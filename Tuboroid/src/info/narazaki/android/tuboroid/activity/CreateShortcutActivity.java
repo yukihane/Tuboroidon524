@@ -41,17 +41,13 @@ public class CreateShortcutActivity extends ListActivity {
 	private void createShortcut(int id) {
 		
         Intent shortcutIntent = new Intent(Intent.ACTION_MAIN);
-        
-        switch (id) {
-        case R.string.title_favorite:
+
+        if (id == R.string.title_favorite) {
             shortcutIntent.setClassName(this, FavoriteListActivity.class.getName());
-        	break;
-        case R.string.title_recents:
-    	default:
+        } else {
             shortcutIntent.setClassName(this, RecentListActivity.class.getName());
-        	break;	
         }
-        
+
         Intent intent = new Intent();
         intent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
         intent.putExtra(Intent.EXTRA_SHORTCUT_NAME, getString(id, getString(R.string.app_name)));

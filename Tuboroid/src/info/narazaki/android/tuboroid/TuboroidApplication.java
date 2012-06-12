@@ -351,13 +351,9 @@ public class TuboroidApplication extends NSimpleApplication {
     
     public boolean isLightTheme() {
         int theme_id = getCurrentThemeID();
-        switch (theme_id) {
-        case R.style.Theme_TuboroidLight:
-        case R.style.Theme_TuboroidLightSimple:
-        case R.style.Theme_TuboroidSepia:
-        case R.style.Theme_TuboroidIceBlue:
-        case R.style.Theme_TuboroidLime:
-        case R.style.Theme_Tuboroidon:
+        if (theme_id == R.style.Theme_TuboroidLight || theme_id == R.style.Theme_TuboroidLightSimple
+                || theme_id == R.style.Theme_TuboroidSepia || theme_id == R.style.Theme_TuboroidIceBlue
+                || theme_id == R.style.Theme_TuboroidLime || theme_id == R.style.Theme_Tuboroidon) {
             return true;
         }
         return false;
