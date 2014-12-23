@@ -104,7 +104,7 @@
 
 	</application>
 
-	<uses-sdk android:minSdkVersion="3" android:targetSdkVersion="4" />
+	<uses-sdk android:minSdkVersion="8" />
 	<supports-screens android:smallScreens="true"
 		android:normalScreens="true" android:largeScreens="true"
 		android:anyDensity="true" />

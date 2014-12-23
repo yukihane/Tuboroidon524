@@ -1025,12 +1025,10 @@ public class ThreadEntryListActivity extends SearchableListActivity {
     
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-    	switch (item.getItemId()) {
-    	case R.id.menu_size_setting:
-    		showSizeSettingDialog();
-    		break;
-    	}
-    	return super.onOptionsItemSelected(item);
+        if (item.getItemId() == R.id.menu_size_setting) {
+            showSizeSettingDialog();
+        }
+        return super.onOptionsItemSelected(item);
     }
     
     // ////////////////////////////////////////////////////////////

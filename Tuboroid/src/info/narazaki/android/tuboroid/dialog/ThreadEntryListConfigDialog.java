@@ -75,29 +75,27 @@ public class ThreadEntryListConfigDialog extends Dialog {
 			public void onClick(View v) {
 				if (v != null) {
 					final int fontSizeMin = 4;
-					switch (v.getId()) {
-					case R.id.body_inc:	
-						view_config.entry_body_++; 
-						break;
-					case R.id.body_dec:
-						if (view_config.entry_body_ > fontSizeMin) view_config.entry_body_--; 
-						break;
-					case R.id.header_inc:
-						view_config.entry_header_++;
-						break;
-					case R.id.header_dec:
-						if (view_config.entry_header_ > fontSizeMin) view_config.entry_header_--;
-						break;
-					case R.id.aa_inc:
-						view_config.entry_aa_body_++;
-						break;
-					case R.id.aa_dec:
-						if (view_config.entry_aa_body_ > fontSizeMin) view_config.entry_aa_body_--;
-						break;
-					case R.id.entry_divider:
-						view_config.entry_divider = ((CheckBox)v).isChecked() ? 1 : 0;
-						break;
-					}
+
+                    final int id = v.getId();
+                    if (id == R.id.body_inc) {
+                        view_config.entry_body_++;
+                    } else if (id == R.id.body_dec) {
+                        if (view_config.entry_body_ > fontSizeMin)
+                            view_config.entry_body_--;
+                    } else if (id == R.id.header_inc) {
+                        view_config.entry_header_++;
+                    } else if (id == R.id.header_dec) {
+                        if (view_config.entry_header_ > fontSizeMin)
+                            view_config.entry_header_--;
+                    } else if (id == R.id.aa_inc) {
+                        view_config.entry_aa_body_++;
+                    } else if (id == R.id.aa_dec) {
+                        if (view_config.entry_aa_body_ > fontSizeMin)
+                            view_config.entry_aa_body_--;
+                    } else if (id == R.id.entry_divider) {
+                        view_config.entry_divider = ((CheckBox) v).isChecked() ? 1 : 0;
+                    }
+
 				}
 				bodySizeText.setText(String.format(sizeFormat, view_config.entry_body_));
 				headerSizeText.setText(String.format(sizeFormat, view_config.entry_header_));
