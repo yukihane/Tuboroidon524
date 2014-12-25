@@ -22,18 +22,18 @@ import android.util.Log;
 
 abstract public class ThreadEntryListTask {
     private static final String TAG = "ThreadEntryListTask";
-    
+
     protected final TuboroidAgentManager agent_manager_;
-    
+
     public LinkedList<Runnable> fetch_task_list_;
-    
-    public ThreadEntryListTask(TuboroidAgentManager agent_manager) {
+
+    public ThreadEntryListTask(final TuboroidAgentManager agent_manager) {
         super();
         agent_manager_ = agent_manager;
-        
+
         fetch_task_list_ = new LinkedList<Runnable>();
     }
-    
+
     private synchronized void pushFetchTask(final Runnable runnable) {
         fetch_task_list_.addLast(runnable);
         if (fetch_task_list_.size() == 1) {
@@ -41,36 +41,38 @@ abstract public class ThreadEntryListTask {
             return;
         }
     }
-    
+
     protected synchronized void popFetchTask() {
-        if (fetch_task_list_.size() == 0) return;
+        if (fetch_task_list_.size() == 0)
+            return;
         fetch_task_list_.removeFirst();
-        if (fetch_task_list_.size() == 0) return;
-        
-        Runnable runnable = fetch_task_list_.getFirst();
+        if (fetch_task_list_.size() == 0)
+            return;
+
+        final Runnable runnable = fetch_task_list_.getFirst();
         runnable.run();
     }
-    
+
     public static interface ThreadEntryListFetchedCallback {
         public void onThreadEntryListFetchedByCache(final List<ThreadEntryData> data_list);
-        
+
         public void onThreadEntryListClear();
-        
+
         public void onThreadEntryListFetchStarted(final ThreadData thread_data);
-        
+
         public void onThreadEntryListFetched(final List<ThreadEntryData> data_list);
-        
+
         public void onThreadEntryListFetchedCompleted(final ThreadData thread_data);
-        
+
         public void onInterrupted();
-        
+
         public void onDatDropped(final boolean is_permanently);
-        
+
         public void onConnectionFailed(final boolean connectionFailed);
-        
+
         public void onConnectionOffline(final ThreadData thread_data);
     }
-    
+
     protected void clearThreadEntryListCache(final ThreadData thread_data, final Runnable callback) {
         thread_data.cache_count_ = 0;
         thread_data.cache_size_ = 0;
@@ -80,13 +82,13 @@ abstract public class ThreadEntryListTask {
                 thread_data.getLocalDatFile(agent_manager_.getContext()).getAbsolutePath(),
                 new DataFileAgent.FileWroteCallback() {
                     @Override
-                    public void onFileWrote(boolean succeeded) {
+                    public void onFileWrote(final boolean succeeded) {
                         agent_manager_.getDBAgent().updateThreadData(thread_data,
                                 new SQLiteAgentBase.DbTransactionDelegate(callback));
                     }
                 });
     }
-    
+
     public final void reloadThreadEntryList(final ThreadData thread_data, final boolean use_ext_storage,
             final boolean reload, final ThreadEntryListFetchedCallback callback) {
         pushFetchTask(new Runnable() {
@@ -96,12 +98,12 @@ abstract public class ThreadEntryListTask {
             }
         });
     }
-    
+
     protected void doReloadThreadEntryList(final ThreadData thread_data, final boolean use_ext_storage,
             final boolean reload, final ThreadEntryListFetchedCallback callback) {
         agent_manager_.getDBAgent().getThreadData(thread_data, new SQLiteAgent.GetThreadDataResult() {
             @Override
-            public void onQuery(ThreadData thread_data) {
+            public void onQuery(final ThreadData thread_data) {
                 thread_data.initWorkingCacheData();
                 if (thread_data.on_ext_storage_ != use_ext_storage && thread_data.cache_count_ > 0) {
                     thread_data.on_ext_storage_ = use_ext_storage;
@@ -112,7 +114,7 @@ abstract public class ThreadEntryListTask {
             }
         });
     }
-    
+
     private void clearAndReloadThreadEntryList(final ThreadData thread_data,
             final ThreadEntryListFetchedCallback callback, final boolean reload) {
         clearThreadEntryListCache(thread_data, new Runnable() {
@@ -122,116 +124,109 @@ abstract public class ThreadEntryListTask {
             }
         });
     }
-    
+
     private void reloadThreadEntryListCache(final ThreadData thread_data, final boolean reload,
             final ThreadEntryListFetchedCallback callback) {
         agent_manager_.getFileAgent().readFile(
                 thread_data.getLocalDatFile(agent_manager_.getContext()).getAbsolutePath(),
                 new DataFileAgent.FileReadUTF8Callback() {
                     @Override
-                    public void read(BufferedReader reader) {
+                    public void read(final BufferedReader reader) {
                         if (reader == null) {
                             thread_data.working_cache_count_ = 0;
                             thread_data.working_cache_size_ = 0;
                             reloadOnlineThreadEntryList(thread_data, null, callback);
-                        }
-                        else {
+                        } else {
                             processThreadEntryListCache(thread_data, reader, reload, callback);
                         }
                     }
                 });
     }
-    
+
     private void processThreadEntryListCache(final ThreadData thread_data, final BufferedReader reader,
             final boolean reload, final ThreadEntryListFetchedCallback callback) {
-        List<ThreadEntryData> data_list = new LinkedList<ThreadEntryData>();
-        
+        final List<ThreadEntryData> data_list = new LinkedList<ThreadEntryData>();
+
         long thread_cur_count = 0;
         try {
             while (true) {
-                String line = reader.readLine();
-                if (line == null) break;
-                
+                final String line = reader.readLine();
+                if (line == null)
+                    break;
+
                 thread_cur_count++;
-                String[] tokens = ListUtils.split("<>", line);
-                
+                final String[] tokens = ListUtils.split("<>", line);
+
                 ThreadEntryData data;
                 if (tokens.length >= 8) {
-                    String author_name = tokens[0];
-                    String author_mail = tokens[1];
+                    final String author_name = tokens[0];
+                    final String author_mail = tokens[1];
                     String entry_body = tokens[2];
-                    String author_id = tokens[3];
-                    String author_be = tokens[4];
-                    String entry_time = tokens[5];
-                    String entry_is_aa = tokens[6];
-                    String forward_anchor_list_str = tokens[7];
-                    
+                    final String author_id = tokens[3];
+                    final String author_be = tokens[4];
+                    final String entry_time = tokens[5];
+                    final String entry_is_aa = tokens[6];
+                    final String forward_anchor_list_str = tokens[7];
+
                     if (thread_cur_count == 1 && tokens.length >= 9 && tokens[8].length() > 0) {
                         thread_data.thread_name_ = tokens[8];
                     }
-                    
+
                     entry_body = HtmlUtils.unescapeHtml(entry_body.replace("<br>", "\n"));
                     data = new ThreadEntryData(true, thread_cur_count, author_name, author_mail, entry_body, author_id,
                             author_be, entry_time, entry_is_aa, forward_anchor_list_str);
-                }
-                else {
+                } else {
                     Log.e(TAG, "Broken Cache : NUM=" + thread_cur_count);
                     data = new ThreadEntryData(true, thread_cur_count, "", "", "", "", "", "", "", "");
                 }
-                
+
                 data_list.add(data);
             }
             if (thread_data.working_cache_count_ == thread_cur_count) {
                 // DB上の数とファイルの内容が一致した時のみ通知(外部ストレージに変なデータが来た時のため)
                 applyIgnoreList(data_list);
                 callback.onThreadEntryListFetchedByCache(data_list);
-            }
-            else {
+            } else {
                 Log.e(TAG, "Broken Cache : Data Clear : working_cache_count_=" + thread_data.working_cache_count_
                         + " but NUM=" + thread_cur_count);
                 clearThreadEntryListCache(thread_data, null);
                 data_list.clear();
                 callback.onThreadEntryListFetchedByCache(data_list);
             }
-        }
-        catch (IndexOutOfBoundsException e) {
+        } catch (final IndexOutOfBoundsException e) {
             e.printStackTrace();
-        }
-        catch (IOException e) {
+        } catch (final IOException e) {
             e.printStackTrace();
-        }
-        finally {
+        } finally {
             try {
                 reader.close();
-            }
-            catch (IOException e) {
+            } catch (final IOException e) {
                 e.printStackTrace();
             }
         }
-              
+
         if (reload) {
             reloadOnlineThreadEntryList(thread_data, null, callback);
-        }
-        else {
+        } else {
             callback.onThreadEntryListFetchedCompleted(thread_data);
             popFetchTask();
         }
     }
-    
+
     protected void appendThreadEntryListCache(final ThreadData thread_data, final List<ThreadEntryData> data_list) {
         agent_manager_.getFileAgent().writeFile(
                 thread_data.getLocalDatFile(agent_manager_.getContext()).getAbsolutePath(),
                 new DataFileAgent.FileWriteUTF8StreamCallback() {
-                    
+
                     @Override
-                    public void write(Writer writer) throws IOException {
-                        for (ThreadEntryData data : data_list) {
+                    public void write(final Writer writer) throws IOException {
+                        for (final ThreadEntryData data : data_list) {
                             writer.append(data.author_name_).append("<>");
                             writer.append(data.author_mail_).append("<>");
-                            
-                            String entry_body = HtmlUtils.escapeHtml(data.entry_body_, false, "<br>");
+
+                            final String entry_body = HtmlUtils.escapeHtml(data.entry_body_, false, "<br>");
                             writer.append(entry_body).append("<>");
-                            
+
                             writer.append(data.author_id_).append("<>");
                             writer.append(data.author_be_).append("<>");
                             writer.append(data.entry_time_).append("<>");
@@ -245,52 +240,52 @@ abstract public class ThreadEntryListTask {
                     }
                 }, true, true, true, null);
     }
-    
-    protected void applyIgnoreList(List<ThreadEntryData> data_list) {
-        for (ThreadEntryData data : data_list) {
-            int type = agent_manager_.getIgnoreListAgent().checkNG(data);
+
+    protected void applyIgnoreList(final List<ThreadEntryData> data_list) {
+        for (final ThreadEntryData data : data_list) {
+            final int type = agent_manager_.getIgnoreListAgent().checkNG(data);
             if (type != IgnoreData.TYPE.NONE) {
                 data.ng_flag_ = type;
             }
         }
     }
-    
+
     protected void reloadOnlineThreadEntryList(final ThreadData thread_data_orig, final String session_key,
             final ThreadEntryListFetchedCallback callback) {
         final ThreadData thread_data = thread_data_orig.clone();
-        
+
         // Offlineチェック
         if (!agent_manager_.isOnline()) {
             callback.onConnectionOffline(thread_data);
             popFetchTask();
             return;
         }
-        
+
         final boolean can_abone = thread_data.working_cache_count_ > 0;
-        
-        HttpGetThreadEntryListTask task = thread_data.factoryGetThreadHttpGetThreadEntryListTask(session_key,
+
+        final HttpGetThreadEntryListTask task = thread_data.factoryGetThreadHttpGetThreadEntryListTask(session_key,
                 factoryGetThreadEntryListCallback(thread_data, session_key, can_abone, callback));
         task.sendTo(agent_manager_.getMultiHttpAgent());
     }
-    
+
     protected HttpGetThreadEntryListTask.Callback factoryGetThreadEntryListCallback(final ThreadData thread_data,
             final String session_key, final boolean can_abone, final ThreadEntryListFetchedCallback callback) {
         return new HttpGetThreadEntryListTask.Callback() {
             final ArrayList<ThreadEntryData> received_list = new ArrayList<ThreadEntryData>();
-            
+
             @Override
             public void onFetchStarted() {
                 callback.onThreadEntryListFetchStarted(thread_data);
             }
-            
+
             @Override
             public void onReceivedNew() {
                 thread_data.working_cache_size_ = 0;
                 thread_data.working_cache_count_ = 0;
             }
-            
+
             @Override
-            public void onReceived(List<ThreadEntryData> data_list) {
+            public void onReceived(final List<ThreadEntryData> data_list) {
                 if (thread_data.working_cache_count_ == 0) {
                     agent_manager_.getFileAgent().deleteFile(
                             thread_data.getLocalDatFile(agent_manager_.getContext()).getAbsolutePath(), null);
@@ -301,17 +296,17 @@ abstract public class ThreadEntryListTask {
                 received_list.addAll(data_list);
                 callback.onThreadEntryListFetched(data_list);
             }
-            
+
             @Override
             public void onNoUpdated() {
                 agent_manager_.getDBAgent().updateThreadData(thread_data, new SQLiteAgentBase.DbTransaction() {
-                    
+
                     @Override
                     public void run() {
                         callback.onThreadEntryListFetchedCompleted(thread_data);
                         popFetchTask();
                     }
-                    
+
                     @Override
                     public void onError() {
                         callback.onInterrupted();
@@ -319,12 +314,12 @@ abstract public class ThreadEntryListTask {
                     }
                 });
             }
-            
+
             @Override
             public void onInterrupted() {
                 callback.onInterrupted();
             }
-            
+
             @Override
             public void onDatDropped() {
                 thread_data.is_dropped_ = true;
@@ -334,7 +329,7 @@ abstract public class ThreadEntryListTask {
                         callback.onDatDropped(session_key != null);
                         popFetchTask();
                     }
-                    
+
                     @Override
                     public void onError() {
                         callback.onInterrupted();
@@ -342,23 +337,22 @@ abstract public class ThreadEntryListTask {
                     }
                 });
             }
-            
+
             @Override
-            public void onConnectionFailed(boolean connectionFailed) {
+            public void onConnectionFailed(final boolean connectionFailed) {
                 if (connectionFailed) {
                     callback.onConnectionFailed(connectionFailed);
                     popFetchTask();
-                }
-                else {
+                } else {
                     onDatDropped();
                 }
             }
-            
+
             @Override
             public void onDatBroken() {
                 onDatDropped();
             }
-            
+
             @Override
             public void onCompleted() {
                 appendThreadEntryListCache(thread_data, received_list);
@@ -369,7 +363,7 @@ abstract public class ThreadEntryListTask {
                         callback.onThreadEntryListFetchedCompleted(thread_data);
                         popFetchTask();
                     }
-                    
+
                     @Override
                     public void onError() {
                         callback.onInterrupted();
@@ -377,23 +371,22 @@ abstract public class ThreadEntryListTask {
                     }
                 });
             }
-            
+
             @Override
             public void onAboneFound() {
                 if (can_abone) {
                     thread_data.working_cache_count_ = 0;
                     thread_data.working_cache_size_ = 0;
                     reloadOnlineThreadEntryList(thread_data, null, callback);
-                    
-                }
-                else {
+
+                } else {
                     callback.onConnectionFailed(false);
                     popFetchTask();
                 }
             }
         };
     }
-    
+
     public final void reloadSpecialThreadEntryList(final ThreadData thread_data, final AccountPref account_pref,
             final String user_agent, final ThreadEntryListFetchedCallback callback) {
         pushFetchTask(new Runnable() {
@@ -403,10 +396,10 @@ abstract public class ThreadEntryListTask {
             }
         });
     }
-    
+
     protected void doReloadSpecialThreadEntryList(final ThreadData thread_data, final AccountPref account_pref,
             final String user_agent, final ThreadEntryListFetchedCallback callback) {
         callback.onConnectionFailed(true);
     }
-    
+
 }
