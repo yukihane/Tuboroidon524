@@ -83,6 +83,9 @@ import android.widget.TextView.BufferType;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+/**
+ * (予想)1つの「スレ」を表示するためのアクティビティ.
+ */
 public class ThreadEntryListActivity extends SearchableListActivity {
     public static final String TAG = "ThreadEntryListActivity";
 
@@ -122,7 +125,9 @@ public class ThreadEntryListActivity extends SearchableListActivity {
     public static final int MENU_KEY_COPY_INFO = 40;
 
     // スレ情報
+    /** (予想)本Activityの表示対象スレURL. */
     private Uri thread_uri_;
+    /** (予想)本Activityの表示対象スレが持つ情報. */
     private ThreadData thread_data_;
     private int maybe_online_count_;
 
@@ -445,7 +450,8 @@ public class ThreadEntryListActivity extends SearchableListActivity {
         if (thread_data_ != null && list_adapter_ != null && list_adapter_.getCount() > 0 && hasInitialData()) {
             final int bottom_pos = getListView().getLastVisiblePosition();
             if (bottom_pos == list_adapter_.getCount()) {
-                final ThreadEntryData bottom_entry_data = ((ThreadEntryListAdapter) list_adapter_).getData(bottom_pos - 1);
+                final ThreadEntryData bottom_entry_data = ((ThreadEntryListAdapter) list_adapter_)
+                        .getData(bottom_pos - 1);
                 if (bottom_entry_data != null) {
                     final long bottom_id = bottom_entry_data.entry_id_ - 1;
                     thread_data_.recent_pos_ = bottom_id;
@@ -517,8 +523,8 @@ public class ThreadEntryListActivity extends SearchableListActivity {
         final ThreadEntryListAdapter list_adapter = new ThreadEntryListAdapter(this, getAgent(), getListFontPref(),
                 new ThreadEntryData.ImageViewerLauncher() {
                     @Override
-                    public void onRequired(final ThreadData threadData, final String imageLocalFilename, final String imageUri,
-                            final long entry_id, final int image_index, final int image_count) {
+                    public void onRequired(final ThreadData threadData, final String imageLocalFilename,
+                            final String imageUri, final long entry_id, final int image_index, final int image_count) {
                         image_viewer_dialog_.setImage(imageLocalFilename, imageUri, entry_id, image_index, image_count);
                         image_viewer_dialog_.show();
                     }
@@ -977,7 +983,8 @@ public class ThreadEntryListActivity extends SearchableListActivity {
                 MENU_KEY_SEARCH_BAR_2);
 
         // 書き込み
-        final MenuItem compose_item = menu.add(0, MENU_KEY_COMPOSE, MENU_KEY_COMPOSE, getString(R.string.label_menu_compose));
+        final MenuItem compose_item = menu.add(0, MENU_KEY_COMPOSE, MENU_KEY_COMPOSE,
+                getString(R.string.label_menu_compose));
         compose_item.setIcon(R.drawable.ic_menu_compose);
         compose_item.setOnMenuItemClickListener(new OnMenuItemClickListener() {
             @Override
@@ -1819,7 +1826,8 @@ public class ThreadEntryListActivity extends SearchableListActivity {
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(final DialogInterface dialog, final int which) {
-                            final Intent intent = new Intent(ThreadEntryListActivity.this, SimilarThreadListActivity.class);
+                            final Intent intent = new Intent(ThreadEntryListActivity.this,
+                                    SimilarThreadListActivity.class);
                             intent.setData(Uri.parse(thread_data_.getBoardSubjectsURI()));
                             intent.putExtra(SimilarThreadListActivity.KEY_SEARCH_KEY_NAME, thread_data_.thread_name_);
                             intent.putExtra(SimilarThreadListActivity.KEY_SEARCH_THREAD_ID, thread_data_.thread_id_);
@@ -1856,7 +1864,8 @@ public class ThreadEntryListActivity extends SearchableListActivity {
                 R.string.dialog_label_dat_dropped_retry_without_maru);
     }
 
-    private void onDatDroppedRetryImpl(final int summary_with_find_next, final int summary_no_name, final int label_retry) {
+    private void onDatDroppedRetryImpl(final int summary_with_find_next, final int summary_no_name,
+            final int label_retry) {
         if (!is_active_)
             return;
         if (thread_data_.cache_count_ == 0) {
@@ -1871,7 +1880,8 @@ public class ThreadEntryListActivity extends SearchableListActivity {
                     R.string.dialog_label_dat_dropped_find_similar, label_retry, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(final DialogInterface dialog, final int which) {
-                            final Intent intent = new Intent(ThreadEntryListActivity.this, SimilarThreadListActivity.class);
+                            final Intent intent = new Intent(ThreadEntryListActivity.this,
+                                    SimilarThreadListActivity.class);
                             intent.setData(Uri.parse(thread_data_.getBoardSubjectsURI()));
                             intent.putExtra(SimilarThreadListActivity.KEY_SEARCH_KEY_NAME, thread_data_.thread_name_);
                             intent.putExtra(SimilarThreadListActivity.KEY_SEARCH_THREAD_ID, thread_data_.thread_id_);
@@ -1942,7 +1952,8 @@ public class ThreadEntryListActivity extends SearchableListActivity {
             target_entry_id_ = 0;
         }
 
-        public ParcelableFilterData(final int type, final String stringFilterWord, final String author_id, final long target_entry_id) {
+        public ParcelableFilterData(final int type, final String stringFilterWord, final String author_id,
+                final long target_entry_id) {
             super();
             type_ = type;
             string_filter_word_ = stringFilterWord;
