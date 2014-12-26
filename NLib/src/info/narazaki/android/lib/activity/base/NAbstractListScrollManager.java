@@ -10,6 +10,9 @@ import android.widget.AbsListView.OnScrollListener;
 abstract public class NAbstractListScrollManager implements OnScrollListener {
     private static final String TAG = "NListScrollManager";
 
+    /**
+     * (予想){@link NAbstractListScrollManager}が管理する対象であることを示すインタフェース.
+     */
     public static interface Target {
 
         public void onScrollReachedTop();

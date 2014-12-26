@@ -8,6 +8,7 @@ import info.narazaki.android.tuboroid.agent.TuboroidAgent;
 import info.narazaki.android.tuboroid.data.ThreadData;
 import info.narazaki.android.tuboroid.data.ThreadEntryData;
 import info.narazaki.android.tuboroid.data.ThreadEntryData.ImageViewerLauncher;
+import info.narazaki.android.tuboroid.data.ThreadEntryDataUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,8 +33,9 @@ public class ThreadEntryListAdapter extends FilterableListAdapterBase<ThreadEntr
 
     int read_count_;
 
-    public ThreadEntryListAdapter(final Activity activity, final TuboroidAgent agent, final TuboroidApplication.ViewConfig view_config,
-            final ImageViewerLauncher image_viewer_launcher, final ThreadEntryData.OnAnchorClickedCallback anchor_callback) {
+    public ThreadEntryListAdapter(final Activity activity, final TuboroidAgent agent,
+            final TuboroidApplication.ViewConfig view_config, final ImageViewerLauncher image_viewer_launcher,
+            final ThreadEntryData.OnAnchorClickedCallback anchor_callback) {
         super(activity);
         setDataList(new ArrayList<ThreadEntryData>());
         agent_ = agent;
@@ -65,7 +67,7 @@ public class ThreadEntryListAdapter extends FilterableListAdapterBase<ThreadEntr
         postAdapterThread(new Runnable() {
             @Override
             public void run() {
-                ThreadEntryData.analyzeThreadEntryList(agent_, thread_data_, view_config_, view_style_,
+                ThreadEntryDataUtil.analyzeThreadEntryList(agent_, thread_data_, view_config_, view_style_,
                         inner_data_list_, progress);
                 activity_.runOnUiThread(new Runnable() {
                     @Override
@@ -128,11 +130,11 @@ public class ThreadEntryListAdapter extends FilterableListAdapterBase<ThreadEntr
 
         if (data == null || !is_aa_considering_config) {
             final View view = layout_inflater.inflate(R.layout.entry_list_row, null);
-            ThreadEntryData.initView(view, view_config_, view_style_, false);
+            ThreadEntryDataUtil.initView(data, view, view_config_, view_style_, false);
             return view;
         }
         final View view = layout_inflater.inflate(R.layout.entry_list_row_aa, null);
-        ThreadEntryData.initView(view, view_config_, view_style_, true);
+        ThreadEntryDataUtil.initView(data, view, view_config_, view_style_, true);
         return view;
     }
 
@@ -147,12 +149,13 @@ public class ThreadEntryListAdapter extends FilterableListAdapterBase<ThreadEntr
                 indent = entry_indent + indent_offset_;
             }
         }
-        return data.setView(agent_, thread_data_, view, parent, read_count_, view_config_, view_style_, is_quick_show_,
-                indent);
+        return ThreadEntryDataUtil.setView(data, agent_, thread_data_, view, parent, read_count_, view_config_,
+                view_style_, is_quick_show_, indent);
     }
 
     @Override
-    public void setFilter(final info.narazaki.android.lib.adapter.FilterableListAdapterBase.Filter<ThreadEntryData> filter,
+    public void setFilter(
+            final info.narazaki.android.lib.adapter.FilterableListAdapterBase.Filter<ThreadEntryData> filter,
             final Runnable callback) {
         indent_map_ = null;
         super.setFilter(filter, callback);
