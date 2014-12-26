@@ -71,21 +71,21 @@ public class IgnoreListAgent {
     }
 
     public synchronized int checkNG(final ThreadEntryData entry_data) {
-        final IgnoreData ngid_data = ngid_map_.get(entry_data.author_id_);
+        final IgnoreData ngid_data = ngid_map_.get(entry_data.getAuthorId());
         if (ngid_data != null)
             return ngid_data.type_;
 
         if (ngwords_pattern_ != null) {
-            if (ngwords_pattern_.matcher(entry_data.author_name_).find()) {
+            if (ngwords_pattern_.matcher(entry_data.getAuthorName()).find()) {
                 for (final IgnoreData data : ngword_list_) {
-                    if (entry_data.author_name_.indexOf(data.token_) != -1) {
+                    if (entry_data.getAuthorName().indexOf(data.token_) != -1) {
                         return data.type_;
                     }
                 }
             }
-            if (ngwords_pattern_.matcher(entry_data.entry_body_).find()) {
+            if (ngwords_pattern_.matcher(entry_data.getEntryBody()).find()) {
                 for (final IgnoreData data : ngword_list_) {
-                    if (entry_data.entry_body_.indexOf(data.token_) != -1) {
+                    if (entry_data.getEntryBody().indexOf(data.token_) != -1) {
                         return data.type_;
                     }
                 }
@@ -157,13 +157,13 @@ public class IgnoreListAgent {
 
     public synchronized void deleteNG(final ThreadEntryData entry_data) {
         deleteNGID(entry_data);
-        deleteNGWord(entry_data.author_name_);
-        deleteNGWord(entry_data.entry_body_);
+        deleteNGWord(entry_data.getAuthorName());
+        deleteNGWord(entry_data.getEntryBody());
         updateNGSet();
     }
 
     private void deleteNGID(final ThreadEntryData entry_data) {
-        final String author_id = entry_data.author_id_;
+        final String author_id = entry_data.getAuthorId();
         final IgnoreData data = ngid_map_.get(author_id);
         if (data == null)
             return;

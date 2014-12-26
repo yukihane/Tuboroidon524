@@ -52,6 +52,9 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.TextView.BufferType;
 
+/**
+ * (予想)いわゆる「レス」1つ1つを表現するためのクラス.
+ */
 public class ThreadEntryData implements NListAdapterDataInterface {
     private static final String TAG = "ThreadEntryData";
 
@@ -80,30 +83,31 @@ public class ThreadEntryData implements NListAdapterDataInterface {
     // 年を表示するかどうかの判定に
     private static String dateBorder = getNewDateBorder();
 
-    public long entry_id_; // レス番
+    /** レス番 */
+    private final long entry_id_;
 
-    public String author_name_;
-    public String author_mail_;
-    public String entry_body_;
+    private String author_name_;
+    private String author_mail_;
+    private String entry_body_;
 
-    public String author_id_;
-    public String author_be_;
-    public String entry_time_;
+    private String author_id_;
+    private String author_be_;
+    private String entry_time_;
 
-    public int author_id_count_;
+    private int author_id_count_;
 
-    public boolean entry_is_aa_;
+    private boolean entry_is_aa_;
 
-    public String forward_anchor_list_str_;
-    public long[] forward_anchor_list_;
+    private String forward_anchor_list_str_;
+    private long[] forward_anchor_list_;
 
-    public ArrayList<Long> back_anchor_list_;
+    private ArrayList<Long> back_anchor_list_;
     private final List<String> img_uri_list_;
     private final List<Boolean> img_uri_enabled_list_;
     private final List<Boolean> img_uri_check_enabled_list_;
-    public int ng_flag_;
+    private int ng_flag_;
 
-    static class SpannableCache {
+    private static class SpannableCache {
         private final Spannable cache_;
         private final ViewStyle view_style_;
         private final TuboroidApplication.ViewConfig view_config_;
@@ -1227,6 +1231,54 @@ public class ThreadEntryData implements NListAdapterDataInterface {
     static {
         System.loadLibrary("info_narazaki_android_tuboroid");
         initNative();
+    }
+
+    public String getAuthorId() {
+        return author_id_;
+    }
+
+    public String getAuthorName() {
+        return author_name_;
+    }
+
+    public String getAuthorMail() {
+        return author_mail_;
+    }
+
+    public String getAuthorBe() {
+        return author_be_;
+    }
+
+    public String getEntryTime() {
+        return entry_time_;
+    }
+
+    public boolean getEntryIsAa() {
+        return entry_is_aa_;
+    }
+
+    public String getForwardAnchorListStr() {
+        return forward_anchor_list_str_;
+    }
+
+    public String getEntryBody() {
+        return entry_body_;
+    }
+
+    public long getEntryId() {
+        return entry_id_;
+    }
+
+    public List<Long> getBackAnchorList() {
+        return back_anchor_list_;
+    }
+
+    public long[] getForwardAnchorList() {
+        return forward_anchor_list_;
+    }
+
+    public void setNgFflag(final int ngFlag) {
+        this.ng_flag_ = ngFlag;
     }
 
 }

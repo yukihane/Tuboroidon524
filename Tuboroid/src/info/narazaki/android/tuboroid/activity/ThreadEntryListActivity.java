@@ -83,6 +83,9 @@ import android.widget.TextView.BufferType;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+/**
+ * (予想)1つの「スレ」を表示するためのアクティビティ.
+ */
 public class ThreadEntryListActivity extends SearchableListActivity {
     public static final String TAG = "ThreadEntryListActivity";
 
@@ -122,7 +125,9 @@ public class ThreadEntryListActivity extends SearchableListActivity {
     public static final int MENU_KEY_COPY_INFO = 40;
 
     // スレ情報
+    /** (予想)本Activityの表示対象スレURL. */
     private Uri thread_uri_;
+    /** (予想)本Activityの表示対象スレが持つ情報. */
     private ThreadData thread_data_;
     private int maybe_online_count_;
 
@@ -353,7 +358,7 @@ public class ThreadEntryListActivity extends SearchableListActivity {
                                 final ThreadEntryData entry_data = ((ThreadEntryListAdapter) list_adapter_)
                                         .getData(doubleTapPosition);
                                 if (entry_data != null) {
-                                    updateFilterByRelation(entry_data.entry_id_);
+                                    updateFilterByRelation(entry_data.getEntryId());
                                 }
                                 return true;
                             }
@@ -445,9 +450,10 @@ public class ThreadEntryListActivity extends SearchableListActivity {
         if (thread_data_ != null && list_adapter_ != null && list_adapter_.getCount() > 0 && hasInitialData()) {
             final int bottom_pos = getListView().getLastVisiblePosition();
             if (bottom_pos == list_adapter_.getCount()) {
-                final ThreadEntryData bottom_entry_data = ((ThreadEntryListAdapter) list_adapter_).getData(bottom_pos - 1);
+                final ThreadEntryData bottom_entry_data = ((ThreadEntryListAdapter) list_adapter_)
+                        .getData(bottom_pos - 1);
                 if (bottom_entry_data != null) {
-                    final long bottom_id = bottom_entry_data.entry_id_ - 1;
+                    final long bottom_id = bottom_entry_data.getEntryId() - 1;
                     thread_data_.recent_pos_ = bottom_id;
                     thread_data_.recent_pos_y_ = 0;
                     getAgent().updateThreadRecentPos(thread_data_, null);
@@ -456,7 +462,7 @@ public class ThreadEntryListActivity extends SearchableListActivity {
                 final int pos = getListView().getFirstVisiblePosition();
                 final ThreadEntryData top_entry_data = ((ThreadEntryListAdapter) list_adapter_).getData(pos);
                 if (top_entry_data != null) {
-                    thread_data_.recent_pos_ = top_entry_data.entry_id_ - 1;
+                    thread_data_.recent_pos_ = top_entry_data.getEntryId() - 1;
                     thread_data_.recent_pos_y_ = getListView().getChildAt(0).getTop();
                     getAgent().updateThreadRecentPos(thread_data_, null);
                 }
@@ -514,39 +520,43 @@ public class ThreadEntryListActivity extends SearchableListActivity {
 
     @Override
     protected SimpleListAdapterBase<?> createListAdapter() {
+        final ThreadEntryData.ImageViewerLauncher imageViewerLauncher = new ThreadEntryData.ImageViewerLauncher() {
+            @Override
+            public void onRequired(final ThreadData threadData, final String imageLocalFilename, final String imageUri,
+                    final long entry_id, final int image_index, final int image_count) {
+                image_viewer_dialog_.setImage(imageLocalFilename, imageUri, entry_id, image_index, image_count);
+                image_viewer_dialog_.show();
+            }
+        };
+
+        final ThreadEntryData.OnAnchorClickedCallback onAnchorClickedCallback = new ThreadEntryData.OnAnchorClickedCallback() {
+
+            @Override
+            public void onNumberAnchorClicked(final int jumpFrom, final int jumpTo) {
+                if (jumpTo > 0) {
+                    jumpToAnchor(jumpFrom, jumpTo);
+                }
+            }
+
+            @Override
+            public void onThreadLinkClicked(final Uri uri) {
+                final Intent intent = new Intent(ThreadEntryListActivity.this, ThreadEntryListActivity.class);
+                intent.setData(uri);
+                MigrationSDK5.Intent_addFlagNoAnimation(intent);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onBoardLinkClicked(final Uri uri) {
+                final Intent intent = new Intent(ThreadEntryListActivity.this, ThreadListActivity.class);
+                intent.setData(uri);
+                MigrationSDK5.Intent_addFlagNoAnimation(intent);
+                startActivity(intent);
+            }
+        };
+
         final ThreadEntryListAdapter list_adapter = new ThreadEntryListAdapter(this, getAgent(), getListFontPref(),
-                new ThreadEntryData.ImageViewerLauncher() {
-                    @Override
-                    public void onRequired(final ThreadData threadData, final String imageLocalFilename, final String imageUri,
-                            final long entry_id, final int image_index, final int image_count) {
-                        image_viewer_dialog_.setImage(imageLocalFilename, imageUri, entry_id, image_index, image_count);
-                        image_viewer_dialog_.show();
-                    }
-                }, new ThreadEntryData.OnAnchorClickedCallback() {
-
-                    @Override
-                    public void onNumberAnchorClicked(final int jumpFrom, final int jumpTo) {
-                        if (jumpTo > 0) {
-                            jumpToAnchor(jumpFrom, jumpTo);
-                        }
-                    }
-
-                    @Override
-                    public void onThreadLinkClicked(final Uri uri) {
-                        final Intent intent = new Intent(ThreadEntryListActivity.this, ThreadEntryListActivity.class);
-                        intent.setData(uri);
-                        MigrationSDK5.Intent_addFlagNoAnimation(intent);
-                        startActivity(intent);
-                    }
-
-                    @Override
-                    public void onBoardLinkClicked(final Uri uri) {
-                        final Intent intent = new Intent(ThreadEntryListActivity.this, ThreadListActivity.class);
-                        intent.setData(uri);
-                        MigrationSDK5.Intent_addFlagNoAnimation(intent);
-                        startActivity(intent);
-                    }
-                });
+                imageViewerLauncher, onAnchorClickedCallback);
         image_viewer_dialog_.setThreadData(thread_data_);
         list_adapter.setThreadData(thread_data_);
         return list_adapter;
@@ -664,14 +674,14 @@ public class ThreadEntryListActivity extends SearchableListActivity {
             return;
 
         menu.clear();
-        menu.setHeaderTitle(String.format(getString(R.string.ctx_menu_title_entry), entry_data.entry_id_));
+        menu.setHeaderTitle(String.format(getString(R.string.ctx_menu_title_entry), entry_data.getEntryId()));
         menu.add(0, CTX_MENU_REPLY_TO_ENTRY, CTX_MENU_REPLY_TO_ENTRY, R.string.ctx_menu_reply_to);
         menu.add(0, CTX_MENU_COPY_TO_CLIPBOARD, CTX_MENU_COPY_TO_CLIPBOARD, R.string.ctx_menu_copy_to_clipboard);
 
         if (entry_data.canAddNGID()) {
             // ?が入ったIDはNG不可
             menu.add(0, CTX_MENU_FIND_BY_ENTRY_ID, CTX_MENU_FIND_BY_ENTRY_ID,
-                    String.format(getString(R.string.ctx_menu_find_by_entry_id), entry_data.author_id_));
+                    String.format(getString(R.string.ctx_menu_find_by_entry_id), entry_data.getAuthorId()));
         }
         if (entry_data.isNG()) {
             menu.add(0, CTX_MENU_DELETE_IGNORE, CTX_MENU_DELETE_IGNORE, R.string.ctx_menu_delete_ignore);
@@ -701,7 +711,7 @@ public class ThreadEntryListActivity extends SearchableListActivity {
             updateFilterByAuthorID(entry_data);
             break;
         case CTX_MENU_FIND_RELATED_ENTRIES:
-            updateFilterByRelation(entry_data.entry_id_);
+            updateFilterByRelation(entry_data.getEntryId());
             break;
         case CTX_MENU_ADD_IGNORE:
             showDialogAddIgnore(entry_data);
@@ -738,14 +748,15 @@ public class ThreadEntryListActivity extends SearchableListActivity {
                 case 0:
                     intent = new Intent(ThreadEntryListActivity.this, ThreadEntryEditActivity.class);
                     intent.setData(Uri.parse(thread_data_.getThreadURI()));
-                    intent.putExtra(ThreadEntryEditActivity.INTENT_KEY_THREAD_DEFAULT_TEXT, ">>" + entry_data.entry_id_
+                    intent.putExtra(ThreadEntryEditActivity.INTENT_KEY_THREAD_DEFAULT_TEXT,
+                            ">>" + entry_data.getEntryId()
                             + "\n");
                     startActivityForResult(intent, INTENT_ID_SHOW_ENTRY_EDITOR);
                     break;
                 case 1:
                     intent = new Intent(ThreadEntryListActivity.this, ThreadEntryEditActivity.class);
                     intent.setData(Uri.parse(thread_data_.getThreadURI()));
-                    final String quoted_entry = getQuotedEntry(entry_data.entry_id_, entry_data.entry_body_);
+                    final String quoted_entry = getQuotedEntry(entry_data.getEntryId(), entry_data.getEntryBody());
                     intent.putExtra(ThreadEntryEditActivity.INTENT_KEY_THREAD_DEFAULT_TEXT, quoted_entry);
                     startActivityForResult(intent, INTENT_ID_SHOW_ENTRY_EDITOR);
                     break;
@@ -756,14 +767,14 @@ public class ThreadEntryListActivity extends SearchableListActivity {
     }
 
     private void showDialogAddIgnore(final ThreadEntryData entry_data) {
-        final String author_id = entry_data.author_id_;
+        final String author_id = entry_data.getAuthorId();
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.ctx_menu_add_ignore);
 
         if (entry_data.canAddNGID()) {
             final String[] menu_strings = new String[] {
-                    String.format(getString(R.string.ctx_menu_add_ignore_id_normal), entry_data.author_id_),
-                    String.format(getString(R.string.ctx_menu_add_ignore_id_gone), entry_data.author_id_),
+                    String.format(getString(R.string.ctx_menu_add_ignore_id_normal), entry_data.getAuthorId()),
+                    String.format(getString(R.string.ctx_menu_add_ignore_id_gone), entry_data.getAuthorId()),
                     getString(R.string.ctx_menu_add_ignore_word_normal),
                     getString(R.string.ctx_menu_add_ignore_word_gone) };
             builder.setItems(menu_strings, new DialogInterface.OnClickListener() {
@@ -826,9 +837,9 @@ public class ThreadEntryListActivity extends SearchableListActivity {
         final EditText ngword_token = (EditText) layout_view.findViewById(R.id.add_ngword_token);
         final EditText ngword_orig = (EditText) layout_view.findViewById(R.id.add_ngword_orig);
         final StringBuilder orig_text = new StringBuilder();
-        orig_text.append(entry_data.author_name_);
+        orig_text.append(entry_data.getEntryBody());
         orig_text.append("\n");
-        orig_text.append(entry_data.entry_body_);
+        orig_text.append(entry_data.getEntryBody());
         ngword_orig.setText(orig_text);
         ngword_orig.setSingleLine(false);
 
@@ -862,10 +873,10 @@ public class ThreadEntryListActivity extends SearchableListActivity {
                 final ClipboardManager cm = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
                 switch (which) {
                 case 0:
-                    cm.setText(entry_data.author_id_);
+                    cm.setText(entry_data.getAuthorId());
                     break;
                 case 1:
-                    cm.setText(entry_data.author_name_);
+                    cm.setText(entry_data.getEntryBody());
                     break;
                 case 2:
                     cm.setText(entry_data.getEntryBodyTextForCopy());
@@ -977,7 +988,8 @@ public class ThreadEntryListActivity extends SearchableListActivity {
                 MENU_KEY_SEARCH_BAR_2);
 
         // 書き込み
-        final MenuItem compose_item = menu.add(0, MENU_KEY_COMPOSE, MENU_KEY_COMPOSE, getString(R.string.label_menu_compose));
+        final MenuItem compose_item = menu.add(0, MENU_KEY_COMPOSE, MENU_KEY_COMPOSE,
+                getString(R.string.label_menu_compose));
         compose_item.setIcon(R.drawable.ic_menu_compose);
         compose_item.setOnMenuItemClickListener(new OnMenuItemClickListener() {
             @Override
@@ -1819,7 +1831,8 @@ public class ThreadEntryListActivity extends SearchableListActivity {
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(final DialogInterface dialog, final int which) {
-                            final Intent intent = new Intent(ThreadEntryListActivity.this, SimilarThreadListActivity.class);
+                            final Intent intent = new Intent(ThreadEntryListActivity.this,
+                                    SimilarThreadListActivity.class);
                             intent.setData(Uri.parse(thread_data_.getBoardSubjectsURI()));
                             intent.putExtra(SimilarThreadListActivity.KEY_SEARCH_KEY_NAME, thread_data_.thread_name_);
                             intent.putExtra(SimilarThreadListActivity.KEY_SEARCH_THREAD_ID, thread_data_.thread_id_);
@@ -1856,7 +1869,8 @@ public class ThreadEntryListActivity extends SearchableListActivity {
                 R.string.dialog_label_dat_dropped_retry_without_maru);
     }
 
-    private void onDatDroppedRetryImpl(final int summary_with_find_next, final int summary_no_name, final int label_retry) {
+    private void onDatDroppedRetryImpl(final int summary_with_find_next, final int summary_no_name,
+            final int label_retry) {
         if (!is_active_)
             return;
         if (thread_data_.cache_count_ == 0) {
@@ -1871,7 +1885,8 @@ public class ThreadEntryListActivity extends SearchableListActivity {
                     R.string.dialog_label_dat_dropped_find_similar, label_retry, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(final DialogInterface dialog, final int which) {
-                            final Intent intent = new Intent(ThreadEntryListActivity.this, SimilarThreadListActivity.class);
+                            final Intent intent = new Intent(ThreadEntryListActivity.this,
+                                    SimilarThreadListActivity.class);
                             intent.setData(Uri.parse(thread_data_.getBoardSubjectsURI()));
                             intent.putExtra(SimilarThreadListActivity.KEY_SEARCH_KEY_NAME, thread_data_.thread_name_);
                             intent.putExtra(SimilarThreadListActivity.KEY_SEARCH_THREAD_ID, thread_data_.thread_id_);
@@ -1942,7 +1957,8 @@ public class ThreadEntryListActivity extends SearchableListActivity {
             target_entry_id_ = 0;
         }
 
-        public ParcelableFilterData(final int type, final String stringFilterWord, final String author_id, final long target_entry_id) {
+        public ParcelableFilterData(final int type, final String stringFilterWord, final String author_id,
+                final long target_entry_id) {
             super();
             type_ = type;
             string_filter_word_ = stringFilterWord;
@@ -2049,7 +2065,7 @@ public class ThreadEntryListActivity extends SearchableListActivity {
         ((ThreadEntryListAdapter) list_adapter_).setFilter(new BaseFilter() {
             @Override
             public boolean filter(final ThreadEntryData data) {
-                if (data.entry_body_.toLowerCase().indexOf(filter_lc) == -1)
+                if (data.getEntryBody().toLowerCase().indexOf(filter_lc) == -1)
                     return false;
                 return super.filter(data);
             }
@@ -2070,7 +2086,7 @@ public class ThreadEntryListActivity extends SearchableListActivity {
         if (!is_active_)
             return;
 
-        updateFilterByAuthorID(entry_data.entry_id_, entry_data.author_id_);
+        updateFilterByAuthorID(entry_data.getEntryId(), entry_data.getAuthorId());
     }
 
     private void updateFilterByAuthorID(final long target_entry_id, final String target_author_id) {
@@ -2085,7 +2101,7 @@ public class ThreadEntryListActivity extends SearchableListActivity {
         ((ThreadEntryListAdapter) list_adapter_).setFilter(new BaseFilter() {
             @Override
             public boolean filter(final ThreadEntryData data) {
-                if (!target_author_id.equals(data.author_id_))
+                if (!target_author_id.equals(data.getAuthorId()))
                     return false;
                 return super.filter(data);
             }
@@ -2161,8 +2177,8 @@ public class ThreadEntryListActivity extends SearchableListActivity {
             public void prepare(final ArrayList<ThreadEntryData> inner_data_list) {
                 ThreadEntryData target_data = null;
                 for (final ThreadEntryData data : inner_data_list) {
-                    inner_data_map.put(data.entry_id_, data);
-                    if (data.entry_id_ == target_entry_id) {
+                    inner_data_map.put(data.getEntryId(), data);
+                    if (data.getEntryId() == target_entry_id) {
                         target_data = data;
                     }
                 }
@@ -2173,21 +2189,21 @@ public class ThreadEntryListActivity extends SearchableListActivity {
             }
 
             private void check(final ThreadEntryData target_data, final int indent) {
-                if (result_id_map.contains(target_data.entry_id_))
+                if (result_id_map.contains(target_data.getEntryId()))
                     return;
-                result_id_map.add(target_data.entry_id_);
-                indent_map.put(target_data.entry_id_, indent);
+                result_id_map.add(target_data.getEntryId());
+                indent_map.put(target_data.getEntryId(), indent);
 
                 if (indent < indentMin)
                     indentMin = indent;
 
-                for (final Long next_id : target_data.back_anchor_list_) {
+                for (final Long next_id : target_data.getBackAnchorList()) {
                     final ThreadEntryData data = inner_data_map.get(next_id);
                     if (data != null)
                         check(data, indent + 1);
                 }
 
-                for (final Long next_id : target_data.forward_anchor_list_) {
+                for (final Long next_id : target_data.getForwardAnchorList()) {
                     final ThreadEntryData data = inner_data_map.get(next_id);
                     if (data != null)
                         check(data, indent - 1);
@@ -2197,7 +2213,7 @@ public class ThreadEntryListActivity extends SearchableListActivity {
         }, new BaseFilter() {
             @Override
             public boolean filter(final ThreadEntryData data) {
-                if (!result_id_map.contains(data.entry_id_))
+                if (!result_id_map.contains(data.getEntryId()))
                     return false;
                 return super.filter(data);
             }

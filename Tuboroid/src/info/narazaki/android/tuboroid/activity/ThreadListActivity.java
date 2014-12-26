@@ -39,6 +39,9 @@ import android.view.View;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ListView;
 
+/**
+ * (予想)ある板のスレッドタイトルを一覧表示するためのアクティビティ.
+ */
 public class ThreadListActivity extends SearchableListActivity {
     public static final String TAG = "ThreadListActivity";
 

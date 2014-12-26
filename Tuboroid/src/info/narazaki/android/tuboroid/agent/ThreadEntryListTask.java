@@ -221,18 +221,18 @@ abstract public class ThreadEntryListTask {
                     @Override
                     public void write(final Writer writer) throws IOException {
                         for (final ThreadEntryData data : data_list) {
-                            writer.append(data.author_name_).append("<>");
-                            writer.append(data.author_mail_).append("<>");
+                            writer.append(data.getAuthorName()).append("<>");
+                            writer.append(data.getAuthorMail()).append("<>");
 
-                            final String entry_body = HtmlUtils.escapeHtml(data.entry_body_, false, "<br>");
+                            final String entry_body = HtmlUtils.escapeHtml(data.getEntryBody(), false, "<br>");
                             writer.append(entry_body).append("<>");
 
-                            writer.append(data.author_id_).append("<>");
-                            writer.append(data.author_be_).append("<>");
-                            writer.append(data.entry_time_).append("<>");
-                            writer.append(data.entry_is_aa_ ? "1" : "0").append("<>");
-                            writer.append(data.forward_anchor_list_str_);
-                            if (data.entry_id_ == 1) {
+                            writer.append(data.getAuthorId()).append("<>");
+                            writer.append(data.getAuthorBe()).append("<>");
+                            writer.append(data.getEntryTime()).append("<>");
+                            writer.append(data.getEntryIsAa() ? "1" : "0").append("<>");
+                            writer.append(data.getForwardAnchorListStr());
+                            if (data.getEntryId() == 1) {
                                 writer.append("<>").append(thread_data.thread_name_);
                             }
                             writer.append("\n");
@@ -245,7 +245,7 @@ abstract public class ThreadEntryListTask {
         for (final ThreadEntryData data : data_list) {
             final int type = agent_manager_.getIgnoreListAgent().checkNG(data);
             if (type != IgnoreData.TYPE.NONE) {
-                data.ng_flag_ = type;
+                data.setNgFflag(type);
             }
         }
     }
