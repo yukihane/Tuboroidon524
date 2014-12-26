@@ -102,7 +102,7 @@ public class ThreadEntryListAdapter extends FilterableListAdapterBase<ThreadEntr
 
     @Override
     public int getItemViewType(final int position) {
-        if (getData(position).entry_is_aa_)
+        if (getData(position).getEntryIsAa())
             return 1;
         return 0;
     }
@@ -119,7 +119,7 @@ public class ThreadEntryListAdapter extends FilterableListAdapterBase<ThreadEntr
         // 設定も考慮してAAモードで表示するか決定する
         boolean is_aa_considering_config = false;
         if (view_config_.aa_mode == ViewConfig.AA_MODE_DEFAULT) {
-            is_aa_considering_config = data.entry_is_aa_;
+            is_aa_considering_config = data.getEntryIsAa();
         } else if (view_config_.aa_mode == ViewConfig.AA_MODE_ALL_AA) {
             is_aa_considering_config = true;
         } else {
@@ -142,7 +142,7 @@ public class ThreadEntryListAdapter extends FilterableListAdapterBase<ThreadEntr
             return view;
         int indent = 0;
         if (indent_map_ != null) {
-            final Integer entry_indent = indent_map_.get(data.entry_id_);
+            final Integer entry_indent = indent_map_.get(data.getEntryId());
             if (entry_indent != null) {
                 indent = entry_indent + indent_offset_;
             }
