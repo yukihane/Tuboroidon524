@@ -520,39 +520,43 @@ public class ThreadEntryListActivity extends SearchableListActivity {
 
     @Override
     protected SimpleListAdapterBase<?> createListAdapter() {
+        final ThreadEntryData.ImageViewerLauncher imageViewerLauncher = new ThreadEntryData.ImageViewerLauncher() {
+            @Override
+            public void onRequired(final ThreadData threadData, final String imageLocalFilename, final String imageUri,
+                    final long entry_id, final int image_index, final int image_count) {
+                image_viewer_dialog_.setImage(imageLocalFilename, imageUri, entry_id, image_index, image_count);
+                image_viewer_dialog_.show();
+            }
+        };
+
+        final ThreadEntryData.OnAnchorClickedCallback onAnchorClickedCallback = new ThreadEntryData.OnAnchorClickedCallback() {
+
+            @Override
+            public void onNumberAnchorClicked(final int jumpFrom, final int jumpTo) {
+                if (jumpTo > 0) {
+                    jumpToAnchor(jumpFrom, jumpTo);
+                }
+            }
+
+            @Override
+            public void onThreadLinkClicked(final Uri uri) {
+                final Intent intent = new Intent(ThreadEntryListActivity.this, ThreadEntryListActivity.class);
+                intent.setData(uri);
+                MigrationSDK5.Intent_addFlagNoAnimation(intent);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onBoardLinkClicked(final Uri uri) {
+                final Intent intent = new Intent(ThreadEntryListActivity.this, ThreadListActivity.class);
+                intent.setData(uri);
+                MigrationSDK5.Intent_addFlagNoAnimation(intent);
+                startActivity(intent);
+            }
+        };
+
         final ThreadEntryListAdapter list_adapter = new ThreadEntryListAdapter(this, getAgent(), getListFontPref(),
-                new ThreadEntryData.ImageViewerLauncher() {
-                    @Override
-                    public void onRequired(final ThreadData threadData, final String imageLocalFilename,
-                            final String imageUri, final long entry_id, final int image_index, final int image_count) {
-                        image_viewer_dialog_.setImage(imageLocalFilename, imageUri, entry_id, image_index, image_count);
-                        image_viewer_dialog_.show();
-                    }
-                }, new ThreadEntryData.OnAnchorClickedCallback() {
-
-                    @Override
-                    public void onNumberAnchorClicked(final int jumpFrom, final int jumpTo) {
-                        if (jumpTo > 0) {
-                            jumpToAnchor(jumpFrom, jumpTo);
-                        }
-                    }
-
-                    @Override
-                    public void onThreadLinkClicked(final Uri uri) {
-                        final Intent intent = new Intent(ThreadEntryListActivity.this, ThreadEntryListActivity.class);
-                        intent.setData(uri);
-                        MigrationSDK5.Intent_addFlagNoAnimation(intent);
-                        startActivity(intent);
-                    }
-
-                    @Override
-                    public void onBoardLinkClicked(final Uri uri) {
-                        final Intent intent = new Intent(ThreadEntryListActivity.this, ThreadListActivity.class);
-                        intent.setData(uri);
-                        MigrationSDK5.Intent_addFlagNoAnimation(intent);
-                        startActivity(intent);
-                    }
-                });
+                imageViewerLauncher, onAnchorClickedCallback);
         image_viewer_dialog_.setThreadData(thread_data_);
         list_adapter.setThreadData(thread_data_);
         return list_adapter;
