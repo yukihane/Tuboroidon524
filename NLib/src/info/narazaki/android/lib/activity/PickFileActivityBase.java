@@ -71,40 +71,40 @@ public class PickFileActivityBase extends ListActivity {
     public static final int FILE_TYPE_FILE = 1001;
     public static final int FILE_TYPE_PICK_DIRECTORY = 2000;
 
-    protected boolean is_light_theme_ = false;
+    private boolean is_light_theme_ = false;
 
-    protected File root_directory_ = null;
-    protected File current_directory_ = null;
-    protected int list_font_size_ = 0;
+    private File root_directory_ = null;
+    private File current_directory_ = null;
+    private int list_font_size_ = 0;
 
-    protected boolean check_writable_ = false;
-    protected String write_failed_message_ = null;
+    private boolean check_writable_ = false;
+    private String write_failed_message_ = null;
 
-    protected String new_filename_ = "";
-    protected String new_file_hint_ = "";
+    private String new_filename_ = "";
+    private String new_file_hint_ = "";
 
-    protected String new_file_caption_ = null;
-    protected String new_file_title_ = null;
+    private String new_file_caption_ = null;
+    private String new_file_title_ = null;
 
-    protected String new_dir_caption_ = null;
-    protected String new_dir_title_ = null;
+    private String new_dir_caption_ = null;
+    private String new_dir_title_ = null;
 
-    protected String file_pattern_string_ = null;
-    protected Pattern file_pattern_ = null;
+    private String file_pattern_string_ = null;
+    private Pattern file_pattern_ = null;
 
-    protected String file_extention_ = null;
+    private String file_extention_ = null;
 
-    protected boolean allow_new_dir_ = false;
-    protected boolean allow_new_file_ = false;
+    private boolean allow_new_dir_ = false;
+    private boolean allow_new_file_ = false;
 
-    protected boolean alert_overwrite_ = false;
-    protected String selection_alert_title_ = null;
-    protected String selection_alert_message_ = null;
+    private boolean alert_overwrite_ = false;
+    private String selection_alert_title_ = null;
+    private String selection_alert_message_ = null;
 
-    protected String recent_dir_keep_tag_ = null;
+    private String recent_dir_keep_tag_ = null;
 
-    protected boolean pick_directory_mode_ = false;
-    protected String pick_dir_caption_ = null;
+    private boolean pick_directory_mode_ = false;
+    private String pick_dir_caption_ = null;
 
     // ////////////////////////////////////////////////////////////
     // 設定系
@@ -710,5 +710,9 @@ public class PickFileActivityBase extends ListActivity {
             return saved_instance_state.getString(key);
         }
         return default_data;
+    }
+
+    protected void setLightTheme(final boolean isLightTheme) {
+        this.is_light_theme_ = isLightTheme;
     }
 }

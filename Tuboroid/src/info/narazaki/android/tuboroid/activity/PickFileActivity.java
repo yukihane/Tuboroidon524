@@ -35,7 +35,7 @@ public class PickFileActivity extends PickFileActivityBase {
 
         super.onCreate(savedInstanceState);
 
-        is_light_theme_ = getTuboroidApplication().isLightTheme();
+        setLightTheme(getTuboroidApplication().isLightTheme());
     }
 
     @Override
