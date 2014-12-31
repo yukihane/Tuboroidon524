@@ -26,7 +26,6 @@ public class FileDataListAdapter extends BaseAdapter {
     public FileDataListAdapter(final FileDataListViewInflator inflator) {
         data_list_ = new ArrayList<FileData>();
         this.inflator = inflator;
-        this.config = config;
     }
 
     public void setConfig(final Config config) {
