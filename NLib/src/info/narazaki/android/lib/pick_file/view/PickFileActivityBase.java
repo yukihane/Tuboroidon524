@@ -16,13 +16,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 public class PickFileActivityBase extends ListActivity implements PickFileViewBase {
-    private static final String TAG = "FilePckerBase";
 
     private IPickFilePresenterBase presenter;
 
-    // ////////////////////////////////////////////////////////////
-    // 設定系
-    // ////////////////////////////////////////////////////////////
+    /**
+     * @return 本Activityの content view id.
+     */
     protected int getLayoutViewID() {
         return R.layout.file_pikcer_base;
     }
