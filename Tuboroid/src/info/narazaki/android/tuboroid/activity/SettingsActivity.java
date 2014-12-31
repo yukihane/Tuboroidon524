@@ -1,6 +1,12 @@
 package info.narazaki.android.tuboroid.activity;
 
-import info.narazaki.android.lib.activity.PickFileActivityBase;
+import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_ALLOW_NEW_DIR;
+import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_CHECK_WRITABLE;
+import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_CURRENT;
+import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_FONT_SIZE;
+import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_PICK_DIRECTORY;
+import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_ROOT;
+import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_TITLE;
 import info.narazaki.android.lib.activity.base.NPreferenceActivity;
 import info.narazaki.android.lib.dialog.SimpleDialog;
 import info.narazaki.android.lib.system.MigrationSDK4;
@@ -149,14 +155,14 @@ public class SettingsActivity extends NPreferenceActivity {
         final String path = ext_storage.getAbsolutePath();
 
         final Intent intent = new Intent(this, PickFileActivity.class);
-        intent.putExtra(PickFileActivityBase.INTENT_KEY_ALLOW_NEW_DIR, true);
-        intent.putExtra(PickFileActivityBase.INTENT_KEY_CHECK_WRITABLE, true);
-        intent.putExtra(PickFileActivityBase.INTENT_KEY_ROOT, ext_storage_base.getAbsolutePath());
-        intent.putExtra(PickFileActivityBase.INTENT_KEY_CURRENT, path);
-        intent.putExtra(PickFileActivityBase.INTENT_KEY_FONT_SIZE,
+        intent.putExtra(INTENT_KEY_ALLOW_NEW_DIR, true);
+        intent.putExtra(INTENT_KEY_CHECK_WRITABLE, true);
+        intent.putExtra(INTENT_KEY_ROOT, ext_storage_base.getAbsolutePath());
+        intent.putExtra(INTENT_KEY_CURRENT, path);
+        intent.putExtra(INTENT_KEY_FONT_SIZE,
                 getTuboroidApplication().view_config_.entry_body_ * 3 / 2);
-        intent.putExtra(PickFileActivityBase.INTENT_KEY_TITLE, getString(R.string.pref_title_external_storage_path));
-        intent.putExtra(PickFileActivityBase.INTENT_KEY_PICK_DIRECTORY, true);
+        intent.putExtra(INTENT_KEY_TITLE, getString(R.string.pref_title_external_storage_path));
+        intent.putExtra(INTENT_KEY_PICK_DIRECTORY, true);
 
         MigrationSDK5.Intent_addFlagNoAnimation(intent);
         startActivityForResult(intent, INTENT_RESULT_EXT_STORAGE);
