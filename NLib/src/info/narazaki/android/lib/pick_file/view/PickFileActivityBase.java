@@ -26,9 +26,6 @@ public class PickFileActivityBase extends ListActivity implements PickFileViewBa
         return R.layout.file_pikcer_base;
     }
 
-    // ////////////////////////////////////////////////////////////
-    // ステート管理系
-    // ////////////////////////////////////////////////////////////
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,7 +34,7 @@ public class PickFileActivityBase extends ListActivity implements PickFileViewBa
         final Bundle bundle = getIntent().getExtras();
 
         presenter = new PickFilePresenterBase(this);
-        presenter.onCreate(savedInstanceState, bundle);
+        presenter.initialize(savedInstanceState, bundle);
     }
 
     @Override

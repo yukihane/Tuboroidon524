@@ -47,7 +47,7 @@ public class PickFilePresenterBase implements IPickFilePresenterBase {
     }
 
     @Override
-    public void onCreate(final Bundle savedInstanceState, final Bundle bundle) {
+    public void initialize(final Bundle savedInstanceState, final Bundle bundle) {
 
         config = new Config(savedInstanceState, bundle, view.getContext());
         view.setTitle(config.getTitle());
