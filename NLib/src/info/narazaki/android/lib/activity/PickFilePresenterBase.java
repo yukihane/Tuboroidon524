@@ -348,8 +348,9 @@ public class PickFilePresenterBase implements IPickFilePresenterBase {
 
         final EditText edit_text = new EditText(view.getContext());
         edit_text.setText(new_filename_);
-        if (new_file_hint_ != null)
-            edit_text.setHint(new_file_hint_);
+        final String new_file_hint = config.getNewFileHint();
+        if (new_file_hint != null)
+            edit_text.setHint(new_file_hint);
         edit_text.setSingleLine(true);
         edit_text.setImeOptions(EditorInfo.IME_ACTION_DONE);
         builder.setView(edit_text);

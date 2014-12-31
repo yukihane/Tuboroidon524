@@ -293,4 +293,8 @@ final class Config {
     public String getNewFileCaption() {
         return new_file_caption_;
     }
+
+    public String getNewFileHint() {
+        return new_file_hint_;
+    }
 }
