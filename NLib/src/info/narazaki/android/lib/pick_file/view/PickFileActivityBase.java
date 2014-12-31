@@ -70,13 +70,7 @@ public class PickFileActivityBase extends ListActivity implements PickFileViewBa
     }
 
     @Override
-    public void onDirSelected(final Intent intent) {
-        setResult(RESULT_OK, intent);
-        finish();
-    }
-
-    @Override
-    public void onFileSelected(final Intent intent) {
+    public void finishSuccessfully(final Intent intent) {
         setResult(RESULT_OK, intent);
         finish();
     }

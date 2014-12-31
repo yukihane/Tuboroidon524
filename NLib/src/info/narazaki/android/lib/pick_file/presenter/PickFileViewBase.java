@@ -16,7 +16,5 @@ public interface PickFileViewBase {
 
     ListAdapter getListAdapter();
 
-    void onDirSelected(Intent intent);
-
-    void onFileSelected(Intent intent);
+    void finishSuccessfully(Intent intent);
 }

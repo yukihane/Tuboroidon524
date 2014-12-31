@@ -385,7 +385,7 @@ public class PickFilePresenterBase implements IPickFilePresenterBase {
     private void onDirSelected() {
         final Intent intent = new Intent();
         intent.setData(Uri.fromFile(config.getCurrentDirectory()));
-        view.onDirSelected(intent);
+        view.finishSuccessfully(intent);
     }
 
     protected void onAlertNewDir() {
@@ -446,7 +446,7 @@ public class PickFilePresenterBase implements IPickFilePresenterBase {
     protected void onFileSelected(final File file) {
         final Intent intent = new Intent();
         intent.setData(Uri.fromFile(file));
-        view.onFileSelected(intent);
+        view.finishSuccessfully(intent);
     }
 
     @Override
