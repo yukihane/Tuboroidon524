@@ -31,7 +31,6 @@ import android.widget.TextView.OnEditorActionListener;
 
 public class PickFilePresenterBase implements IPickFilePresenterBase {
 
-
     public static final int FILE_TYPE_PARENT = 0;
     public static final int FILE_TYPE_NEW = 1;
     public static final int FILE_TYPE_NEW_DIRECTORY = 2;
@@ -54,7 +53,6 @@ public class PickFilePresenterBase implements IPickFilePresenterBase {
         moveDirectory(config.getCurrentDirectory());
     }
 
-
     private void moveDirectory(final File directory) {
         config.setCurrentDirectory(directory);
         String local_path = config.getCurrentDirectory().getAbsolutePath()
@@ -70,7 +68,7 @@ public class PickFilePresenterBase implements IPickFilePresenterBase {
 
         @Override
         public boolean onEditorAction(final TextView v, final int actionId, final KeyEvent event) {
-            new_filename_ = v.getText().toString();
+            config.setNewFilename(v.getText().toString());
             return true;
         }
 
@@ -347,7 +345,7 @@ public class PickFilePresenterBase implements IPickFilePresenterBase {
         final Builder builder = new AlertDialog.Builder(view.getContext());
 
         final EditText edit_text = new EditText(view.getContext());
-        edit_text.setText(new_filename_);
+        edit_text.setText(config.getNewFilename());
         final String new_file_hint = config.getNewFileHint();
         if (new_file_hint != null)
             edit_text.setHint(new_file_hint);
@@ -358,23 +356,24 @@ public class PickFilePresenterBase implements IPickFilePresenterBase {
         builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(final DialogInterface dialog, final int which) {
-                new_filename_ = edit_text.getText().toString();
-                if (new_filename_.length() == 0)
+                final String new_filename = edit_text.getText().toString();
+                config.setNewFilename(new_filename);
+                if (new_filename.length() == 0)
                     return;
-                final File target = new File(config.getCurrentDirectory(), new_filename_);
+                final File target = new File(config.getCurrentDirectory(), new_filename);
                 onNewFileSelected(target);
             }
         });
         builder.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(final DialogInterface dialog, final int which) {
-                new_filename_ = edit_text.getText().toString();
+                config.setNewFilename(edit_text.getText().toString());
             }
         });
         builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(final DialogInterface dialog) {
-                new_filename_ = edit_text.getText().toString();
+                config.setNewFilename(edit_text.getText().toString());
             }
         });
         final String new_file_title = config.getNewFileTitle();

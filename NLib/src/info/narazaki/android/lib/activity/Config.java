@@ -301,4 +301,12 @@ final class Config {
     public String getNewFileTitle() {
         return new_file_title_;
     }
+
+    public void setNewFilename(final String new_filename) {
+        this.new_filename_ = new_filename;
+    }
+
+    public String getNewFilename() {
+        return new_filename_;
+    }
 }
