@@ -36,6 +36,9 @@ import android.widget.ExpandableListView.ExpandableListContextMenuInfo;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+/**
+ * 板一覧を表示するためのアクティビティ. 一番最初に表示される画面です.
+ */
 public class BoardListActivity extends TuboroidExpandableListActivityBase {
     private static final String TAG = "BoardListActivity";
     
@@ -56,7 +59,10 @@ public class BoardListActivity extends TuboroidExpandableListActivityBase {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+        requestWindowFeature(Window.FEATURE_ACTION_BAR);
+
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.board_list);
         
         registerForContextMenu(getExpandableListView());

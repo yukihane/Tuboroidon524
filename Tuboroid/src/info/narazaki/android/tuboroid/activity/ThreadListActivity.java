@@ -36,6 +36,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ListView;
 
@@ -90,7 +91,10 @@ public class ThreadListActivity extends SearchableListActivity {
     // ////////////////////////////////////////////////////////////
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
+        requestWindowFeature(Window.FEATURE_ACTION_BAR);
+
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.thread_list);
         registerForContextMenu(getListView());
 

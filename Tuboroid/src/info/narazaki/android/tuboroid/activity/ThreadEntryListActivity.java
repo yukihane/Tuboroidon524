@@ -65,6 +65,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewConfiguration;
+import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.OvershootInterpolator;
 import android.view.animation.ScaleAnimation;
@@ -177,7 +178,10 @@ public class ThreadEntryListActivity extends SearchableListActivity {
     // ////////////////////////////////////////////////////////////
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
+        requestWindowFeature(Window.FEATURE_ACTION_BAR);
+
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.entry_list);
 
         registerForContextMenu(getListView());
