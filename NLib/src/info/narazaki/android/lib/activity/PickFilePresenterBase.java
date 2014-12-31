@@ -188,8 +188,9 @@ public class PickFilePresenterBase implements IPickFilePresenterBase {
                     filename_view.setText(R.string.text_file_picker_new_dir);
                 }
             } else if (filetype == FILE_TYPE_PICK_DIRECTORY) {
-                if (pick_dir_caption_ != null) {
-                    filename_view.setText(pick_dir_caption_);
+                final String pick_dir_caption = config.getPickDirCaption();
+                if (pick_dir_caption != null) {
+                    filename_view.setText(pick_dir_caption);
                 } else {
                     filename_view.setText(R.string.text_file_picker_pick_dir);
                 }

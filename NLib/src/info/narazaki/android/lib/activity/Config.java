@@ -309,4 +309,8 @@ final class Config {
     public String getNewFilename() {
         return new_filename_;
     }
+
+    public String getPickDirCaption() {
+        return pick_dir_caption_;
+    }
 }
