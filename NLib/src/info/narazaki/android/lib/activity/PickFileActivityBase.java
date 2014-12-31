@@ -71,6 +71,8 @@ public class PickFileActivityBase extends ListActivity implements PickFileViewBa
     public static final int FILE_TYPE_FILE = 1001;
     public static final int FILE_TYPE_PICK_DIRECTORY = 2000;
 
+    private IPickFilePresenterBase presenter;
+
     private boolean is_light_theme_ = false;
 
     private File root_directory_ = null;
@@ -162,6 +164,8 @@ public class PickFileActivityBase extends ListActivity implements PickFileViewBa
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(getLayoutViewID());
+
+        presenter = new PickFilePresenterBase(this);
 
         final Bundle bundle = getIntent().getExtras();
 
