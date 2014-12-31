@@ -2,7 +2,7 @@ package info.narazaki.android.lib.pick_file.presenter;
 
 import info.narazaki.android.lib.R;
 import info.narazaki.android.lib.pick_file.model.Config;
-import info.narazaki.android.lib.pick_file.view.PickFileActivityBase.FileData;
+import info.narazaki.android.lib.pick_file.model.FileData;
 
 import java.io.File;
 import java.util.ArrayList;

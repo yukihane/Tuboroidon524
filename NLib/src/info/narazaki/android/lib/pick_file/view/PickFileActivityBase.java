@@ -4,9 +4,6 @@ import info.narazaki.android.lib.R;
 import info.narazaki.android.lib.pick_file.presenter.IPickFilePresenterBase;
 import info.narazaki.android.lib.pick_file.presenter.PickFilePresenterBase;
 import info.narazaki.android.lib.pick_file.presenter.PickFileViewBase;
-
-import java.io.File;
-
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
@@ -58,24 +55,6 @@ public class PickFileActivityBase extends ListActivity implements PickFileViewBa
     @Override
     protected void onListItemClick(final ListView l, final View v, final int position, final long id) {
         presenter.onListItemClick(l, v, position, id);
-    }
-
-    public static class FileData {
-        final int type_;
-        final File file_;
-
-        public FileData(final int type, final File file) {
-            type_ = type;
-            file_ = file;
-        }
-
-        public File getFile() {
-            return file_;
-        }
-
-        public int getFileType() {
-            return type_;
-        }
     }
 
     @Override
