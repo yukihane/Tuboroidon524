@@ -38,57 +38,56 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
-import android.widget.Toast;
 import android.widget.ImageView.ScaleType;
+import android.widget.Toast;
 
 public class ImageViewerActivity extends TuboroidActivity {
     public static final String TAG = "ImageViewerActivity";
-    
+
     public static final String INTENT_KEY_IMAGE_URI = "INTENT_KEY_IMAGE_URI";
     public static final String INTENT_KEY_IMAGE_FILENAME = "INTENT_KEY_IMAGE_FILENAME";
-    
+
     public static final String INTENT_KEY_ENTRY_ID = "INTENT_KEY_ENTRY_ID";
     public static final String INTENT_KEY_IMAGE_INDEX = "INTENT_KEY_IMAGE_INDEX";
     public static final String INTENT_KEY_IMAGE_COUNT = "INTENT_KEY_IMAGE_COUNT";
-    
-    
+
     public static final String INTENT_TAG_RECENT_DIR = "INTENT_TAG_RECENT_DIR";
-    
+
     public static final int MENU_KEY_SAVE = 10;
     public static final int MENU_KEY_SHARE = 20;
-    
+
     private File image_local_file_;
     private String image_uri_;
     private long entry_id_ = -1;
     private int image_index_ = -1;
     private int image_count_ = -1;
-    
+
     private boolean is_fill_parent_mode_;
     private SimpleProgressDialog progress_dialog_;
-    
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        
+
         setContentView(R.layout.image_viewer);
-        
+
         image_local_file_ = null;
         is_fill_parent_mode_ = true;
         progress_dialog_ = new SimpleProgressDialog();
     }
-    
+
     @Override
     protected void onResume() {
         super.onResume();
-        
+
         final Uri thread_uri = getIntent().getData();
         String image_uri = null;
         String image_filename = null;
 
-        Bundle extras = getIntent().getExtras();
+        final Bundle extras = getIntent().getExtras();
         if (extras != null) {
             if (extras.containsKey(INTENT_KEY_IMAGE_FILENAME)) {
                 image_filename = extras.getString(INTENT_KEY_IMAGE_FILENAME);
@@ -97,13 +96,13 @@ public class ImageViewerActivity extends TuboroidActivity {
                 image_uri = extras.getString(INTENT_KEY_IMAGE_URI);
             }
             if (extras.containsKey(INTENT_KEY_ENTRY_ID)) {
-            	entry_id_ = extras.getLong(INTENT_KEY_ENTRY_ID);
+                entry_id_ = extras.getLong(INTENT_KEY_ENTRY_ID);
             }
             if (extras.containsKey(INTENT_KEY_IMAGE_INDEX)) {
-            	image_index_ = extras.getInt(INTENT_KEY_IMAGE_INDEX);
+                image_index_ = extras.getInt(INTENT_KEY_IMAGE_INDEX);
             }
             if (extras.containsKey(INTENT_KEY_IMAGE_COUNT)) {
-            	image_count_ = extras.getInt(INTENT_KEY_IMAGE_COUNT);
+                image_count_ = extras.getInt(INTENT_KEY_IMAGE_COUNT);
             }
         }
         final ThreadData thread_data_temp = ThreadData.factory(thread_uri);
@@ -112,36 +111,36 @@ public class ImageViewerActivity extends TuboroidActivity {
             finish();
             return;
         }
-        
+
         final File image_local_file = new File(image_filename);
         final String const_image_uri = image_uri;
         image_local_file_ = image_local_file;
         image_uri_ = image_uri;
-        
+
         final ScrollImageView image_view = (ScrollImageView) findViewById(R.id.image_viewer_image);
         image_view.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(final View v) {
                 setFillParentMode(!is_fill_parent_mode_);
             }
         });
         setFillParentMode(is_fill_parent_mode_);
         image_view.setScaleType(ScaleType.MATRIX);
 
-
-        ImageViewerFooter footer = (ImageViewerFooter) findViewById(R.id.image_viewer_footer);
-        DisplayMetrics metrics = new DisplayMetrics();   
+        final ImageViewerFooter footer = (ImageViewerFooter) findViewById(R.id.image_viewer_footer);
+        final DisplayMetrics metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
-        
-        footer.setImageInfo(image_local_file_.toString(), image_uri_, image_view, entry_id_, image_index_, image_count_, metrics.widthPixels);
-        
-        image_view.setOnMoveImageListner(new ScrollImageView.OnMoveImageListner() {
-			@Override
-			public void onMoveImage(boolean is_next){
 
-			}
-		});
-        
+        footer.setImageInfo(image_local_file_.toString(), image_uri_, image_view, entry_id_, image_index_,
+                image_count_, metrics.widthPixels);
+
+        image_view.setOnMoveImageListner(new ScrollImageView.OnMoveImageListner() {
+            @Override
+            public void onMoveImage(final boolean is_next) {
+
+            }
+        });
+
         // スレッド情報の読み込み
         getAgent().getThreadData(thread_data_temp, new SQLiteAgent.GetThreadDataResult() {
             @Override
@@ -154,37 +153,40 @@ public class ImageViewerActivity extends TuboroidActivity {
                 });
             }
         });
-        
+
     }
-    
+
     @Override
     protected void onPause() {
         progress_dialog_.hide();
-        ImageView image_view = (ImageView) findViewById(R.id.image_viewer_image);
+        final ImageView image_view = (ImageView) findViewById(R.id.image_viewer_image);
         image_view.destroyDrawingCache();
         super.onPause();
     }
-    
+
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        boolean result = super.onCreateOptionsMenu(menu);
-        
-        MenuItem share_item = menu.add(0, MENU_KEY_SHARE, MENU_KEY_SHARE, getString(R.string.label_menu_share_image));
-        
+    public boolean onCreateOptionsMenu(final Menu menu) {
+        final boolean result = super.onCreateOptionsMenu(menu);
+
+        final MenuItem share_item = menu.add(0, MENU_KEY_SHARE, MENU_KEY_SHARE,
+                getString(R.string.label_menu_share_image));
+
         share_item.setIcon(android.R.drawable.ic_menu_share);
         share_item.setOnMenuItemClickListener(new OnMenuItemClickListener() {
             @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                if (image_local_file_ == null) return true;
-                
-                Uri file_uri = Uri.fromFile(image_local_file_);
-                String extention = MimeTypeMap.getFileExtensionFromUrl(file_uri.toString());
-                MimeTypeMap mime_map = MimeTypeMap.getSingleton();
-                
-                if (!mime_map.hasExtension(extention)) return true;
-                String mime_type = mime_map.getMimeTypeFromExtension(extention);
-                
-                Intent intent = new Intent(Intent.ACTION_SEND);
+            public boolean onMenuItemClick(final MenuItem item) {
+                if (image_local_file_ == null)
+                    return true;
+
+                final Uri file_uri = Uri.fromFile(image_local_file_);
+                final String extention = MimeTypeMap.getFileExtensionFromUrl(file_uri.toString());
+                final MimeTypeMap mime_map = MimeTypeMap.getSingleton();
+
+                if (!mime_map.hasExtension(extention))
+                    return true;
+                final String mime_type = mime_map.getMimeTypeFromExtension(extention);
+
+                final Intent intent = new Intent(Intent.ACTION_SEND);
                 intent.setType(mime_type);
                 intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 intent.putExtra(Intent.EXTRA_STREAM, file_uri);
@@ -193,32 +195,34 @@ public class ImageViewerActivity extends TuboroidActivity {
                 return false;
             }
         });
-        
-        MenuItem save_item = menu.add(0, MENU_KEY_SAVE, MENU_KEY_SAVE, getString(R.string.label_menu_save_image));
-        
+
+        final MenuItem save_item = menu.add(0, MENU_KEY_SAVE, MENU_KEY_SAVE, getString(R.string.label_menu_save_image));
+
         save_item.setIcon(android.R.drawable.ic_menu_save);
         save_item.setOnMenuItemClickListener(new OnMenuItemClickListener() {
             @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                if (image_local_file_ == null) return true;
-                if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) return true;
-                
-                NFileNameInfo file_info = new NFileNameInfo(image_local_file_);
-                
-                Intent intent = new Intent(ImageViewerActivity.this, PickFileActivity.class);
+            public boolean onMenuItemClick(final MenuItem item) {
+                if (image_local_file_ == null)
+                    return true;
+                if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED))
+                    return true;
+
+                final NFileNameInfo file_info = new NFileNameInfo(image_local_file_);
+
+                final Intent intent = new Intent(ImageViewerActivity.this, PickFileActivity.class);
                 intent.putExtra(PickFileActivityBase.INTENT_KEY_ALLOW_NEW_DIR, true);
                 intent.putExtra(PickFileActivityBase.INTENT_KEY_ALLOW_NEW_FILE, true);
                 intent.putExtra(PickFileActivityBase.INTENT_KEY_ALERT_OVERWRITE, true);
                 intent.putExtra(PickFileActivityBase.INTENT_KEY_FILE_EXTENTION, file_info.getExtention());
                 intent.putExtra(PickFileActivityBase.INTENT_KEY_CHECK_WRITABLE, true);
-                
-                Matcher m = Pattern.compile("^[^:]*://[^/]*/([^?]*/)?([^?/]*)(\\?.*)?").matcher(image_uri_);
+
+                final Matcher m = Pattern.compile("^[^:]*://[^/]*/([^?]*/)?([^?/]*)(\\?.*)?").matcher(image_uri_);
                 String filename = "";
-                if(m.find()){
-                	filename = m.group(2);
+                if (m.find()) {
+                    filename = m.group(2);
                 }
-                if(filename == null || filename == ""){
-                	filename = image_local_file_.getName();
+                if (filename == null || filename == "") {
+                    filename = image_local_file_.getName();
                 }
                 intent.putExtra(PickFileActivityBase.INTENT_KEY_DEFAULT_NEW_FILENAME, filename);
                 intent.putExtra(PickFileActivityBase.INTENT_KEY_ROOT, Environment.getExternalStorageDirectory()
@@ -228,119 +232,120 @@ public class ImageViewerActivity extends TuboroidActivity {
                 intent.putExtra(PickFileActivityBase.INTENT_KEY_FONT_SIZE,
                         getTuboroidApplication().view_config_.entry_body_ * 3 / 2);
                 intent.putExtra(PickFileActivityBase.INTENT_KEY_TITLE, getString(R.string.label_menu_save_image));
-                
+
                 intent.putExtra(PickFileActivityBase.INTENT_KEY_RECENT_DIR_KEEP_TAG, this.getClass().getName()
                         + INTENT_TAG_RECENT_DIR);
-                
+
                 MigrationSDK5.Intent_addFlagNoAnimation(intent);
                 startActivityForResult(intent, MENU_KEY_SHARE);
                 return false;
             }
         });
-        
+
         return result;
     }
-    
+
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         if (requestCode == MENU_KEY_SHARE) {
             if (resultCode == RESULT_OK) {
-                Uri uri = data.getData();
-                if (uri == null) return;
-                String target_path = uri.getPath();
-                if (target_path == null) return;
-                
+                final Uri uri = data.getData();
+                if (uri == null)
+                    return;
+                final String target_path = uri.getPath();
+                if (target_path == null)
+                    return;
+
                 getAgent().copyFile(image_local_file_.getAbsolutePath(), target_path,
                         new DataFileAgent.FileWroteCallback() {
-                            @Override
-                            public void onFileWrote(boolean succeeded) {
-                                if (succeeded) {
-                                    ManagedToast.raiseToast(getApplicationContext(), R.string.toast_image_saved,
-                                            Toast.LENGTH_LONG);
-                                }
-                                else {
-                                    ManagedToast.raiseToast(getApplicationContext(),
-                                            R.string.toast_image_failed_to_save, Toast.LENGTH_LONG);
-                                }
-                            }
-                        });
+                    @Override
+                    public void onFileWrote(final boolean succeeded) {
+                        if (succeeded) {
+                            ManagedToast.raiseToast(getApplicationContext(), R.string.toast_image_saved,
+                                    Toast.LENGTH_LONG);
+                        } else {
+                            ManagedToast.raiseToast(getApplicationContext(),
+                                    R.string.toast_image_failed_to_save, Toast.LENGTH_LONG);
+                        }
+                    }
+                });
             }
             return;
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
-    
+
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        MenuItem save_item = menu.findItem(MENU_KEY_SAVE);
+    public boolean onPrepareOptionsMenu(final Menu menu) {
+        final MenuItem save_item = menu.findItem(MENU_KEY_SAVE);
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             // SDカードがある
             save_item.setVisible(true);
-        }
-        else {
+        } else {
             save_item.setVisible(false);
         }
-        
+
         return super.onPrepareOptionsMenu(menu);
     }
-    
-    private void setFillParentMode(boolean fill_parent_mode) {
-        ImageView image_view = (ImageView) findViewById(R.id.image_viewer_image);
-        
+
+    private void setFillParentMode(final boolean fill_parent_mode) {
+        final ImageView image_view = (ImageView) findViewById(R.id.image_viewer_image);
+
         image_view.setAdjustViewBounds(true);
-        
-        Display display = getWindowManager().getDefaultDisplay();
-        int width = display.getWidth();
-        int height = display.getHeight();
+
+        final Display display = getWindowManager().getDefaultDisplay();
+        final int width = display.getWidth();
+        final int height = display.getHeight();
         if (fill_parent_mode) {
             image_view.setMaxWidth(width);
             image_view.setMaxHeight(height);
-        }
-        else {
-        	Rect r = image_view.getDrawable().getBounds();
+        } else {
+            final Rect r = image_view.getDrawable().getBounds();
             image_view.setMaxWidth(width * 16);
             image_view.setMaxHeight(height * 16);
         }
         image_view.requestLayout();
         is_fill_parent_mode_ = fill_parent_mode;
     }
-    
+
     private void showThumbnail(final ThreadData thread_data, final File image_local_file, final String uri) {
-        if (!is_active_) return;
-        
+        if (!is_active_)
+            return;
+
         progress_dialog_.show(this, R.string.dialog_loading_progress, new DialogInterface.OnCancelListener() {
             @Override
-            public void onCancel(DialogInterface dialog) {
+            public void onCancel(final DialogInterface dialog) {
                 if (is_active_) {
                     finish();
                 }
             }
         });
-        
-        ImageView image_view = (ImageView) findViewById(R.id.image_viewer_image);
+
+        final ImageView image_view = (ImageView) findViewById(R.id.image_viewer_image);
         final WeakReference<ImageView> image_view_ref = new WeakReference<ImageView>(image_view);
         final Handler handler = new Handler();
-        
+
         final ImageFetchAgent.BitmapFetchedCallback callback = new ImageFetchAgent.BitmapFetchedCallback() {
-            
+
             @Override
-            public void onCacheFetched(Bitmap bitmap) {
+            public void onCacheFetched(final Bitmap bitmap) {
                 onFetched(bitmap);
             }
-            
+
             @Override
             public void onFetched(final Bitmap bitmap) {
-                final ScrollImageView image_view_tmp = (ScrollImageView)image_view_ref.get();
-                if (image_view_tmp == null) return;
-                //このスレッドからImageView.postを呼ぶとtrueが返ってくるのにRunnableが実行されないという
-                //事態がまれに発生する。View自体がもつhandlerの代わりに自分で作ったhandlerを使うと大丈夫？
+                final ScrollImageView image_view_tmp = (ScrollImageView) image_view_ref.get();
+                if (image_view_tmp == null)
+                    return;
+                // このスレッドからImageView.postを呼ぶとtrueが返ってくるのにRunnableが実行されないという
+                // 事態がまれに発生する。View自体がもつhandlerの代わりに自分で作ったhandlerを使うと大丈夫？
 
                 handler.post(new Runnable() {
-                	@Override
-                	public void run() {
-                		image_view_tmp.setImageBitmap(bitmap);
-                		progress_dialog_.hide();
-                	}
+                    @Override
+                    public void run() {
+                        image_view_tmp.setImageBitmap(bitmap);
+                        progress_dialog_.hide();
+                    }
                 });
             }
 
@@ -355,32 +360,34 @@ public class ImageViewerActivity extends TuboroidActivity {
                     }
                 });
             }
-            
+
             @Override
-            public void onBegeinNoCache() {}
+            public void onBegeinNoCache() {
+            }
 
-			@Override
-			public void onBeginOnlineFetch(){
-				// TODO Auto-generated method stub
-				
-			}
+            @Override
+            public void onBeginOnlineFetch() {
+                // TODO Auto-generated method stub
 
-			@Override
-			public void onProgress(int currentLength, int contentLength){
-				// TODO Auto-generated method stub
-				
-			}
+            }
+
+            @Override
+            public void onProgress(final int currentLength, final int contentLength) {
+                // TODO Auto-generated method stub
+
+            }
         };
-        
-        final float scale = getResources().getDisplayMetrics().density;
-        Display display = getWindowManager().getDefaultDisplay();
 
-        BitmapFactory.Options options = new BitmapFactory.Options();
+        final float scale = getResources().getDisplayMetrics().density;
+        final Display display = getWindowManager().getDefaultDisplay();
+
+        final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(image_local_file.getAbsolutePath(), options);
-        
+
         getAgent().fetchImage(callback, image_local_file, uri, options.outWidth, options.outHeight, false);
-        //getAgent().fetchImage(callback, image_local_file, uri, 100, 100, false);
+        // getAgent().fetchImage(callback, image_local_file, uri, 100, 100,
+        // false);
     }
-    
+
 }
