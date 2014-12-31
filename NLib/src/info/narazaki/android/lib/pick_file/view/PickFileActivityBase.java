@@ -5,7 +5,6 @@ import info.narazaki.android.lib.pick_file.presenter.IPickFilePresenterBase;
 import info.narazaki.android.lib.pick_file.presenter.PickFilePresenterBase;
 import info.narazaki.android.lib.pick_file.presenter.PickFileViewBase;
 import android.app.ListActivity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -30,7 +29,7 @@ public class PickFileActivityBase extends ListActivity implements PickFileViewBa
 
         final Bundle bundle = getIntent().getExtras();
 
-        presenter = new PickFilePresenterBase(this);
+        presenter = new PickFilePresenterBase(this, this);
         presenter.initialize(savedInstanceState, bundle);
     }
 
@@ -55,11 +54,6 @@ public class PickFileActivityBase extends ListActivity implements PickFileViewBa
     @Override
     protected void onListItemClick(final ListView l, final View v, final int position, final long id) {
         presenter.onListItemClick(l, v, position, id);
-    }
-
-    @Override
-    public Context getContext() {
-        return this;
     }
 
     @Override

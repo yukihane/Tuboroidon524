@@ -8,10 +8,12 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -38,16 +40,18 @@ public class PickFilePresenterBase implements IPickFilePresenterBase {
     public static final int FILE_TYPE_PICK_DIRECTORY = 2000;
 
     private final PickFileViewBase view;
+    private final Context context;
     private Config config;
 
-    public PickFilePresenterBase(final PickFileViewBase view) {
-        this.view = view;
+    public PickFilePresenterBase(final PickFileViewBase view, final Context context) {
+        this.view = Objects.requireNonNull(view);
+        this.context = Objects.requireNonNull(context);
     }
 
     @Override
     public void initialize(final Bundle savedInstanceState, final Bundle bundle) {
 
-        config = new Config(savedInstanceState, bundle, view.getContext());
+        config = new Config(savedInstanceState, bundle, context);
         view.setTitle(config.getTitle());
         moveDirectory(config.getCurrentDirectory());
     }
@@ -148,7 +152,7 @@ public class PickFilePresenterBase implements IPickFilePresenterBase {
         }
 
         private View createView() {
-            final LayoutInflater layout_inflater = LayoutInflater.from(view.getContext());
+            final LayoutInflater layout_inflater = LayoutInflater.from(context);
             final View view = layout_inflater.inflate(getRowViewID(), null);
 
             final TextView filename_view = (TextView) view.findViewById(R.id.filename);
@@ -298,7 +302,7 @@ public class PickFilePresenterBase implements IPickFilePresenterBase {
             onFileSelected(file);
             return;
         }
-        final Builder builder = new AlertDialog.Builder(view.getContext());
+        final Builder builder = new AlertDialog.Builder(context);
         builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(final DialogInterface dialog, final int which) {
@@ -338,9 +342,9 @@ public class PickFilePresenterBase implements IPickFilePresenterBase {
     }
 
     protected void onAlertNewFile() {
-        final Builder builder = new AlertDialog.Builder(view.getContext());
+        final Builder builder = new AlertDialog.Builder(context);
 
-        final EditText edit_text = new EditText(view.getContext());
+        final EditText edit_text = new EditText(context);
         edit_text.setText(config.getNewFilename());
         final String new_file_hint = config.getNewFileHint();
         if (new_file_hint != null)
@@ -389,9 +393,9 @@ public class PickFilePresenterBase implements IPickFilePresenterBase {
     }
 
     protected void onAlertNewDir() {
-        final Builder builder = new AlertDialog.Builder(view.getContext());
+        final Builder builder = new AlertDialog.Builder(context);
 
-        final EditText edit_text = new EditText(view.getContext());
+        final EditText edit_text = new EditText(context);
         edit_text.setSingleLine(true);
         edit_text.setImeOptions(EditorInfo.IME_ACTION_DONE);
         builder.setView(edit_text);
@@ -427,7 +431,7 @@ public class PickFilePresenterBase implements IPickFilePresenterBase {
     }
 
     protected void showWriteFailedDialog() {
-        final Builder builder = new AlertDialog.Builder(view.getContext());
+        final Builder builder = new AlertDialog.Builder(context);
         builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(final DialogInterface dialog, final int which) {
@@ -457,7 +461,7 @@ public class PickFilePresenterBase implements IPickFilePresenterBase {
             final File curDir = config.getCurrentDirectory();
             if (curDir != null)
                 current_directory_name = curDir.getAbsolutePath();
-            final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(view.getContext());
+            final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
             final SharedPreferences.Editor editor = pref.edit();
             editor.putString(recent_dir_keep_tag, current_directory_name);
             editor.commit();
