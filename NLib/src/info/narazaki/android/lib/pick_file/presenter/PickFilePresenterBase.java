@@ -1,7 +1,8 @@
-package info.narazaki.android.lib.activity;
+package info.narazaki.android.lib.pick_file.presenter;
 
 import info.narazaki.android.lib.R;
-import info.narazaki.android.lib.activity.PickFileActivityBase.FileData;
+import info.narazaki.android.lib.pick_file.model.Config;
+import info.narazaki.android.lib.pick_file.view.PickFileActivityBase.FileData;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -38,7 +39,7 @@ public class PickFilePresenterBase implements IPickFilePresenterBase {
     public static final int FILE_TYPE_FILE = 1001;
     public static final int FILE_TYPE_PICK_DIRECTORY = 2000;
 
-    private PickFileViewBase view;
+    private final PickFileViewBase view;
     private Config config;
 
     public PickFilePresenterBase(final PickFileViewBase view) {

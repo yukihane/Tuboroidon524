@@ -1,28 +1,28 @@
-package info.narazaki.android.lib.activity;
+package info.narazaki.android.lib.pick_file.model;
 
-import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_ALERT_OVERWRITE;
-import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_ALLOW_NEW_DIR;
-import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_ALLOW_NEW_FILE;
-import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_CHECK_WRITABLE;
-import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_CURRENT;
-import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_DEFAULT_NEW_FILENAME;
-import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_FILE_EXTENTION;
-import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_FILE_PATTERN;
-import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_FONT_SIZE;
-import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_LIGHT_THEME;
-import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_NEW_DIR_CAPTION;
-import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_NEW_DIR_TITLE;
-import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_NEW_FILE_CAPTION;
-import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_NEW_FILE_HINT;
-import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_NEW_FILE_TITLE;
-import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_PICK_DIRECTORY;
-import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_PICK_DIR_CAPTION;
-import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_RECENT_DIR_KEEP_TAG;
-import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_ROOT;
-import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_SLECTION_ALERT_MESSAGE;
-import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_SLECTION_ALERT_TITLE;
-import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_TITLE;
-import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_WRITE_FAILED_MESSAGE;
+import static info.narazaki.android.lib.pick_file.model.Constants.INTENT_KEY_ALERT_OVERWRITE;
+import static info.narazaki.android.lib.pick_file.model.Constants.INTENT_KEY_ALLOW_NEW_DIR;
+import static info.narazaki.android.lib.pick_file.model.Constants.INTENT_KEY_ALLOW_NEW_FILE;
+import static info.narazaki.android.lib.pick_file.model.Constants.INTENT_KEY_CHECK_WRITABLE;
+import static info.narazaki.android.lib.pick_file.model.Constants.INTENT_KEY_CURRENT;
+import static info.narazaki.android.lib.pick_file.model.Constants.INTENT_KEY_DEFAULT_NEW_FILENAME;
+import static info.narazaki.android.lib.pick_file.model.Constants.INTENT_KEY_FILE_EXTENTION;
+import static info.narazaki.android.lib.pick_file.model.Constants.INTENT_KEY_FILE_PATTERN;
+import static info.narazaki.android.lib.pick_file.model.Constants.INTENT_KEY_FONT_SIZE;
+import static info.narazaki.android.lib.pick_file.model.Constants.INTENT_KEY_LIGHT_THEME;
+import static info.narazaki.android.lib.pick_file.model.Constants.INTENT_KEY_NEW_DIR_CAPTION;
+import static info.narazaki.android.lib.pick_file.model.Constants.INTENT_KEY_NEW_DIR_TITLE;
+import static info.narazaki.android.lib.pick_file.model.Constants.INTENT_KEY_NEW_FILE_CAPTION;
+import static info.narazaki.android.lib.pick_file.model.Constants.INTENT_KEY_NEW_FILE_HINT;
+import static info.narazaki.android.lib.pick_file.model.Constants.INTENT_KEY_NEW_FILE_TITLE;
+import static info.narazaki.android.lib.pick_file.model.Constants.INTENT_KEY_PICK_DIRECTORY;
+import static info.narazaki.android.lib.pick_file.model.Constants.INTENT_KEY_PICK_DIR_CAPTION;
+import static info.narazaki.android.lib.pick_file.model.Constants.INTENT_KEY_RECENT_DIR_KEEP_TAG;
+import static info.narazaki.android.lib.pick_file.model.Constants.INTENT_KEY_ROOT;
+import static info.narazaki.android.lib.pick_file.model.Constants.INTENT_KEY_SLECTION_ALERT_MESSAGE;
+import static info.narazaki.android.lib.pick_file.model.Constants.INTENT_KEY_SLECTION_ALERT_TITLE;
+import static info.narazaki.android.lib.pick_file.model.Constants.INTENT_KEY_TITLE;
+import static info.narazaki.android.lib.pick_file.model.Constants.INTENT_KEY_WRITE_FAILED_MESSAGE;
 import info.narazaki.android.lib.R;
 
 import java.io.File;
@@ -33,7 +33,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 
-final class Config {
+public final class Config {
 
     private boolean is_light_theme_ = false;
 
@@ -72,7 +72,7 @@ final class Config {
 
     private String title;
 
-    Config(final Bundle savedInstanceState, final Bundle bundle, final Context context) {
+    public Config(final Bundle savedInstanceState, final Bundle bundle, final Context context) {
 
         is_light_theme_ = getInstanceStateBoolean(bundle, savedInstanceState, INTENT_KEY_LIGHT_THEME, false);
 

@@ -1,4 +1,4 @@
-package info.narazaki.android.lib.activity;
+package info.narazaki.android.lib.pick_file.model;
 
 public final class Constants {
     private Constants() {

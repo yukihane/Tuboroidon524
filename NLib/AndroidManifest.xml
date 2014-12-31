@@ -4,7 +4,7 @@
       android:versionCode="1"
       android:versionName="1.0">
     <application>
-        <activity android:name=".activity.PickFileActivityBase"></activity>
+        <activity android:name="info.narazaki.android.lib.pick_file.view.PickFileActivityBase"></activity>
 
 
     </application>

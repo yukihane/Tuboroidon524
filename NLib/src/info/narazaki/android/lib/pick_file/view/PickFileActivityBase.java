@@ -1,6 +1,9 @@
-package info.narazaki.android.lib.activity;
+package info.narazaki.android.lib.pick_file.view;
 
 import info.narazaki.android.lib.R;
+import info.narazaki.android.lib.pick_file.presenter.IPickFilePresenterBase;
+import info.narazaki.android.lib.pick_file.presenter.PickFilePresenterBase;
+import info.narazaki.android.lib.pick_file.presenter.PickFileViewBase;
 
 import java.io.File;
 
@@ -69,7 +72,7 @@ public class PickFileActivityBase extends ListActivity implements PickFileViewBa
     // アダプタ
     // ////////////////////////////////////////////////////////////
 
-    static class FileData {
+    public static class FileData {
         final int type_;
         final File file_;
 

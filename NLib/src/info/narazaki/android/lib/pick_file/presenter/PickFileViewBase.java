@@ -1,4 +1,4 @@
-package info.narazaki.android.lib.activity;
+package info.narazaki.android.lib.pick_file.presenter;
 
 import android.content.Context;
 import android.content.Intent;
