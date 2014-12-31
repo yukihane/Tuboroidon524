@@ -297,4 +297,8 @@ final class Config {
     public String getNewFileHint() {
         return new_file_hint_;
     }
+
+    public String getNewFileTitle() {
+        return new_file_title_;
+    }
 }

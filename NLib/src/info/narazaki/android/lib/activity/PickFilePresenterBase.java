@@ -377,8 +377,9 @@ public class PickFilePresenterBase implements IPickFilePresenterBase {
                 new_filename_ = edit_text.getText().toString();
             }
         });
-        if (new_file_title_ != null) {
-            builder.setTitle(new_file_title_);
+        final String new_file_title = config.getNewFileTitle();
+        if (new_file_title != null) {
+            builder.setTitle(new_file_title);
         } else {
             builder.setTitle(R.string.text_file_picker_new_file_title);
         }
