@@ -18,7 +18,6 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +27,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.TextView.OnEditorActionListener;
 
 public class PickFilePresenterBase implements IPickFilePresenterBase {
 
@@ -64,14 +62,8 @@ public class PickFilePresenterBase implements IPickFilePresenterBase {
         view.setListAdapter(new FileDataListAdapter(directory));
     }
 
-    class FileDataListAdapter extends BaseAdapter implements OnEditorActionListener {
+    class FileDataListAdapter extends BaseAdapter {
         final ArrayList<FileData> data_list_;
-
-        @Override
-        public boolean onEditorAction(final TextView v, final int actionId, final KeyEvent event) {
-            config.setNewFilename(v.getText().toString());
-            return true;
-        }
 
         public FileDataListAdapter(final File directory) {
             data_list_ = new ArrayList<FileData>();
