@@ -281,4 +281,8 @@ final class Config {
     public int getListFontSize() {
         return list_font_size_;
     }
+
+    public String getNewDirCaption() {
+        return new_dir_caption_;
+    }
 }
