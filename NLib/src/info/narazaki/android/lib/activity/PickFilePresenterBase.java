@@ -11,7 +11,6 @@ import java.util.regex.Pattern;
 
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -32,37 +31,6 @@ import android.widget.TextView.OnEditorActionListener;
 
 public class PickFilePresenterBase implements IPickFilePresenterBase {
 
-    public static final String INTENT_KEY_LIGHT_THEME = "info.narazaki.android.lib.extra.LIGHT_THEME";
-
-    public static final String INTENT_KEY_TITLE = "info.narazaki.android.lib.extra.TITLE";
-    public static final String INTENT_KEY_ROOT = "info.narazaki.android.lib.extra.ROOT";
-    public static final String INTENT_KEY_CURRENT = "info.narazaki.android.lib.extra.CURRENT";
-    public static final String INTENT_KEY_FONT_SIZE = "info.narazaki.android.lib.extra.FONT_SIZE";
-    public static final String INTENT_KEY_DEFAULT_NEW_FILENAME = "info.narazaki.android.lib.extra.NEW_FILENAME";
-    public static final String INTENT_KEY_NEW_FILE_HINT = "info.narazaki.android.lib.extra.NEW_FILE_HINT";
-    public static final String INTENT_KEY_ALLOW_NEW_DIR = "info.narazaki.android.lib.extra.ALLOW_NEW_DIR";
-    public static final String INTENT_KEY_ALLOW_NEW_FILE = "info.narazaki.android.lib.extra.ALLOW_NEW_FILE";
-
-    public static final String INTENT_KEY_CHECK_WRITABLE = "info.narazaki.android.lib.extra.CHECK_WRITABLE";
-    public static final String INTENT_KEY_WRITE_FAILED_MESSAGE = "info.narazaki.android.lib.extra.WRITE_FAILED_MESSAGE";
-
-    public static final String INTENT_KEY_NEW_FILE_CAPTION = "info.narazaki.android.lib.extra.NEW_FILE_CAPTION";
-    public static final String INTENT_KEY_NEW_FILE_TITLE = "info.narazaki.android.lib.extra.NEW_FILE_TITLE";
-
-    public static final String INTENT_KEY_NEW_DIR_CAPTION = "info.narazaki.android.lib.extra.NEW_DIR_CAPTION";
-    public static final String INTENT_KEY_NEW_DIR_TITLE = "info.narazaki.android.lib.extra.NEW_DIR_TITLE";
-
-    public static final String INTENT_KEY_FILE_PATTERN = "info.narazaki.android.lib.extra.FILE_PATTERN";
-    public static final String INTENT_KEY_FILE_EXTENTION = "info.narazaki.android.lib.extra.FILE_EXTENTION";
-
-    public static final String INTENT_KEY_ALERT_OVERWRITE = "info.narazaki.android.lib.extra.ALERT_OVERWRITE";
-    public static final String INTENT_KEY_SLECTION_ALERT_TITLE = "info.narazaki.android.lib.extra.SLECTION_ALERT_TITLE";
-    public static final String INTENT_KEY_SLECTION_ALERT_MESSAGE = "info.narazaki.android.lib.extra.SLECTION_ALERT_MESSAGE";
-
-    public static final String INTENT_KEY_RECENT_DIR_KEEP_TAG = "info.narazaki.android.lib.extra.RECENT_DIR_KEEP_TAG";
-
-    public static final String INTENT_KEY_PICK_DIRECTORY = "info.narazaki.android.lib.extra.PICK_DIRECTORY";
-    public static final String INTENT_KEY_PICK_DIR_CAPTION = "info.narazaki.android.lib.extra.PICK_DIR_CAPTION";
 
     public static final int FILE_TYPE_PARENT = 0;
     public static final int FILE_TYPE_NEW = 1;
@@ -71,42 +39,8 @@ public class PickFilePresenterBase implements IPickFilePresenterBase {
     public static final int FILE_TYPE_FILE = 1001;
     public static final int FILE_TYPE_PICK_DIRECTORY = 2000;
 
-    private boolean is_light_theme_ = false;
-
-    private File root_directory_ = null;
-    private File current_directory_ = null;
-    private int list_font_size_ = 0;
-
-    private boolean check_writable_ = false;
-    private String write_failed_message_ = null;
-
-    private String new_filename_ = "";
-    private String new_file_hint_ = "";
-
-    private String new_file_caption_ = null;
-    private String new_file_title_ = null;
-
-    private String new_dir_caption_ = null;
-    private String new_dir_title_ = null;
-
-    private String file_pattern_string_ = null;
-    private Pattern file_pattern_ = null;
-
-    private String file_extention_ = null;
-
-    private boolean allow_new_dir_ = false;
-    private boolean allow_new_file_ = false;
-
-    private boolean alert_overwrite_ = false;
-    private String selection_alert_title_ = null;
-    private String selection_alert_message_ = null;
-
-    private String recent_dir_keep_tag_ = null;
-
-    private boolean pick_directory_mode_ = false;
-    private String pick_dir_caption_ = null;
-
     private PickFileViewBase view;
+    private Config config;
 
     public PickFilePresenterBase(final PickFileViewBase view) {
         this.view = view;
@@ -115,115 +49,20 @@ public class PickFilePresenterBase implements IPickFilePresenterBase {
     @Override
     public void onCreate(final Bundle savedInstanceState, final Bundle bundle) {
 
-        is_light_theme_ = getInstanceStateBoolean(bundle, savedInstanceState, INTENT_KEY_LIGHT_THEME, false);
-
-        final String title = getInstanceStateString(bundle, savedInstanceState, INTENT_KEY_TITLE, null);
-        if (title != null) {
-            view.setTitle(title);
-        } else {
-            final Context context = view.getContext();
-            final CharSequence text = context.getText(R.string.title_file_picker_base);
-            view.setTitle(text);
-        }
-
-        final String root_directory_name = getInstanceStateString(bundle, savedInstanceState, INTENT_KEY_ROOT, null);
-        root_directory_ = root_directory_name != null ? new File(root_directory_name) : getDefaultRoot();
-
-        String current_directory_name = getInstanceStateString(bundle, savedInstanceState, INTENT_KEY_CURRENT, null);
-        current_directory_ = current_directory_name != null ? new File(current_directory_name) : root_directory_;
-
-        check_writable_ = getInstanceStateBoolean(bundle, savedInstanceState, INTENT_KEY_CHECK_WRITABLE, false);
-        write_failed_message_ = getInstanceStateString(bundle, savedInstanceState, INTENT_KEY_WRITE_FAILED_MESSAGE,
-                null);
-
-        file_pattern_string_ = getInstanceStateString(bundle, savedInstanceState, INTENT_KEY_FILE_PATTERN, null);
-        file_pattern_ = null;
-        if (file_pattern_string_ != null) {
-            file_pattern_ = Pattern.compile(file_pattern_string_);
-        }
-        file_extention_ = getInstanceStateString(bundle, savedInstanceState, INTENT_KEY_FILE_EXTENTION, null);
-
-        list_font_size_ = getInstanceStateInt(bundle, savedInstanceState, INTENT_KEY_FONT_SIZE, 0);
-        new_filename_ = getInstanceStateString(bundle, savedInstanceState, INTENT_KEY_DEFAULT_NEW_FILENAME, "");
-        new_file_hint_ = getInstanceStateString(bundle, savedInstanceState, INTENT_KEY_NEW_FILE_HINT, "");
-        allow_new_dir_ = getInstanceStateBoolean(bundle, savedInstanceState, INTENT_KEY_ALLOW_NEW_DIR, false);
-        allow_new_file_ = getInstanceStateBoolean(bundle, savedInstanceState, INTENT_KEY_ALLOW_NEW_FILE, false);
-
-        new_file_caption_ = getInstanceStateString(bundle, savedInstanceState, INTENT_KEY_NEW_FILE_CAPTION, null);
-        new_file_title_ = getInstanceStateString(bundle, savedInstanceState, INTENT_KEY_NEW_FILE_TITLE, null);
-
-        new_dir_caption_ = getInstanceStateString(bundle, savedInstanceState, INTENT_KEY_NEW_DIR_CAPTION, null);
-        new_dir_title_ = getInstanceStateString(bundle, savedInstanceState, INTENT_KEY_NEW_DIR_TITLE, null);
-
-        alert_overwrite_ = getInstanceStateBoolean(bundle, savedInstanceState, INTENT_KEY_ALERT_OVERWRITE, false);
-        selection_alert_title_ = getInstanceStateString(bundle, savedInstanceState, INTENT_KEY_SLECTION_ALERT_TITLE,
-                null);
-        selection_alert_message_ = getInstanceStateString(bundle, savedInstanceState,
-                INTENT_KEY_SLECTION_ALERT_MESSAGE, null);
-
-        recent_dir_keep_tag_ = getInstanceStateString(bundle, savedInstanceState, INTENT_KEY_RECENT_DIR_KEEP_TAG, null);
-        if (recent_dir_keep_tag_ != null) {
-            final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(view.getContext());
-            current_directory_name = pref.getString(recent_dir_keep_tag_, null);
-            if (current_directory_name != null) {
-                current_directory_ = new File(current_directory_name);
-            }
-        }
-
-        if (!current_directory_.getAbsolutePath().startsWith(root_directory_.getAbsolutePath())) {
-            current_directory_ = root_directory_;
-        }
-
-        pick_directory_mode_ = getInstanceStateBoolean(bundle, savedInstanceState, INTENT_KEY_PICK_DIRECTORY, false);
-        if (pick_directory_mode_) {
-            allow_new_file_ = false;
-        }
-        pick_dir_caption_ = getInstanceStateString(bundle, savedInstanceState, INTENT_KEY_PICK_DIR_CAPTION, null);
-
-        moveDirectory(current_directory_);
+        config = new Config(savedInstanceState, bundle, view.getContext());
+        view.setTitle(config.getTitle());
+        moveDirectory(config.getCurrentDirectory());
     }
 
-    private Boolean getInstanceStateBoolean(final Bundle intent_bundle, final Bundle saved_instance_state,
-            final String key, final Boolean default_data) {
-        if (intent_bundle != null && intent_bundle.containsKey(key)) {
-            return intent_bundle.getBoolean(key);
-        } else if (saved_instance_state != null && saved_instance_state.containsKey(key)) {
-            return saved_instance_state.getBoolean(key);
-        }
-        return default_data;
-    }
-
-    private int getInstanceStateInt(final Bundle intent_bundle, final Bundle saved_instance_state, final String key,
-            final int default_data) {
-        if (intent_bundle != null && intent_bundle.containsKey(key)) {
-            return intent_bundle.getInt(key);
-        } else if (saved_instance_state != null && saved_instance_state.containsKey(key)) {
-            return saved_instance_state.getInt(key);
-        }
-        return default_data;
-    }
-
-    private String getInstanceStateString(final Bundle intent_bundle, final Bundle saved_instance_state,
-            final String key, final String default_data) {
-        if (intent_bundle != null && intent_bundle.containsKey(key)) {
-            return intent_bundle.getString(key);
-        } else if (saved_instance_state != null && saved_instance_state.containsKey(key)) {
-            return saved_instance_state.getString(key);
-        }
-        return default_data;
-    }
-
-    protected File getDefaultRoot() {
-        return new File("/");
-    }
 
     private void moveDirectory(final File directory) {
-        current_directory_ = directory;
-        String local_path = current_directory_.getAbsolutePath().substring(root_directory_.getAbsolutePath().length());
+        config.setCurrentDirectory(directory);
+        String local_path = config.getCurrentDirectory().getAbsolutePath()
+                .substring(config.getRootDirectory().getAbsolutePath().length());
         if (local_path.length() == 0)
             local_path = "/";
-        view.setPathText(local_path, list_font_size_);
-        view.setListAdapter(new FileDataListAdapter(current_directory_));
+        view.setPathText(local_path, config.getListFontSize());
+        view.setListAdapter(new FileDataListAdapter(directory));
     }
 
     class FileDataListAdapter extends BaseAdapter implements OnEditorActionListener {
@@ -251,12 +90,12 @@ public class PickFilePresenterBase implements IPickFilePresenterBase {
             }
 
             // new file!
-            if (directory.canWrite() && allow_new_file_) {
+            if (directory.canWrite() && config.getAllowNewFile()) {
                 data_list_.add(new FileData(FILE_TYPE_NEW, null));
             }
 
             // new dir!
-            if (directory.canWrite() && allow_new_dir_) {
+            if (directory.canWrite() && config.getAllowNewDir()) {
                 data_list_.add(new FileData(FILE_TYPE_NEW_DIRECTORY, null));
             }
 
@@ -322,15 +161,16 @@ public class PickFilePresenterBase implements IPickFilePresenterBase {
             final View view = layout_inflater.inflate(getRowViewID(), null);
 
             final TextView filename_view = (TextView) view.findViewById(R.id.filename);
-            if (list_font_size_ != 0) {
-                filename_view.setTextSize(list_font_size_);
+            final int list_font_size = config.getListFontSize();
+            if (list_font_size != 0) {
+                filename_view.setTextSize(list_font_size);
             }
             return view;
         }
 
         private View setView(final View view, final FileData data) {
             final ImageView icon_view = (ImageView) view.findViewById(R.id.icon);
-            icon_view.setImageResource(getFileIconID(is_light_theme_, data));
+            icon_view.setImageResource(getFileIconID(config.getIsLightTheme(), data));
 
             final TextView filename_view = (TextView) view.findViewById(R.id.filename);
 
@@ -408,7 +248,7 @@ public class PickFilePresenterBase implements IPickFilePresenterBase {
             showWriteFailedDialog();
             return;
         }
-        moveDirectory(current_directory_);
+        moveDirectory(config.getCurrentDirectory());
     }
 
     protected boolean checkVisibleFile(final File file) {
@@ -418,14 +258,18 @@ public class PickFilePresenterBase implements IPickFilePresenterBase {
             return false;
 
         final String name = file.getName();
-        if (file_pattern_ != null) {
-            if (!file_pattern_.matcher(name).find())
+
+        final Pattern file_pattern = config.getFilePattern();
+        if (file_pattern != null) {
+            if (!file_pattern.matcher(name).find())
                 return false;
         }
-        if (file_extention_ != null) {
-            if (name.length() < file_extention_.length() + 1)
+
+        final String file_extention = config.getFileExtention();
+        if (file_extention != null) {
+            if (name.length() < file_extention.length() + 1)
                 return false;
-            if (!name.endsWith("." + file_extention_))
+            if (!name.endsWith("." + file_extention))
                 return false;
         }
         return true;
@@ -450,12 +294,12 @@ public class PickFilePresenterBase implements IPickFilePresenterBase {
     }
 
     protected void onAlertFileSelection(final File file) {
-        if (check_writable_ && !file.canWrite()) {
+        if (config.getCheckWritable() && !file.canWrite()) {
             showWriteFailedDialog();
             return;
         }
 
-        if (selection_alert_message_ == null && !alert_overwrite_) {
+        if (selection_alert_message_ == null && !config.getAlertOverwrite()) {
             onFileSelected(file);
             return;
         }
@@ -514,7 +358,7 @@ public class PickFilePresenterBase implements IPickFilePresenterBase {
                 new_filename_ = edit_text.getText().toString();
                 if (new_filename_.length() == 0)
                     return;
-                final File target = new File(current_directory_, new_filename_);
+                final File target = new File(config.getCurrentDirectory(), new_filename_);
                 onNewFileSelected(target);
             }
         });
@@ -541,7 +385,7 @@ public class PickFilePresenterBase implements IPickFilePresenterBase {
 
     private void onDirSelected() {
         final Intent intent = new Intent();
-        intent.setData(Uri.fromFile(current_directory_));
+        intent.setData(Uri.fromFile(config.getCurrentDirectory()));
         view.onDirSelected(intent);
     }
 
@@ -559,7 +403,7 @@ public class PickFilePresenterBase implements IPickFilePresenterBase {
                 final String dirname = edit_text.getText().toString();
                 if (dirname.length() == 0)
                     return;
-                final File target = new File(current_directory_, dirname);
+                final File target = new File(config.getCurrentDirectory(), dirname);
                 onNewDirSelected(target);
             }
         });
@@ -608,8 +452,9 @@ public class PickFilePresenterBase implements IPickFilePresenterBase {
     public void onPause() {
         if (recent_dir_keep_tag_ != null) {
             String current_directory_name = null;
-            if (current_directory_ != null)
-                current_directory_name = current_directory_.getAbsolutePath();
+            final File curDir = config.getCurrentDirectory();
+            if (curDir != null)
+                current_directory_name = curDir.getAbsolutePath();
             final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(view.getContext());
             final SharedPreferences.Editor editor = pref.edit();
             editor.putString(recent_dir_keep_tag_, current_directory_name);
@@ -619,60 +464,6 @@ public class PickFilePresenterBase implements IPickFilePresenterBase {
 
     @Override
     public void onRestoreInstanceState(final Bundle state) {
-
-        state.putBoolean(INTENT_KEY_LIGHT_THEME, is_light_theme_);
-
-        if (root_directory_ != null)
-            state.putString(INTENT_KEY_ROOT, root_directory_.getAbsolutePath());
-        if (current_directory_ != null)
-            state.putString(INTENT_KEY_CURRENT, current_directory_.getAbsolutePath());
-
-        state.putBoolean(INTENT_KEY_CHECK_WRITABLE, check_writable_);
-        if (write_failed_message_ != null)
-            state.putString(INTENT_KEY_WRITE_FAILED_MESSAGE, write_failed_message_);
-
-        if (file_pattern_string_ != null)
-            state.putString(INTENT_KEY_FILE_PATTERN, file_pattern_string_);
-        if (file_extention_ != null)
-            state.putString(INTENT_KEY_FILE_EXTENTION, file_extention_);
-
-        state.putInt(INTENT_KEY_FONT_SIZE, list_font_size_);
-
-        if (new_filename_ != null)
-            state.putString(INTENT_KEY_DEFAULT_NEW_FILENAME, new_filename_);
-        if (new_file_hint_ != null)
-            state.putString(INTENT_KEY_NEW_FILE_HINT, new_file_hint_);
-
-        state.putBoolean(INTENT_KEY_ALLOW_NEW_DIR, allow_new_dir_);
-        state.putBoolean(INTENT_KEY_ALLOW_NEW_FILE, allow_new_file_);
-
-        if (new_file_caption_ != null)
-            state.putString(INTENT_KEY_NEW_FILE_CAPTION, new_file_caption_);
-        if (new_file_title_ != null)
-            state.putString(INTENT_KEY_NEW_FILE_TITLE, new_file_title_);
-
-        if (new_dir_caption_ != null)
-            state.putString(INTENT_KEY_NEW_DIR_CAPTION, new_dir_caption_);
-        if (new_dir_title_ != null)
-            state.putString(INTENT_KEY_NEW_DIR_TITLE, new_dir_title_);
-
-        state.putBoolean(INTENT_KEY_ALERT_OVERWRITE, alert_overwrite_);
-        if (selection_alert_title_ != null)
-            state.putString(INTENT_KEY_SLECTION_ALERT_TITLE, selection_alert_title_);
-        if (selection_alert_message_ != null)
-            state.putString(INTENT_KEY_SLECTION_ALERT_MESSAGE, selection_alert_message_);
-
-        if (recent_dir_keep_tag_ != null) {
-            state.putString(INTENT_KEY_RECENT_DIR_KEEP_TAG, recent_dir_keep_tag_);
-        }
-
-        state.putBoolean(INTENT_KEY_PICK_DIRECTORY, pick_directory_mode_);
-        if (pick_dir_caption_ != null)
-            state.putString(INTENT_KEY_PICK_DIR_CAPTION, new_dir_caption_);
+        config.onRestoreInstanceState(state);
     }
-
-    protected void setLightTheme(final boolean isLightTheme) {
-        this.is_light_theme_ = isLightTheme;
-    }
-
 }
