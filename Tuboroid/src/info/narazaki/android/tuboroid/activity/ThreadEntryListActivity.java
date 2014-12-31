@@ -485,14 +485,14 @@ public class ThreadEntryListActivity extends SearchableListActivity {
             if (thread_data_ != null && list_adapter_.getCount() > 0 && hasValidData()) {
                 final ThreadData thread_data = thread_data_;
                 ((ThreadEntryListAdapter) list_adapter_)
-                        .getInnerDataList(new ThreadEntryListAdapter.GetInnerDataListCallback<ThreadEntryData>() {
-                            @Override
-                            public void onFetched(final ArrayList<ThreadEntryData> dataList) {
-                                if (!dataList.isEmpty()) {
-                                    getAgent().storeThreadEntryListAnalyzedCache(thread_data, dataList);
-                                }
-                            }
-                        });
+                .getInnerDataList(new ThreadEntryListAdapter.GetInnerDataListCallback<ThreadEntryData>() {
+                    @Override
+                    public void onFetched(final ArrayList<ThreadEntryData> dataList) {
+                        if (!dataList.isEmpty()) {
+                            getAgent().storeThreadEntryListAnalyzedCache(thread_data, dataList);
+                        }
+                    }
+                });
             }
         }
 
@@ -753,8 +753,7 @@ public class ThreadEntryListActivity extends SearchableListActivity {
                     intent = new Intent(ThreadEntryListActivity.this, ThreadEntryEditActivity.class);
                     intent.setData(Uri.parse(thread_data_.getThreadURI()));
                     intent.putExtra(ThreadEntryEditActivity.INTENT_KEY_THREAD_DEFAULT_TEXT,
-                            ">>" + entry_data.getEntryId()
-                            + "\n");
+                            ">>" + entry_data.getEntryId() + "\n");
                     startActivityForResult(intent, INTENT_ID_SHOW_ENTRY_EDITOR);
                     break;
                 case 1:
@@ -1056,17 +1055,17 @@ public class ThreadEntryListActivity extends SearchableListActivity {
 
         final ThreadEntryListConfigDialog dlg = new ThreadEntryListConfigDialog(this, null,
                 new ThreadEntryListConfigDialog.OnChangedListener() {
-                    @Override
-                    public void onChanged(final ViewConfig config) {
-                        listView.setSelectionFromTop(pos, 0);
-                        final ThreadEntryListAdapter adapter = (ThreadEntryListAdapter) list_adapter_;
-                        adapter.setFontSize(new ViewConfig(config));
-                        applyViewConfig(config);
-                        listView.invalidateViews();
+            @Override
+            public void onChanged(final ViewConfig config) {
+                listView.setSelectionFromTop(pos, 0);
+                final ThreadEntryListAdapter adapter = (ThreadEntryListAdapter) list_adapter_;
+                adapter.setFontSize(new ViewConfig(config));
+                applyViewConfig(config);
+                listView.invalidateViews();
 
-                        listView.setSelectionFromTop(pos, 0);
-                    }
-                });
+                listView.setSelectionFromTop(pos, 0);
+            }
+        });
         dlg.show();
     }
 
@@ -1833,31 +1832,31 @@ public class ThreadEntryListActivity extends SearchableListActivity {
         if (thread_data_.thread_name_.length() > 0) {
             SimpleDialog.showYesNo(this, R.string.dialog_dat_dropped_title, R.string.dialog_dat_dropped_summary,
                     new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(final DialogInterface dialog, final int which) {
-                            final Intent intent = new Intent(ThreadEntryListActivity.this,
-                                    SimilarThreadListActivity.class);
-                            intent.setData(Uri.parse(thread_data_.getBoardSubjectsURI()));
-                            intent.putExtra(SimilarThreadListActivity.KEY_SEARCH_KEY_NAME, thread_data_.thread_name_);
-                            intent.putExtra(SimilarThreadListActivity.KEY_SEARCH_THREAD_ID, thread_data_.thread_id_);
-                            MigrationSDK5.Intent_addFlagNoAnimation(intent);
-                            startActivity(intent);
-                            cancelDatDropped();
-                        }
-                    }, new DialogInterface.OnCancelListener() {
-                        @Override
-                        public void onCancel(final DialogInterface dialog) {
-                            cancelDatDropped();
-                        }
-                    });
+                @Override
+                public void onClick(final DialogInterface dialog, final int which) {
+                    final Intent intent = new Intent(ThreadEntryListActivity.this,
+                            SimilarThreadListActivity.class);
+                    intent.setData(Uri.parse(thread_data_.getBoardSubjectsURI()));
+                    intent.putExtra(SimilarThreadListActivity.KEY_SEARCH_KEY_NAME, thread_data_.thread_name_);
+                    intent.putExtra(SimilarThreadListActivity.KEY_SEARCH_THREAD_ID, thread_data_.thread_id_);
+                    MigrationSDK5.Intent_addFlagNoAnimation(intent);
+                    startActivity(intent);
+                    cancelDatDropped();
+                }
+            }, new DialogInterface.OnCancelListener() {
+                @Override
+                public void onCancel(final DialogInterface dialog) {
+                    cancelDatDropped();
+                }
+            });
         } else {
             SimpleDialog.showNotice(this, R.string.dialog_dat_dropped_title,
                     R.string.dialog_dat_dropped_summary_no_name, new Runnable() {
-                        @Override
-                        public void run() {
-                            cancelDatDropped();
-                        }
-                    });
+                @Override
+                public void run() {
+                    cancelDatDropped();
+                }
+            });
         }
     }
 
@@ -1887,43 +1886,43 @@ public class ThreadEntryListActivity extends SearchableListActivity {
         if (thread_data_.thread_name_.length() > 0) {
             SimpleDialog.showYesEtcNo(this, R.string.dialog_dat_dropped_title, summary_with_find_next,
                     R.string.dialog_label_dat_dropped_find_similar, label_retry, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(final DialogInterface dialog, final int which) {
-                            final Intent intent = new Intent(ThreadEntryListActivity.this,
-                                    SimilarThreadListActivity.class);
-                            intent.setData(Uri.parse(thread_data_.getBoardSubjectsURI()));
-                            intent.putExtra(SimilarThreadListActivity.KEY_SEARCH_KEY_NAME, thread_data_.thread_name_);
-                            intent.putExtra(SimilarThreadListActivity.KEY_SEARCH_THREAD_ID, thread_data_.thread_id_);
-                            MigrationSDK5.Intent_addFlagNoAnimation(intent);
-                            startActivity(intent);
-                            cancelDatDropped();
-                        }
-                    }, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(final DialogInterface dialog, final int which) {
-                            getAgent().reloadSpecialThreadEntryList(thread_data_.clone(),
-                                    getTuboroidApplication().getAccountPref(), getFetchTask(true));
-                        }
-                    }, new DialogInterface.OnCancelListener() {
-                        @Override
-                        public void onCancel(final DialogInterface dialog) {
-                            cancelDatDropped();
-                        }
-                    });
+                @Override
+                public void onClick(final DialogInterface dialog, final int which) {
+                    final Intent intent = new Intent(ThreadEntryListActivity.this,
+                            SimilarThreadListActivity.class);
+                    intent.setData(Uri.parse(thread_data_.getBoardSubjectsURI()));
+                    intent.putExtra(SimilarThreadListActivity.KEY_SEARCH_KEY_NAME, thread_data_.thread_name_);
+                    intent.putExtra(SimilarThreadListActivity.KEY_SEARCH_THREAD_ID, thread_data_.thread_id_);
+                    MigrationSDK5.Intent_addFlagNoAnimation(intent);
+                    startActivity(intent);
+                    cancelDatDropped();
+                }
+            }, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(final DialogInterface dialog, final int which) {
+                    getAgent().reloadSpecialThreadEntryList(thread_data_.clone(),
+                            getTuboroidApplication().getAccountPref(), getFetchTask(true));
+                }
+            }, new DialogInterface.OnCancelListener() {
+                @Override
+                public void onCancel(final DialogInterface dialog) {
+                    cancelDatDropped();
+                }
+            });
         } else {
             SimpleDialog.showYesNo(this, R.string.dialog_dat_dropped_title, summary_no_name,
                     new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(final DialogInterface dialog, final int which) {
-                            getAgent().reloadSpecialThreadEntryList(thread_data_.clone(),
-                                    getTuboroidApplication().getAccountPref(), getFetchTask(true));
-                        }
-                    }, new DialogInterface.OnCancelListener() {
-                        @Override
-                        public void onCancel(final DialogInterface dialog) {
-                            cancelDatDropped();
-                        }
-                    });
+                @Override
+                public void onClick(final DialogInterface dialog, final int which) {
+                    getAgent().reloadSpecialThreadEntryList(thread_data_.clone(),
+                            getTuboroidApplication().getAccountPref(), getFetchTask(true));
+                }
+            }, new DialogInterface.OnCancelListener() {
+                @Override
+                public void onCancel(final DialogInterface dialog) {
+                    cancelDatDropped();
+                }
+            });
         }
     }
 
