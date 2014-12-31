@@ -78,7 +78,7 @@ public class PickFilePresenterBase implements IPickFilePresenterBase {
                 return;
 
             // pick dir!
-            if (pick_directory_mode_) {
+            if (config.getPickDirectoryMode()) {
                 data_list_.add(new FileData(FILE_TYPE_PICK_DIRECTORY, null));
             }
 
@@ -255,7 +255,7 @@ public class PickFilePresenterBase implements IPickFilePresenterBase {
     protected boolean checkVisibleFile(final File file) {
         if (file.isDirectory())
             return true;
-        if (pick_directory_mode_)
+        if (config.getPickDirectoryMode())
             return false;
 
         final String name = file.getName();

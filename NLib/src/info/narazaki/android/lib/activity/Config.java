@@ -313,4 +313,8 @@ final class Config {
     public String getPickDirCaption() {
         return pick_dir_caption_;
     }
+
+    public boolean getPickDirectoryMode() {
+        return pick_directory_mode_;
+    }
 }
