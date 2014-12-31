@@ -83,7 +83,7 @@ public class PickFilePresenterBase implements IPickFilePresenterBase {
             }
 
             // has parent?
-            if (root_directory_.compareTo(directory) < 0) {
+            if (config.getRootDirectory().compareTo(directory) < 0) {
                 data_list_.add(new FileData(FILE_TYPE_PARENT, directory.getParentFile()));
             }
 
