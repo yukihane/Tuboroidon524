@@ -1,13 +1,12 @@
 package info.narazaki.android.tuboroid.activity;
 
-import info.narazaki.android.lib.activity.PickFileActivityBase;
 import info.narazaki.android.tuboroid.TuboroidApplication;
 import info.narazaki.android.tuboroid.TuboroidApplication.SettingInvalidateChecker;
 import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
 
-public class PickFileActivity extends PickFileActivityBase {
+public class PickFileActivity extends info.narazaki.android.lib.pick_file.view.PickFileActivity {
 
     private SettingInvalidateChecker setting_invalidate_checker_;
 
@@ -35,7 +34,8 @@ public class PickFileActivity extends PickFileActivityBase {
 
         super.onCreate(savedInstanceState);
 
-        is_light_theme_ = getTuboroidApplication().isLightTheme();
+        // FIXME 最終的に, Configのフィールド値を変更すればよい
+        // setLightTheme(getTuboroidApplication().isLightTheme());
     }
 
     @Override
