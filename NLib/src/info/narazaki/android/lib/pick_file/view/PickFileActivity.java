@@ -1,9 +1,9 @@
 package info.narazaki.android.lib.pick_file.view;
 
 import info.narazaki.android.lib.R;
-import info.narazaki.android.lib.pick_file.presenter.IPickFilePresenterBase;
-import info.narazaki.android.lib.pick_file.presenter.PickFilePresenterBase;
-import info.narazaki.android.lib.pick_file.presenter.PickFileViewBase;
+import info.narazaki.android.lib.pick_file.presenter.PickFilePresenter;
+import info.narazaki.android.lib.pick_file.presenter.PickFilePresenterImpl;
+import info.narazaki.android.lib.pick_file.presenter.PickFileView;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,9 +11,9 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class PickFileActivityBase extends ListActivity implements PickFileViewBase {
+public class PickFileActivity extends ListActivity implements PickFileView {
 
-    private IPickFilePresenterBase presenter;
+    private PickFilePresenter presenter;
 
     /**
      * @return 本Activityの content view id.
@@ -29,7 +29,7 @@ public class PickFileActivityBase extends ListActivity implements PickFileViewBa
 
         final Bundle bundle = getIntent().getExtras();
 
-        presenter = new PickFilePresenterBase(this, this);
+        presenter = new PickFilePresenterImpl(this, this);
         presenter.initialize(savedInstanceState, bundle);
     }
 

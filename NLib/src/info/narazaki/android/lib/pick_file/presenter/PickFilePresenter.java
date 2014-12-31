@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
 
-public interface IPickFilePresenterBase {
+public interface PickFilePresenter {
 
     /**
      * 状態を初期化します.

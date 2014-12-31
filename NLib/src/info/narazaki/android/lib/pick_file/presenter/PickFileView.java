@@ -3,7 +3,7 @@ package info.narazaki.android.lib.pick_file.presenter;
 import android.content.Intent;
 import android.widget.ListAdapter;
 
-public interface PickFileViewBase {
+public interface PickFileView {
 
     void setTitle(CharSequence text);
 

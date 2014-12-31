@@ -30,7 +30,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class PickFilePresenterBase implements IPickFilePresenterBase {
+public class PickFilePresenterImpl implements PickFilePresenter {
 
     public static final int FILE_TYPE_PARENT = 0;
     public static final int FILE_TYPE_NEW = 1;
@@ -39,11 +39,11 @@ public class PickFilePresenterBase implements IPickFilePresenterBase {
     public static final int FILE_TYPE_FILE = 1001;
     public static final int FILE_TYPE_PICK_DIRECTORY = 2000;
 
-    private final PickFileViewBase view;
+    private final PickFileView view;
     private final Context context;
     private Config config;
 
-    public PickFilePresenterBase(final PickFileViewBase view, final Context context) {
+    public PickFilePresenterImpl(final PickFileView view, final Context context) {
         this.view = Objects.requireNonNull(view);
         this.context = Objects.requireNonNull(context);
     }
