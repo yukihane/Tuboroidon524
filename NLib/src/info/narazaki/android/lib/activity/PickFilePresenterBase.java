@@ -176,8 +176,9 @@ public class PickFilePresenterBase implements IPickFilePresenterBase {
 
             final int filetype = data.getFileType();
             if (filetype == FILE_TYPE_NEW) {
-                if (new_file_caption_ != null) {
-                    filename_view.setText(new_file_caption_);
+                final String new_file_caption = config.getNewFileCaption();
+                if (new_file_caption != null) {
+                    filename_view.setText(new_file_caption);
                 } else {
                     filename_view.setText(R.string.text_file_picker_new_file);
                 }

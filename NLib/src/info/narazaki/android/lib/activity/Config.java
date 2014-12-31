@@ -289,4 +289,8 @@ final class Config {
     public String getNewDirTitle() {
         return new_dir_title_;
     }
+
+    public String getNewFileCaption() {
+        return new_file_caption_;
+    }
 }
