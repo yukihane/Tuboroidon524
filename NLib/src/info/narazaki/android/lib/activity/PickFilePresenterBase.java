@@ -222,7 +222,7 @@ public class PickFilePresenterBase implements IPickFilePresenterBase {
         String local_path = current_directory_.getAbsolutePath().substring(root_directory_.getAbsolutePath().length());
         if (local_path.length() == 0)
             local_path = "/";
-        view.setPathText(local_path);
+        view.setPathText(local_path, list_font_size_);
         view.setListAdapter(new FileDataListAdapter(current_directory_));
     }
 
@@ -603,4 +603,76 @@ public class PickFilePresenterBase implements IPickFilePresenterBase {
         intent.setData(Uri.fromFile(file));
         view.onFileSelected(intent);
     }
+
+    @Override
+    public void onPause() {
+        if (recent_dir_keep_tag_ != null) {
+            String current_directory_name = null;
+            if (current_directory_ != null)
+                current_directory_name = current_directory_.getAbsolutePath();
+            final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(view.getContext());
+            final SharedPreferences.Editor editor = pref.edit();
+            editor.putString(recent_dir_keep_tag_, current_directory_name);
+            editor.commit();
+        }
+    }
+
+    @Override
+    public void onRestoreInstanceState(final Bundle state) {
+
+        state.putBoolean(INTENT_KEY_LIGHT_THEME, is_light_theme_);
+
+        if (root_directory_ != null)
+            state.putString(INTENT_KEY_ROOT, root_directory_.getAbsolutePath());
+        if (current_directory_ != null)
+            state.putString(INTENT_KEY_CURRENT, current_directory_.getAbsolutePath());
+
+        state.putBoolean(INTENT_KEY_CHECK_WRITABLE, check_writable_);
+        if (write_failed_message_ != null)
+            state.putString(INTENT_KEY_WRITE_FAILED_MESSAGE, write_failed_message_);
+
+        if (file_pattern_string_ != null)
+            state.putString(INTENT_KEY_FILE_PATTERN, file_pattern_string_);
+        if (file_extention_ != null)
+            state.putString(INTENT_KEY_FILE_EXTENTION, file_extention_);
+
+        state.putInt(INTENT_KEY_FONT_SIZE, list_font_size_);
+
+        if (new_filename_ != null)
+            state.putString(INTENT_KEY_DEFAULT_NEW_FILENAME, new_filename_);
+        if (new_file_hint_ != null)
+            state.putString(INTENT_KEY_NEW_FILE_HINT, new_file_hint_);
+
+        state.putBoolean(INTENT_KEY_ALLOW_NEW_DIR, allow_new_dir_);
+        state.putBoolean(INTENT_KEY_ALLOW_NEW_FILE, allow_new_file_);
+
+        if (new_file_caption_ != null)
+            state.putString(INTENT_KEY_NEW_FILE_CAPTION, new_file_caption_);
+        if (new_file_title_ != null)
+            state.putString(INTENT_KEY_NEW_FILE_TITLE, new_file_title_);
+
+        if (new_dir_caption_ != null)
+            state.putString(INTENT_KEY_NEW_DIR_CAPTION, new_dir_caption_);
+        if (new_dir_title_ != null)
+            state.putString(INTENT_KEY_NEW_DIR_TITLE, new_dir_title_);
+
+        state.putBoolean(INTENT_KEY_ALERT_OVERWRITE, alert_overwrite_);
+        if (selection_alert_title_ != null)
+            state.putString(INTENT_KEY_SLECTION_ALERT_TITLE, selection_alert_title_);
+        if (selection_alert_message_ != null)
+            state.putString(INTENT_KEY_SLECTION_ALERT_MESSAGE, selection_alert_message_);
+
+        if (recent_dir_keep_tag_ != null) {
+            state.putString(INTENT_KEY_RECENT_DIR_KEEP_TAG, recent_dir_keep_tag_);
+        }
+
+        state.putBoolean(INTENT_KEY_PICK_DIRECTORY, pick_directory_mode_);
+        if (pick_dir_caption_ != null)
+            state.putString(INTENT_KEY_PICK_DIR_CAPTION, new_dir_caption_);
+    }
+
+    protected void setLightTheme(final boolean isLightTheme) {
+        this.is_light_theme_ = isLightTheme;
+    }
+
 }

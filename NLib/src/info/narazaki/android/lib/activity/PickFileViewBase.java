@@ -10,7 +10,7 @@ public interface PickFileViewBase {
 
     void setTitle(CharSequence text);
 
-    void setPathText(String path);
+    void setPathText(String path, float size);
 
     void setListAdapter(ListAdapter adapter);
 

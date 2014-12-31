@@ -15,4 +15,8 @@ public interface IPickFilePresenterBase {
     void onNewDirSelected(File file);
 
     void onNewFileSelected(File target);
+
+    void onPause();
+
+    void onRestoreInstanceState(Bundle state);
 }
