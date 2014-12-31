@@ -33,7 +33,7 @@ public class FileDataListAdapter extends BaseAdapter {
         this.config = config;
     }
 
-    public void list(final File directory, final Config config) {
+    public void refreshList(final File directory, final Config config) {
         data_list_.clear();
 
         if (!directory.isDirectory())

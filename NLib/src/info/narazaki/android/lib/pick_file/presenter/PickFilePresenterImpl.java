@@ -58,7 +58,7 @@ public class PickFilePresenterImpl implements PickFilePresenter {
         if (local_path.length() == 0)
             local_path = "/";
         view.setPathText(local_path, config.getListFontSize());
-        fileDataListAdapter.list(directory, config);
+        fileDataListAdapter.refreshList(directory, config);
     }
 
     @Override
