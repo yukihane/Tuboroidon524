@@ -1,6 +1,16 @@
 package info.narazaki.android.tuboroid.activity;
 
-import info.narazaki.android.lib.activity.PickFileActivityBase;
+import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_ALERT_OVERWRITE;
+import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_ALLOW_NEW_DIR;
+import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_ALLOW_NEW_FILE;
+import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_CHECK_WRITABLE;
+import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_DEFAULT_NEW_FILENAME;
+import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_FILE_EXTENTION;
+import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_FONT_SIZE;
+import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_NEW_FILE_CAPTION;
+import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_RECENT_DIR_KEEP_TAG;
+import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_ROOT;
+import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_TITLE;
 import info.narazaki.android.lib.dialog.SimpleProgressDialog;
 import info.narazaki.android.lib.system.MigrationSDK5;
 import info.narazaki.android.lib.text.NFileNameInfo;
@@ -210,11 +220,11 @@ public class ImageViewerActivity extends TuboroidActivity {
                 final NFileNameInfo file_info = new NFileNameInfo(image_local_file_);
 
                 final Intent intent = new Intent(ImageViewerActivity.this, PickFileActivity.class);
-                intent.putExtra(PickFileActivityBase.INTENT_KEY_ALLOW_NEW_DIR, true);
-                intent.putExtra(PickFileActivityBase.INTENT_KEY_ALLOW_NEW_FILE, true);
-                intent.putExtra(PickFileActivityBase.INTENT_KEY_ALERT_OVERWRITE, true);
-                intent.putExtra(PickFileActivityBase.INTENT_KEY_FILE_EXTENTION, file_info.getExtention());
-                intent.putExtra(PickFileActivityBase.INTENT_KEY_CHECK_WRITABLE, true);
+                intent.putExtra(INTENT_KEY_ALLOW_NEW_DIR, true);
+                intent.putExtra(INTENT_KEY_ALLOW_NEW_FILE, true);
+                intent.putExtra(INTENT_KEY_ALERT_OVERWRITE, true);
+                intent.putExtra(INTENT_KEY_FILE_EXTENTION, file_info.getExtention());
+                intent.putExtra(INTENT_KEY_CHECK_WRITABLE, true);
 
                 final Matcher m = Pattern.compile("^[^:]*://[^/]*/([^?]*/)?([^?/]*)(\\?.*)?").matcher(image_uri_);
                 String filename = "";
@@ -224,17 +234,13 @@ public class ImageViewerActivity extends TuboroidActivity {
                 if (filename == null || filename == "") {
                     filename = image_local_file_.getName();
                 }
-                intent.putExtra(PickFileActivityBase.INTENT_KEY_DEFAULT_NEW_FILENAME, filename);
-                intent.putExtra(PickFileActivityBase.INTENT_KEY_ROOT, Environment.getExternalStorageDirectory()
-                        .getAbsolutePath());
-                intent.putExtra(PickFileActivityBase.INTENT_KEY_NEW_FILE_CAPTION,
-                        getString(R.string.label_filepicker_save_here));
-                intent.putExtra(PickFileActivityBase.INTENT_KEY_FONT_SIZE,
-                        getTuboroidApplication().view_config_.entry_body_ * 3 / 2);
-                intent.putExtra(PickFileActivityBase.INTENT_KEY_TITLE, getString(R.string.label_menu_save_image));
+                intent.putExtra(INTENT_KEY_DEFAULT_NEW_FILENAME, filename);
+                intent.putExtra(INTENT_KEY_ROOT, Environment.getExternalStorageDirectory().getAbsolutePath());
+                intent.putExtra(INTENT_KEY_NEW_FILE_CAPTION, getString(R.string.label_filepicker_save_here));
+                intent.putExtra(INTENT_KEY_FONT_SIZE, getTuboroidApplication().view_config_.entry_body_ * 3 / 2);
+                intent.putExtra(INTENT_KEY_TITLE, getString(R.string.label_menu_save_image));
 
-                intent.putExtra(PickFileActivityBase.INTENT_KEY_RECENT_DIR_KEEP_TAG, this.getClass().getName()
-                        + INTENT_TAG_RECENT_DIR);
+                intent.putExtra(INTENT_KEY_RECENT_DIR_KEEP_TAG, this.getClass().getName() + INTENT_TAG_RECENT_DIR);
 
                 MigrationSDK5.Intent_addFlagNoAnimation(intent);
                 startActivityForResult(intent, MENU_KEY_SHARE);
