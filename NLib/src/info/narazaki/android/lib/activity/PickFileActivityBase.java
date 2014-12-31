@@ -29,7 +29,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
-public class PickFileActivityBase extends ListActivity {
+public class PickFileActivityBase extends ListActivity implements PickFileViewBase {
     private static final String TAG = "FilePckerBase";
 
     public static final String INTENT_KEY_LIGHT_THEME = "info.narazaki.android.lib.extra.LIGHT_THEME";
