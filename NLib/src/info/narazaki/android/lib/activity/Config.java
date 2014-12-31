@@ -321,4 +321,8 @@ final class Config {
     public String getRecentDirKeepTag() {
         return recent_dir_keep_tag_;
     }
+
+    public String getSelectionAlertMessage() {
+        return selection_alert_message_;
+    }
 }

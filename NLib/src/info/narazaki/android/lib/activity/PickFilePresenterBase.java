@@ -300,7 +300,8 @@ public class PickFilePresenterBase implements IPickFilePresenterBase {
             return;
         }
 
-        if (selection_alert_message_ == null && !config.getAlertOverwrite()) {
+        final String selection_alert_message = config.getSelectionAlertMessage();
+        if (selection_alert_message == null && !config.getAlertOverwrite()) {
             onFileSelected(file);
             return;
         }
@@ -316,11 +317,11 @@ public class PickFilePresenterBase implements IPickFilePresenterBase {
             public void onClick(final DialogInterface dialog, final int which) {
             }
         });
-        if (selection_alert_message_ != null) {
+        if (selection_alert_message != null) {
             if (selection_alert_title_ != null) {
                 builder.setTitle(selection_alert_title_);
             }
-            builder.setMessage(selection_alert_message_);
+            builder.setMessage(selection_alert_message);
         } else {
             builder.setTitle(R.string.text_file_picker_overwrite_title);
             builder.setMessage(R.string.text_file_picker_overwrite_message);
