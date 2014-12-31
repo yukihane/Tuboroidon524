@@ -1,8 +1,15 @@
 package info.narazaki.android.lib.pick_file.presenter;
 
+import static info.narazaki.android.lib.pick_file.model.FileType.FILE_TYPE_DIRECTORY;
+import static info.narazaki.android.lib.pick_file.model.FileType.FILE_TYPE_FILE;
+import static info.narazaki.android.lib.pick_file.model.FileType.FILE_TYPE_NEW;
+import static info.narazaki.android.lib.pick_file.model.FileType.FILE_TYPE_NEW_DIRECTORY;
+import static info.narazaki.android.lib.pick_file.model.FileType.FILE_TYPE_PARENT;
+import static info.narazaki.android.lib.pick_file.model.FileType.FILE_TYPE_PICK_DIRECTORY;
 import info.narazaki.android.lib.R;
 import info.narazaki.android.lib.pick_file.model.Config;
 import info.narazaki.android.lib.pick_file.model.FileData;
+import info.narazaki.android.lib.pick_file.model.FileType;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -31,13 +38,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 public class PickFilePresenterImpl implements PickFilePresenter {
-
-    public static final int FILE_TYPE_PARENT = 0;
-    public static final int FILE_TYPE_NEW = 1;
-    public static final int FILE_TYPE_NEW_DIRECTORY = 2;
-    public static final int FILE_TYPE_DIRECTORY = 1000;
-    public static final int FILE_TYPE_FILE = 1001;
-    public static final int FILE_TYPE_PICK_DIRECTORY = 2000;
 
     private final PickFileView view;
     private final Context context;
@@ -169,7 +169,7 @@ public class PickFilePresenterImpl implements PickFilePresenter {
 
             final TextView filename_view = (TextView) view.findViewById(R.id.filename);
 
-            final int filetype = data.getFileType();
+            final FileType filetype = data.getFileType();
             if (filetype == FILE_TYPE_NEW) {
                 final String new_file_caption = config.getNewFileCaption();
                 if (new_file_caption != null) {

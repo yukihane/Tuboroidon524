@@ -3,10 +3,10 @@ package info.narazaki.android.lib.pick_file.model;
 import java.io.File;
 
 public class FileData {
-    private final int type_;
+    private final FileType type_;
     private final File file_;
 
-    public FileData(final int type, final File file) {
+    public FileData(final FileType type, final File file) {
         type_ = type;
         file_ = file;
     }
@@ -15,7 +15,7 @@ public class FileData {
         return file_;
     }
 
-    public int getFileType() {
+    public FileType getFileType() {
         return type_;
     }
 }
