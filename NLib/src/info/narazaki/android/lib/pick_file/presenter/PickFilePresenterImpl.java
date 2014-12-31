@@ -1,22 +1,11 @@
 package info.narazaki.android.lib.pick_file.presenter;
 
-import static info.narazaki.android.lib.pick_file.model.FileType.FILE_TYPE_DIRECTORY;
-import static info.narazaki.android.lib.pick_file.model.FileType.FILE_TYPE_FILE;
-import static info.narazaki.android.lib.pick_file.model.FileType.FILE_TYPE_NEW;
-import static info.narazaki.android.lib.pick_file.model.FileType.FILE_TYPE_NEW_DIRECTORY;
-import static info.narazaki.android.lib.pick_file.model.FileType.FILE_TYPE_PARENT;
-import static info.narazaki.android.lib.pick_file.model.FileType.FILE_TYPE_PICK_DIRECTORY;
 import info.narazaki.android.lib.R;
 import info.narazaki.android.lib.pick_file.model.Config;
 import info.narazaki.android.lib.pick_file.model.FileData;
-import info.narazaki.android.lib.pick_file.model.FileType;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Objects;
-import java.util.regex.Pattern;
 
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -27,185 +16,49 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.widget.BaseAdapter;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
 
 public class PickFilePresenterImpl implements PickFilePresenter {
 
     private final PickFileView view;
     private final Context context;
+    private final FileDataListAdapter fileDataListAdapter;
     private Config config;
 
-    public PickFilePresenterImpl(final PickFileView view, final Context context) {
+    public PickFilePresenterImpl(final PickFileView view, final FileDataListViewInflator fileDataListViewInflator,
+            final Context context) {
         this.view = Objects.requireNonNull(view);
         this.context = Objects.requireNonNull(context);
+        this.fileDataListAdapter = new FileDataListAdapter(fileDataListViewInflator);
+        view.setListAdapter(fileDataListAdapter);
     }
 
     @Override
     public void initialize(final Bundle savedInstanceState, final Bundle bundle) {
 
         config = new Config(savedInstanceState, bundle, context);
+        fileDataListAdapter.setConfig(config);
         view.setTitle(config.getTitle());
-        moveDirectory(config.getCurrentDirectory());
+        changeDirectory(config.getCurrentDirectory());
     }
 
-    private void moveDirectory(final File directory) {
+    /**
+     * カレントディレクトリを変更します.
+     *
+     * @param directory
+     *            指定されたディレクトリにカレントディレクトリを移します.
+     */
+    private void changeDirectory(final File directory) {
         config.setCurrentDirectory(directory);
         String local_path = config.getCurrentDirectory().getAbsolutePath()
                 .substring(config.getRootDirectory().getAbsolutePath().length());
         if (local_path.length() == 0)
             local_path = "/";
         view.setPathText(local_path, config.getListFontSize());
-        view.setListAdapter(new FileDataListAdapter(directory));
-    }
-
-    class FileDataListAdapter extends BaseAdapter {
-        final ArrayList<FileData> data_list_;
-
-        public FileDataListAdapter(final File directory) {
-            data_list_ = new ArrayList<FileData>();
-            if (!directory.isDirectory())
-                return;
-
-            // pick dir!
-            if (config.getPickDirectoryMode()) {
-                data_list_.add(new FileData(FILE_TYPE_PICK_DIRECTORY, null));
-            }
-
-            // has parent?
-            if (config.getRootDirectory().compareTo(directory) < 0) {
-                data_list_.add(new FileData(FILE_TYPE_PARENT, directory.getParentFile()));
-            }
-
-            // new file!
-            if (directory.canWrite() && config.getAllowNewFile()) {
-                data_list_.add(new FileData(FILE_TYPE_NEW, null));
-            }
-
-            // new dir!
-            if (directory.canWrite() && config.getAllowNewDir()) {
-                data_list_.add(new FileData(FILE_TYPE_NEW_DIRECTORY, null));
-            }
-
-            // files
-            final File[] base_list = directory.listFiles();
-            final ArrayList<FileData> dirs_list = new ArrayList<FileData>();
-            final ArrayList<FileData> files_list = new ArrayList<FileData>();
-            for (final File file : base_list) {
-                if (checkVisibleFile(file)) {
-                    if (file.isDirectory()) {
-                        dirs_list.add(new FileData(FILE_TYPE_DIRECTORY, file));
-                    } else {
-                        files_list.add(new FileData(FILE_TYPE_FILE, file));
-                    }
-                }
-            }
-            Collections.sort(dirs_list, new Comparator<FileData>() {
-                @Override
-                public int compare(final FileData object1, final FileData object2) {
-                    return object1.getFile().compareTo(object2.getFile());
-                }
-            });
-            Collections.sort(files_list, new Comparator<FileData>() {
-                @Override
-                public int compare(final FileData object1, final FileData object2) {
-                    return object1.getFile().compareTo(object2.getFile());
-                }
-            });
-            data_list_.addAll(dirs_list);
-            data_list_.addAll(files_list);
-
-        }
-
-        @Override
-        public int getCount() {
-            return data_list_.size();
-        }
-
-        @Override
-        public Object getItem(final int position) {
-            if (position >= data_list_.size())
-                return null;
-            return data_list_.get(position);
-        }
-
-        @Override
-        public long getItemId(final int position) {
-            return 0;
-        }
-
-        @Override
-        public View getView(final int position, View convert_view, final ViewGroup parent) {
-            if (convert_view == null)
-                convert_view = createView();
-            if (getCount() <= position || position < 0)
-                return convert_view;
-            final FileData data = (FileData) getItem(position);
-            return setView(convert_view, data);
-        }
-
-        private View createView() {
-            final LayoutInflater layout_inflater = LayoutInflater.from(context);
-            final View view = layout_inflater.inflate(getRowViewID(), null);
-
-            final TextView filename_view = (TextView) view.findViewById(R.id.filename);
-            final int list_font_size = config.getListFontSize();
-            if (list_font_size != 0) {
-                filename_view.setTextSize(list_font_size);
-            }
-            return view;
-        }
-
-        private View setView(final View view, final FileData data) {
-            final ImageView icon_view = (ImageView) view.findViewById(R.id.icon);
-            icon_view.setImageResource(getFileIconID(config.getIsLightTheme(), data));
-
-            final TextView filename_view = (TextView) view.findViewById(R.id.filename);
-
-            final FileType filetype = data.getFileType();
-            if (filetype == FILE_TYPE_NEW) {
-                final String new_file_caption = config.getNewFileCaption();
-                if (new_file_caption != null) {
-                    filename_view.setText(new_file_caption);
-                } else {
-                    filename_view.setText(R.string.text_file_picker_new_file);
-                }
-            } else if (filetype == FILE_TYPE_NEW_DIRECTORY) {
-                final String new_dir_caption = config.getNewDirCaption();
-                if (new_dir_caption != null) {
-                    filename_view.setText(new_dir_caption);
-                } else {
-                    filename_view.setText(R.string.text_file_picker_new_dir);
-                }
-            } else if (filetype == FILE_TYPE_PICK_DIRECTORY) {
-                final String pick_dir_caption = config.getPickDirCaption();
-                if (pick_dir_caption != null) {
-                    filename_view.setText(pick_dir_caption);
-                } else {
-                    filename_view.setText(R.string.text_file_picker_pick_dir);
-                }
-            } else {
-                switch (filetype) {
-                case FILE_TYPE_PARENT:
-                    filename_view.setText(R.string.text_file_picker_parent_dir);
-                    break;
-                case FILE_TYPE_DIRECTORY:
-                case FILE_TYPE_FILE:
-                    filename_view.setText(data.getFile().getName());
-                    break;
-                }
-            }
-
-            return view;
-        }
-
+        fileDataListAdapter.list(directory, config);
     }
 
     @Override
@@ -215,17 +68,17 @@ public class PickFilePresenterImpl implements PickFilePresenter {
 
         switch (data.getFileType()) {
         case FILE_TYPE_PARENT:
-            moveDirectory(file);
+            changeDirectory(file);
             break;
         case FILE_TYPE_DIRECTORY:
             if (!file.canRead())
                 return;
-            moveDirectory(file);
+            changeDirectory(file);
             break;
         case FILE_TYPE_FILE:
             if (!file.canRead())
                 return;
-            if (checkVisibleFile(file))
+            if (Utils.checkVisibleFile(file, config))
                 onAlertFileSelection(file);
             break;
         case FILE_TYPE_NEW:
@@ -246,49 +99,7 @@ public class PickFilePresenterImpl implements PickFilePresenter {
             showWriteFailedDialog();
             return;
         }
-        moveDirectory(config.getCurrentDirectory());
-    }
-
-    protected boolean checkVisibleFile(final File file) {
-        if (file.isDirectory())
-            return true;
-        if (config.getPickDirectoryMode())
-            return false;
-
-        final String name = file.getName();
-
-        final Pattern file_pattern = config.getFilePattern();
-        if (file_pattern != null) {
-            if (!file_pattern.matcher(name).find())
-                return false;
-        }
-
-        final String file_extention = config.getFileExtention();
-        if (file_extention != null) {
-            if (name.length() < file_extention.length() + 1)
-                return false;
-            if (!name.endsWith("." + file_extention))
-                return false;
-        }
-        return true;
-    }
-
-    protected int getRowViewID() {
-        return R.layout.file_picker_row_base;
-    }
-
-    protected int getFileIconID(final boolean is_light_theme, final FileData file_data) {
-        switch (file_data.getFileType()) {
-        case FILE_TYPE_PARENT:
-            return is_light_theme ? R.drawable.folder_parent_black : R.drawable.folder_parent_white;
-        case FILE_TYPE_DIRECTORY:
-            return is_light_theme ? R.drawable.folder_close_black : R.drawable.folder_close_white;
-        case FILE_TYPE_NEW_DIRECTORY:
-            return is_light_theme ? R.drawable.new_folder_black : R.drawable.new_folder_white;
-        case FILE_TYPE_NEW:
-            return R.drawable.new_document;
-        }
-        return R.drawable.unknown_document;
+        changeDirectory(config.getCurrentDirectory());
     }
 
     protected void onAlertFileSelection(final File file) {

@@ -29,7 +29,7 @@ public class PickFileActivity extends ListActivity implements PickFileView {
 
         final Bundle bundle = getIntent().getExtras();
 
-        presenter = new PickFilePresenterImpl(this, this);
+        presenter = new PickFilePresenterImpl(this, new FileDataListViewInflatorImpl(this), this);
         presenter.initialize(savedInstanceState, bundle);
     }
 
