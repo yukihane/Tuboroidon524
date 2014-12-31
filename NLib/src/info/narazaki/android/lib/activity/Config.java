@@ -329,4 +329,8 @@ final class Config {
     public String getSelectionAlertTitle() {
         return selection_alert_title_;
     }
+
+    public String getWriteFailedMessage_() {
+        return write_failed_message_;
+    }
 }

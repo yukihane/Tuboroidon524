@@ -440,8 +440,9 @@ public class PickFilePresenterBase implements IPickFilePresenterBase {
             public void onClick(final DialogInterface dialog, final int which) {
             }
         });
-        if (write_failed_message_ != null) {
-            builder.setMessage(write_failed_message_);
+        final String write_failed_message = config.getWriteFailedMessage_();
+        if (write_failed_message != null) {
+            builder.setMessage(write_failed_message);
         } else {
             builder.setMessage(R.string.text_file_picker_write_failed);
         }
