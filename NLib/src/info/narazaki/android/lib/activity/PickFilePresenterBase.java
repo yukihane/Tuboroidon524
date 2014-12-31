@@ -418,8 +418,9 @@ public class PickFilePresenterBase implements IPickFilePresenterBase {
             public void onCancel(final DialogInterface dialog) {
             }
         });
-        if (new_dir_title_ != null) {
-            builder.setTitle(new_dir_title_);
+        final String new_dir_title = config.getNewDirTitle();
+        if (new_dir_title != null) {
+            builder.setTitle(new_dir_title);
         } else {
             builder.setTitle(R.string.text_file_picker_new_dir_title);
         }
