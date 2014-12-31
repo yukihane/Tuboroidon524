@@ -318,8 +318,9 @@ public class PickFilePresenterBase implements IPickFilePresenterBase {
             }
         });
         if (selection_alert_message != null) {
-            if (selection_alert_title_ != null) {
-                builder.setTitle(selection_alert_title_);
+            final String selection_alert_title = config.getSelectionAlertTitle();
+            if (selection_alert_title != null) {
+                builder.setTitle(selection_alert_title);
             }
             builder.setMessage(selection_alert_message);
         } else {

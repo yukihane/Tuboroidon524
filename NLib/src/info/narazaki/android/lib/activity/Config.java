@@ -325,4 +325,8 @@ final class Config {
     public String getSelectionAlertMessage() {
         return selection_alert_message_;
     }
+
+    public String getSelectionAlertTitle() {
+        return selection_alert_title_;
+    }
 }
