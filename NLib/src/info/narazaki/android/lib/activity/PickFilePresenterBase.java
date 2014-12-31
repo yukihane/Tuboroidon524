@@ -455,14 +455,15 @@ public class PickFilePresenterBase implements IPickFilePresenterBase {
 
     @Override
     public void onPause() {
-        if (recent_dir_keep_tag_ != null) {
+        final String recent_dir_keep_tag = config.getRecentDirKeepTag();
+        if (recent_dir_keep_tag != null) {
             String current_directory_name = null;
             final File curDir = config.getCurrentDirectory();
             if (curDir != null)
                 current_directory_name = curDir.getAbsolutePath();
             final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(view.getContext());
             final SharedPreferences.Editor editor = pref.edit();
-            editor.putString(recent_dir_keep_tag_, current_directory_name);
+            editor.putString(recent_dir_keep_tag, current_directory_name);
             editor.commit();
         }
     }

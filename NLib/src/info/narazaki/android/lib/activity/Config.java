@@ -317,4 +317,8 @@ final class Config {
     public boolean getPickDirectoryMode() {
         return pick_directory_mode_;
     }
+
+    public String getRecentDirKeepTag() {
+        return recent_dir_keep_tag_;
+    }
 }
