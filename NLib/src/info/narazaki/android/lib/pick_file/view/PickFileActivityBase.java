@@ -55,18 +55,10 @@ public class PickFileActivityBase extends ListActivity implements PickFileViewBa
         presenter.onRestoreInstanceState(state);
     }
 
-    // ////////////////////////////////////////////////////////////
-    // 選択
-    // ////////////////////////////////////////////////////////////
-
     @Override
     protected void onListItemClick(final ListView l, final View v, final int position, final long id) {
         presenter.onListItemClick(l, v, position, id);
     }
-
-    // ////////////////////////////////////////////////////////////
-    // アダプタ
-    // ////////////////////////////////////////////////////////////
 
     public static class FileData {
         final int type_;
