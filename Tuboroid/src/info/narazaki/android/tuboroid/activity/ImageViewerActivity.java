@@ -1,16 +1,16 @@
 package info.narazaki.android.tuboroid.activity;
 
-import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_ALERT_OVERWRITE;
-import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_ALLOW_NEW_DIR;
-import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_ALLOW_NEW_FILE;
-import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_CHECK_WRITABLE;
-import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_DEFAULT_NEW_FILENAME;
-import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_FILE_EXTENTION;
-import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_FONT_SIZE;
-import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_NEW_FILE_CAPTION;
-import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_RECENT_DIR_KEEP_TAG;
-import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_ROOT;
-import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_TITLE;
+import static info.narazaki.android.lib.pick_file.model.Constants.INTENT_KEY_ALERT_OVERWRITE;
+import static info.narazaki.android.lib.pick_file.model.Constants.INTENT_KEY_ALLOW_NEW_DIR;
+import static info.narazaki.android.lib.pick_file.model.Constants.INTENT_KEY_ALLOW_NEW_FILE;
+import static info.narazaki.android.lib.pick_file.model.Constants.INTENT_KEY_CHECK_WRITABLE;
+import static info.narazaki.android.lib.pick_file.model.Constants.INTENT_KEY_DEFAULT_NEW_FILENAME;
+import static info.narazaki.android.lib.pick_file.model.Constants.INTENT_KEY_FILE_EXTENTION;
+import static info.narazaki.android.lib.pick_file.model.Constants.INTENT_KEY_FONT_SIZE;
+import static info.narazaki.android.lib.pick_file.model.Constants.INTENT_KEY_NEW_FILE_CAPTION;
+import static info.narazaki.android.lib.pick_file.model.Constants.INTENT_KEY_RECENT_DIR_KEEP_TAG;
+import static info.narazaki.android.lib.pick_file.model.Constants.INTENT_KEY_ROOT;
+import static info.narazaki.android.lib.pick_file.model.Constants.INTENT_KEY_TITLE;
 import info.narazaki.android.lib.dialog.SimpleProgressDialog;
 import info.narazaki.android.lib.system.MigrationSDK5;
 import info.narazaki.android.lib.text.NFileNameInfo;

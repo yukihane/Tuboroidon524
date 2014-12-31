@@ -1,6 +1,6 @@
 package info.narazaki.android.tuboroid.activity;
 
-import info.narazaki.android.lib.activity.PickFileActivityBase;
+import info.narazaki.android.lib.pick_file.view.PickFileActivityBase;
 import info.narazaki.android.tuboroid.TuboroidApplication;
 import info.narazaki.android.tuboroid.TuboroidApplication.SettingInvalidateChecker;
 import android.os.Bundle;

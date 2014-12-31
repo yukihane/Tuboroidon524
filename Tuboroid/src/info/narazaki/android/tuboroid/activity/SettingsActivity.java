@@ -1,12 +1,12 @@
 package info.narazaki.android.tuboroid.activity;
 
-import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_ALLOW_NEW_DIR;
-import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_CHECK_WRITABLE;
-import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_CURRENT;
-import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_FONT_SIZE;
-import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_PICK_DIRECTORY;
-import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_ROOT;
-import static info.narazaki.android.lib.activity.Constants.INTENT_KEY_TITLE;
+import static info.narazaki.android.lib.pick_file.model.Constants.INTENT_KEY_ALLOW_NEW_DIR;
+import static info.narazaki.android.lib.pick_file.model.Constants.INTENT_KEY_CHECK_WRITABLE;
+import static info.narazaki.android.lib.pick_file.model.Constants.INTENT_KEY_CURRENT;
+import static info.narazaki.android.lib.pick_file.model.Constants.INTENT_KEY_FONT_SIZE;
+import static info.narazaki.android.lib.pick_file.model.Constants.INTENT_KEY_PICK_DIRECTORY;
+import static info.narazaki.android.lib.pick_file.model.Constants.INTENT_KEY_ROOT;
+import static info.narazaki.android.lib.pick_file.model.Constants.INTENT_KEY_TITLE;
 import info.narazaki.android.lib.activity.base.NPreferenceActivity;
 import info.narazaki.android.lib.dialog.SimpleDialog;
 import info.narazaki.android.lib.system.MigrationSDK4;
