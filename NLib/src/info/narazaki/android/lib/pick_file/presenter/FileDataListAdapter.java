@@ -63,7 +63,7 @@ public class FileDataListAdapter extends BaseAdapter {
         final ArrayList<FileData> dirs_list = new ArrayList<FileData>();
         final ArrayList<FileData> files_list = new ArrayList<FileData>();
         for (final File file : base_list) {
-            if (Utils.checkVisibleFile(file, config)) {
+            if (Utils.isVisible(file, config)) {
                 if (file.isDirectory()) {
                     dirs_list.add(new FileData(FILE_TYPE_DIRECTORY, file));
                 } else {

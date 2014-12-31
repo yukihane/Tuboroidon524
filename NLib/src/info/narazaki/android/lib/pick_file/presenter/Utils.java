@@ -10,7 +10,7 @@ public class Utils {
     private Utils() {
     }
 
-    public static boolean checkVisibleFile(final File file, final Config config) {
+    public static boolean isVisible(final File file, final Config config) {
         if (file.isDirectory())
             return true;
         if (config.getPickDirectoryMode())

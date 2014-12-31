@@ -78,7 +78,7 @@ public class PickFilePresenterImpl implements PickFilePresenter {
         case FILE_TYPE_FILE:
             if (!file.canRead())
                 return;
-            if (Utils.checkVisibleFile(file, config))
+            if (Utils.isVisible(file, config))
                 onAlertFileSelection(file);
             break;
         case FILE_TYPE_NEW:
