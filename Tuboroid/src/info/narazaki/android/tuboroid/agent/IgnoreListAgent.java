@@ -64,7 +64,8 @@ public class IgnoreListAgent {
         });
     }
 
-    private synchronized void setIgnoreList(final ArrayList<IgnoreData> ngid_list, final ArrayList<IgnoreData> ngword_list) {
+    private synchronized void setIgnoreList(final ArrayList<IgnoreData> ngid_list,
+            final ArrayList<IgnoreData> ngword_list) {
         ngid_list_ = ngid_list;
         ngword_list_ = ngword_list;
         updateNGSet();

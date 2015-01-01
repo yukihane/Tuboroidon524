@@ -8,48 +8,49 @@ import java.util.concurrent.Future;
 
 public class FontFetchAgent {
     private static final String TAG = "FontFetchAgent";
-    
-    private HttpTaskAgentInterface http_agent_;
-    private FontFetchedCallback callback_;
-    
+
+    private final HttpTaskAgentInterface http_agent_;
+    private final FontFetchedCallback callback_;
+
     public interface FontFetchedCallback {
         public void onFailed();
-        
+
         public void onCompleted();
     }
-    
-    public FontFetchAgent(HttpTaskAgentInterface http_agent, FontFetchedCallback callback) {
+
+    public FontFetchAgent(final HttpTaskAgentInterface http_agent, final FontFetchedCallback callback) {
         super();
         http_agent_ = http_agent;
         callback_ = callback;
     }
-    
+
     public Future<?> fetchFile(final File local_file, final String uri) {
-        if (local_file == null) return null;
-        
-        HttpGetFileTask task = new HttpGetFileTask(uri, local_file, new HttpGetFileTask.Callback() {
+        if (local_file == null)
+            return null;
+
+        final HttpGetFileTask task = new HttpGetFileTask(uri, local_file, new HttpGetFileTask.Callback() {
             @Override
             public void onFailed() {
                 callback_.onFailed();
             }
-            
+
             @Override
             public void onCompleted() {
                 callback_.onCompleted();
             }
-            
+
             @Override
             public void onStart() {
             }
 
             @Override
-            public void onProgress(int current_length, int content_length) {
+            public void onProgress(final int current_length, final int content_length) {
                 // TODO 自動生成されたメソッド・スタブ
-                
+
             }
         });
-        
+
         return http_agent_.send(task);
     }
-    
+
 }

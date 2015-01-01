@@ -10,15 +10,15 @@ public class NotificationReceiverActivity extends TuboroidActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        
-        NotificationManager notif_manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+        final NotificationManager notif_manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         notif_manager.cancel(TuboroidApplication.NOTIF_ID_BACKGROUND_UPDATED);
-        
-        Intent intent = new Intent(this, FavoriteListActivity.class);
+
+        final Intent intent = new Intent(this, FavoriteListActivity.class);
         MigrationSDK5.Intent_addFlagNoAnimation(intent);
         startActivity(intent);
-        
+
         finish();
     }
-    
+
 }

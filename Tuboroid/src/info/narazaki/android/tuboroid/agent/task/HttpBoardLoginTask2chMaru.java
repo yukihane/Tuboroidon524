@@ -14,94 +14,92 @@ import org.apache.http.entity.StringEntity;
 
 public class HttpBoardLoginTask2chMaru extends TextHttpPostTaskBase {
     private static final String TAG = "HttpBoardLoginTask2chMaru";
-    
+
     static public interface MaruLoginCallback {
         void onLogin(final String session_key);
-        
+
         void onLoginFailed();
     }
-    
+
     private static final String LOGIN_URI = "https://2chv.tora3.net/futen.cgi";
     private static final String MARU_REFERER = "https://2chv.tora3.net/";
-    
+
     private static final String SESSION_PREFIX = "SESSION-ID=";
     private static final String ERROR_PREFIX = "ERROR";
-    
-    private AccountPref account_pref_;
-    private String user_agent_;
+
+    private final AccountPref account_pref_;
+    private final String user_agent_;
     private MaruLoginCallback callback_;
-    
+
     @Override
     protected String getTextEncode() {
         return "MS932";
     }
-    
-    public HttpBoardLoginTask2chMaru(AccountPref account_pref, String user_agent, MaruLoginCallback callback) {
+
+    public HttpBoardLoginTask2chMaru(final AccountPref account_pref, final String user_agent, final MaruLoginCallback callback) {
         super(LOGIN_URI);
         account_pref_ = account_pref;
         user_agent_ = user_agent;
         callback_ = callback;
     }
-    
+
     @Override
-    protected boolean setRequestParameters(HttpRequestBase req) {
+    protected boolean setRequestParameters(final HttpRequestBase req) {
         try {
             req.setHeader("Content-type", "application/x-www-form-urlencoded");
-            StringBuilder buf = new StringBuilder();
+            final StringBuilder buf = new StringBuilder();
             buf.append("ID=").append(account_pref_.maru_user_id_);
             buf.append("&PW=").append(account_pref_.maru_password_);
-            
-            StringEntity string_entity = new StringEntity(buf.toString(), getTextEncode());
+
+            final StringEntity string_entity = new StringEntity(buf.toString(), getTextEncode());
             ((HttpPost) req).setEntity(string_entity);
             req.setHeader("Referer", MARU_REFERER);
             req.setHeader("X-2ch-UA", user_agent_);
-        }
-        catch (UnsupportedEncodingException e) {
+        } catch (final UnsupportedEncodingException e) {
             e.printStackTrace();
         }
         return true;
     }
-    
+
     @Override
-    protected void dispatchHttpTextResponse(HttpResponse res, BufferedReader reader) throws InterruptedException,
+    protected void dispatchHttpTextResponse(final HttpResponse res, final BufferedReader reader) throws InterruptedException,
             IOException {
-        
+
         try {
-            String line = reader.readLine();
+            final String line = reader.readLine();
             if (line == null || line.indexOf(SESSION_PREFIX) != 0) {
                 onConnectionError(false);
                 return;
             }
-            String session_key = line.substring(SESSION_PREFIX.length());
+            final String session_key = line.substring(SESSION_PREFIX.length());
             if (session_key.length() == 0 || session_key.toUpperCase().indexOf(ERROR_PREFIX) == 0) {
                 onConnectionError(false);
                 return;
             }
             callback_.onLogin(session_key);
-        }
-        catch (Exception e) {
+        } catch (final Exception e) {
             if (callback_ != null) {
                 callback_.onLoginFailed();
                 callback_ = null;
             }
-        }
-        finally {
+        } finally {
             reader.close();
         }
-        if (Thread.interrupted()) throw new InterruptedException();
+        if (Thread.interrupted())
+            throw new InterruptedException();
     }
-    
+
     @Override
-    protected void onConnectionError(boolean connection_failed) {
+    protected void onConnectionError(final boolean connection_failed) {
         if (callback_ != null) {
             callback_.onLoginFailed();
         }
         callback_ = null;
     }
-    
+
     @Override
     protected void onRequestCanceled() {
         onConnectionError(false);
     }
-    
+
 }

@@ -7,10 +7,10 @@ import android.content.Intent;
 
 public class BeginCheckTimerUpdateReceiver extends BroadcastReceiver {
     private static final String TAG = "BeginCheckUpdateTimerReceiver";
-    
+
     @Override
-    public void onReceive(Context context, Intent intent) {
+    public void onReceive(final Context context, final Intent intent) {
         BackgroundTimerUpdater.updateTimer(context.getApplicationContext());
     }
-    
+
 }

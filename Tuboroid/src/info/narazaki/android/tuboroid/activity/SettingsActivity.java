@@ -77,16 +77,16 @@ public class SettingsActivity extends NPreferenceActivity {
             public boolean onPreferenceClick(final Preference preference) {
                 SimpleDialog.showYesNo(SettingsActivity.this, R.string.dialog_clear_ignores_title,
                         R.string.dialog_clear_ignores, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(final DialogInterface dialog, final int which) {
-                        getAgent().clearNG();
-                        ManagedToast.raiseToast(SettingsActivity.this, R.string.toast_clear_ignores);
-                    }
-                }, new DialogInterface.OnCancelListener() {
-                    @Override
-                    public void onCancel(final DialogInterface dialog) {
-                    }
-                });
+                            @Override
+                            public void onClick(final DialogInterface dialog, final int which) {
+                                getAgent().clearNG();
+                                ManagedToast.raiseToast(SettingsActivity.this, R.string.toast_clear_ignores);
+                            }
+                        }, new DialogInterface.OnCancelListener() {
+                            @Override
+                            public void onCancel(final DialogInterface dialog) {
+                            }
+                        });
                 return true;
             }
         });
@@ -97,16 +97,16 @@ public class SettingsActivity extends NPreferenceActivity {
             public boolean onPreferenceClick(final Preference preference) {
                 SimpleDialog.showYesNo(SettingsActivity.this, R.string.dialog_clear_cookie_title,
                         R.string.dialog_clear_cookie, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(final DialogInterface dialog, final int which) {
-                        getAgent().clearCookie();
-                        ManagedToast.raiseToast(SettingsActivity.this, R.string.toast_clear_cookie);
-                    }
-                }, new DialogInterface.OnCancelListener() {
-                    @Override
-                    public void onCancel(final DialogInterface dialog) {
-                    }
-                });
+                            @Override
+                            public void onClick(final DialogInterface dialog, final int which) {
+                                getAgent().clearCookie();
+                                ManagedToast.raiseToast(SettingsActivity.this, R.string.toast_clear_cookie);
+                            }
+                        }, new DialogInterface.OnCancelListener() {
+                            @Override
+                            public void onCancel(final DialogInterface dialog) {
+                            }
+                        });
                 return true;
             }
         });
@@ -159,8 +159,7 @@ public class SettingsActivity extends NPreferenceActivity {
         intent.putExtra(INTENT_KEY_CHECK_WRITABLE, true);
         intent.putExtra(INTENT_KEY_ROOT, ext_storage_base.getAbsolutePath());
         intent.putExtra(INTENT_KEY_CURRENT, path);
-        intent.putExtra(INTENT_KEY_FONT_SIZE,
-                getTuboroidApplication().view_config_.entry_body_ * 3 / 2);
+        intent.putExtra(INTENT_KEY_FONT_SIZE, getTuboroidApplication().view_config_.entry_body_ * 3 / 2);
         intent.putExtra(INTENT_KEY_TITLE, getString(R.string.pref_title_external_storage_path));
         intent.putExtra(INTENT_KEY_PICK_DIRECTORY, true);
 

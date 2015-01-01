@@ -8,68 +8,68 @@ import android.widget.TextView;
 
 public class FavoriteItemBoardData extends FavoriteItemData {
     BoardData board_data_;
-    
-    public FavoriteItemBoardData(BoardData board_data) {
+
+    public FavoriteItemBoardData(final BoardData board_data) {
         super();
         board_data_ = board_data.clone();
     }
-    
-    public FavoriteItemBoardData(Cursor cursor) {
+
+    public FavoriteItemBoardData(final Cursor cursor) {
         super();
         board_data_ = BoardData.factory(cursor);
     }
-    
+
     @Override
     public String getURI() {
         return board_data_.getSubjectsURI();
     }
-    
+
     @Override
     public long getId() {
         return 0;
     }
-    
+
     @Override
     public boolean isBoard() {
         return true;
     }
-    
+
     @Override
     public BoardData getBoardData() {
         return board_data_;
     }
-    
+
     @Override
     public ThreadData getThreadData() {
         return null;
     }
-    
+
     @Override
     public boolean isThread() {
         return false;
     }
-    
+
     @Override
     public boolean isSearchKey() {
         return false;
     }
-    
+
     @Override
     public Find2chKeyData getSearchKey() {
         return null;
     }
-    
+
     @Override
     public BoardIdentifier getServerDef() {
         return board_data_.server_def_;
     }
-    
+
     @Override
-    public View setView(View view, TuboroidApplication.ViewConfig view_config, ThreadData.ViewStyle style) {
-        TextView title_view = (TextView) view.findViewById(R.id.favorite_board_name);
+    public View setView(final View view, final TuboroidApplication.ViewConfig view_config, final ThreadData.ViewStyle style) {
+        final TextView title_view = (TextView) view.findViewById(R.id.favorite_board_name);
         title_view.setTextSize(view_config.board_list_);
         title_view.setText(board_data_.board_name_);
         return view;
     }
-    
+
 }

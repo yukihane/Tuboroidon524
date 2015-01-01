@@ -19,19 +19,19 @@ import org.apache.http.entity.StringEntity;
 
 public class HttpPostEntryTaskMachi extends TextHttpPostTaskBase {
     private static final String TAG = "public class HttpPostEntryTaskMachi";
-    
+
     static public interface Callback {
         void onPosted();
-        
+
         void onPostFailed(final String message);
-        
+
         void onConnectionError(final boolean connection_failed);
     }
-    
-    private ThreadData thread_data_;
-    private PostEntryData post_entry_data_;
+
+    private final ThreadData thread_data_;
+    private final PostEntryData post_entry_data_;
     private Callback callback_;
-    
+
     static Pattern pattern_title_;
     static Pattern pattern_body_;
     static {
@@ -40,28 +40,28 @@ public class HttpPostEntryTaskMachi extends TextHttpPostTaskBase {
         pattern_body_ = Pattern.compile("<body.*?\\>(.+?)</body\\>", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE
                 | Pattern.DOTALL);
     }
-    
+
     @Override
     protected String getTextEncode() {
         return CharsetInfo.getEmojiShiftJis();
     }
-    
-    public HttpPostEntryTaskMachi(ThreadData thread_data, PostEntryData post_entry_data, Callback callback) {
+
+    public HttpPostEntryTaskMachi(final ThreadData thread_data, final PostEntryData post_entry_data, final Callback callback) {
         super(thread_data.getPostEntryURI());
         thread_data_ = thread_data;
         post_entry_data_ = post_entry_data;
         callback_ = callback;
     }
-    
+
     @Override
-    protected boolean setRequestParameters(HttpRequestBase req) {
+    protected boolean setRequestParameters(final HttpRequestBase req) {
         try {
             long epoc_time = System.currentTimeMillis() / 1000;
             epoc_time -= 60 * 15;
-            
+
             req.setHeader("Content-type", "application/x-www-form-urlencoded");
-            StringBuilder buf = new StringBuilder();
-            
+            final StringBuilder buf = new StringBuilder();
+
             buf.append("&BBS=").append(urlencode(thread_data_.server_def_.board_tag_));
             buf.append("&KEY=").append(thread_data_.thread_id_);
             buf.append("&TIME=").append(epoc_time);
@@ -69,70 +69,73 @@ public class HttpPostEntryTaskMachi extends TextHttpPostTaskBase {
             buf.append("&MAIL=").append(urlencode(post_entry_data_.author_mail_));
             buf.append("&MESSAGE=").append(urlencode(post_entry_data_.entry_body_));
             buf.append("&submit=").append("%8F%91%82%AB%8D%9E%82%DE");
-            
+
             ((HttpPost) req).setEntity(new StringEntity(buf.toString(), getTextEncode()));
             req.setHeader("Referer", thread_data_.getPostEntryRefererURI());
-            
-        }
-        catch (UnsupportedEncodingException e) {
+
+        } catch (final UnsupportedEncodingException e) {
             e.printStackTrace();
         }
         return true;
     }
-    
+
     @Override
-    protected void dispatchHttpTextResponse(HttpResponse res, BufferedReader reader) throws InterruptedException,
+    protected void dispatchHttpTextResponse(final HttpResponse res, final BufferedReader reader) throws InterruptedException,
             IOException {
-        
+
         try {
-            StringBuilder buf = new StringBuilder();
+            final StringBuilder buf = new StringBuilder();
             while (true) {
-                String line = reader.readLine();
-                if (line == null) break;
+                final String line = reader.readLine();
+                if (line == null)
+                    break;
                 buf.append(line);
             }
-            String data = buf.toString();
-            
+            final String data = buf.toString();
+
             String title = "";
             String body = "";
-            
-            Matcher matcher_title = pattern_title_.matcher(data);
+
+            final Matcher matcher_title = pattern_title_.matcher(data);
             matcher_title.reset();
-            if (matcher_title.find()) title = matcher_title.group(1);
-            
-            Matcher matcher_body = pattern_body_.matcher(data);
+            if (matcher_title.find())
+                title = matcher_title.group(1);
+
+            final Matcher matcher_body = pattern_body_.matcher(data);
             matcher_body.reset();
-            if (matcher_body.find()) body = matcher_body.group(1);
-            
-            if (checkFailed(title, body)) return;
-            
+            if (matcher_body.find())
+                body = matcher_body.group(1);
+
+            if (checkFailed(title, body))
+                return;
+
             onPosted(title, body);
-            
-        }
-        catch (Exception e) {
+
+        } catch (final Exception e) {
             if (callback_ != null) {
                 callback_.onConnectionError(false);
                 callback_ = null;
             }
-        }
-        finally {
+        } finally {
             reader.close();
         }
-        if (Thread.interrupted()) throw new InterruptedException();
+        if (Thread.interrupted())
+            throw new InterruptedException();
     }
-    
+
     // 書き込みエラー
     private boolean checkFailed(final String title, final String body) throws InterruptedException {
-        if (title.indexOf("ＥＲＲＯＲ") == -1) return false;
+        if (title.indexOf("ＥＲＲＯＲ") == -1)
+            return false;
         final String message = HtmlUtils.stripAllHtmls(body, true);
-        
+
         if (callback_ != null) {
             callback_.onPostFailed(message);
         }
         callback_ = null;
         return true;
     }
-    
+
     // 書き込み完了
     private boolean onPosted(final String title, final String body) throws InterruptedException {
         if (callback_ != null) {
@@ -141,18 +144,18 @@ public class HttpPostEntryTaskMachi extends TextHttpPostTaskBase {
         callback_ = null;
         return true;
     }
-    
+
     @Override
-    protected void onConnectionError(boolean connection_failed) {
+    protected void onConnectionError(final boolean connection_failed) {
         if (callback_ != null) {
             callback_.onConnectionError(connection_failed);
         }
         callback_ = null;
     }
-    
+
     @Override
     protected void onRequestCanceled() {
         onConnectionError(false);
     }
-    
+
 }

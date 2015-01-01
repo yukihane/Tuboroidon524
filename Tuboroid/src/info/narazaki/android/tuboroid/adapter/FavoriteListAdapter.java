@@ -21,49 +21,49 @@ import android.view.ViewGroup;
 // アダプタ
 // ////////////////////////////////////////////////////////////
 public class FavoriteListAdapter extends FavoriteListAdapterBase<FavoriteItemData> {
-	final ThreadData.ViewStyle view_style_;
-	
-    public FavoriteListAdapter(Activity activity, TuboroidApplication.ViewConfig view_config) {
+    final ThreadData.ViewStyle view_style_;
+
+    public FavoriteListAdapter(final Activity activity, final TuboroidApplication.ViewConfig view_config) {
         super(activity, view_config);
         view_style_ = new ThreadData.ViewStyle(activity);
     }
-    
+
     @Override
-    public void setShowUpdatedOnly(boolean updated_only) {
+    public void setShowUpdatedOnly(final boolean updated_only) {
         if (updated_only) {
             setFilter(new Filter<FavoriteItemData>() {
                 @Override
-                public boolean filter(FavoriteItemData data) {
+                public boolean filter(final FavoriteItemData data) {
                     return data.isThread() && data.getThreadData().online_count_ > data.getThreadData().read_count_;
                 }
             }, null);
-        }
-        else {
+        } else {
             setFilter(null, null);
         }
     }
-    
+
     @Override
-    public int getItemViewType(int position) {
-        FavoriteItemData data = getData(position);
-        if (data.isBoard()) return 1;
-        if (data.isSearchKey()) return 2;
+    public int getItemViewType(final int position) {
+        final FavoriteItemData data = getData(position);
+        if (data.isBoard())
+            return 1;
+        if (data.isSearchKey())
+            return 2;
         return 0;
     }
-    
+
     @Override
     public int getViewTypeCount() {
         return 3;
     }
-    
+
     @Override
-    protected View createView(FavoriteItemData data) {
-        LayoutInflater layout_inflater = LayoutInflater.from(activity_);
+    protected View createView(final FavoriteItemData data) {
+        final LayoutInflater layout_inflater = LayoutInflater.from(activity_);
         if (data.isBoard()) {
-            View board_row = layout_inflater.inflate(R.layout.favorite_list_board_row, null);
+            final View board_row = layout_inflater.inflate(R.layout.favorite_list_board_row, null);
             return board_row;
-        }
-        else if (data.isSearchKey()) {
+        } else if (data.isSearchKey()) {
             View search_key_row = layout_inflater.inflate(R.layout.find2ch_search_key_row, null);
             search_key_row = Find2chKeyData.initView(search_key_row, view_config_);
             return search_key_row;
@@ -72,28 +72,27 @@ public class FavoriteListAdapter extends FavoriteListAdapterBase<FavoriteItemDat
         thread_list_row = ThreadData.initView(thread_list_row, view_config_);
         return thread_list_row;
     }
-    
+
     @Override
-    protected View setView(View view, FavoriteItemData data, ViewGroup parent) {
+    protected View setView(final View view, final FavoriteItemData data, final ViewGroup parent) {
         return data.setView(view, view_config_, view_style_);
     }
-    
+
     public interface DeleteFilledCallback {
         public void onDeleted(ArrayList<FavoriteItemData> delete_list);
     }
-    
+
     public void deleteFilled(final DeleteFilledCallback callback) {
         postAdapterThread(new Runnable() {
             @Override
             public void run() {
                 final ArrayList<FavoriteItemData> delete_list = new ArrayList<FavoriteItemData>();
                 final ArrayList<FavoriteItemData> new_list = new ArrayList<FavoriteItemData>();
-                
-                for (FavoriteItemData data : inner_data_list_) {
+
+                for (final FavoriteItemData data : inner_data_list_) {
                     if (data.isThread() && data.getThreadData().isFilled()) {
                         delete_list.add(data);
-                    }
-                    else {
+                    } else {
                         new_list.add(data);
                     }
                 }
@@ -106,46 +105,51 @@ public class FavoriteListAdapter extends FavoriteListAdapterBase<FavoriteItemDat
             }
         });
     }
-    
+
     public interface OnSortedCallback {
         public void onSorted(ArrayList<FavoriteItemData> data_list);
     }
-    
+
     public void sortAutomatically(final OnSortedCallback callback) {
         postAdapterThread(new Runnable() {
             @Override
             public void run() {
                 final ArrayList<FavoriteItemData> work_list = new ArrayList<FavoriteItemData>();
                 work_list.addAll(inner_data_list_);
-                
+
                 final HashMap<BoardIdentifier, Integer> server_tag_order_map = new HashMap<BoardIdentifier, Integer>();
                 int i = 0;
-                for (FavoriteItemData data : work_list) {
+                for (final FavoriteItemData data : work_list) {
                     if (!server_tag_order_map.containsKey(data.getServerDef()) || data.isBoard()) {
                         server_tag_order_map.put(data.getServerDef(), i);
                         i++;
                     }
                 }
-                
+
                 Collections.sort(work_list, new Comparator<FavoriteItemData>() {
                     @Override
-                    public int compare(FavoriteItemData object1, FavoriteItemData object2) {
-                        if (object1.isSearchKey()) return 1;
-                        if (object2.isSearchKey()) return -1;
-                        
-                        int result = server_tag_order_map.get(object1.getServerDef())
+                    public int compare(final FavoriteItemData object1, final FavoriteItemData object2) {
+                        if (object1.isSearchKey())
+                            return 1;
+                        if (object2.isSearchKey())
+                            return -1;
+
+                        final int result = server_tag_order_map.get(object1.getServerDef())
                                 - server_tag_order_map.get(object2.getServerDef());
-                        if (result != 0) return result;
-                        
-                        if (object1.isBoard()) return -1;
-                        if (object2.isBoard()) return 1;
-                        
+                        if (result != 0)
+                            return result;
+
+                        if (object1.isBoard())
+                            return -1;
+                        if (object2.isBoard())
+                            return 1;
+
                         return 0;
                     }
                 });
-                
+
                 activity_.runOnUiThread(new Runnable() {
-                    
+
                     @Override
                     public void run() {
                         setDataList(work_list);
@@ -154,7 +158,7 @@ public class FavoriteListAdapter extends FavoriteListAdapterBase<FavoriteItemDat
                 });
             }
         });
-        
+
     }
-    
+
 }

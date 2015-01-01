@@ -14,54 +14,57 @@ import android.database.sqlite.SQLiteOpenHelper;
 abstract public class SQLiteAgentBase {
     static public interface DbResultReceiver {
         public void onQuery(final Cursor cursor);
-        
+
         public void onError();
     }
-    
+
     static public interface DbTransaction {
         public void run();
-        
+
         public void onError();
     }
-    
+
     static public abstract class DbTransactionBase implements DbTransaction {
         @Override
-        public void onError() {}
+        public void onError() {
+        }
     }
-    
+
     static public class DbTransactionDelegate implements DbTransaction {
         final Runnable runnable_;
-        
-        public DbTransactionDelegate(Runnable runnable) {
+
+        public DbTransactionDelegate(final Runnable runnable) {
             runnable_ = runnable;
         }
-        
+
         @Override
         public void run() {
-            if (runnable_ != null) runnable_.run();
+            if (runnable_ != null)
+                runnable_.run();
         }
-        
+
         @Override
         public void onError() {
-            if (runnable_ != null) runnable_.run();
+            if (runnable_ != null)
+                runnable_.run();
         }
     }
-    
-    private Context context_;
+
+    private final Context context_;
     private final ExecutorService executor_;
     private SQLiteDatabase db_;
-    private SQLiteOpenHelper open_helper_;
-    
-    public SQLiteAgentBase(Context context) {
+    private final SQLiteOpenHelper open_helper_;
+
+    public SQLiteAgentBase(final Context context) {
         super();
         context_ = context;
         executor_ = Executors.newSingleThreadExecutor();
         open_helper_ = createSQLiteOpenHelper(context);
         transaction_queue_ = new LinkedList<Runnable>();
     }
-    
+
     abstract protected SQLiteOpenHelper createSQLiteOpenHelper(Context context);
-    
+
     public synchronized SQLiteAgentBase open() {
         try {
             db_ = executor_.submit(new Callable<SQLiteDatabase>() {
@@ -70,18 +73,17 @@ abstract public class SQLiteAgentBase {
                     return open_helper_.getWritableDatabase();
                 }
             }).get();
-        }
-        catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             e.printStackTrace();
-        }
-        catch (ExecutionException e) {
+        } catch (final ExecutionException e) {
             e.printStackTrace();
         }
         return this;
     }
-    
+
     public synchronized SQLiteAgentBase close() {
-        if (db_ == null) return this;
+        if (db_ == null)
+            return this;
         try {
             executor_.submit(new Runnable() {
                 @Override
@@ -89,45 +91,44 @@ abstract public class SQLiteAgentBase {
                     open_helper_.close();
                 }
             }).get();
-        }
-        catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             e.printStackTrace();
-        }
-        catch (ExecutionException e) {
+        } catch (final ExecutionException e) {
             e.printStackTrace();
         }
         db_ = null;
         return this;
     }
-    
+
     public SQLiteAgentBase reopen() {
         return close().open();
     }
-    
+
     public Context getContext() {
         return context_;
     }
-    
+
     public SQLiteDatabase getDB() {
         return db_;
     }
-    
+
     private final LinkedList<Runnable> transaction_queue_;
-    
+
     private synchronized void pushTransactionTask(final Runnable runnable) {
         transaction_queue_.addLast(runnable);
         if (transaction_queue_.size() == 1) {
             executor_.submit(runnable);
         }
     }
-    
+
     private synchronized void popTransactionTask() {
         transaction_queue_.removeFirst();
-        if (transaction_queue_.size() == 0) return;
-        Runnable runnable = transaction_queue_.getFirst();
+        if (transaction_queue_.size() == 0)
+            return;
+        final Runnable runnable = transaction_queue_.getFirst();
         executor_.submit(runnable);
     }
-    
+
     public void submitTransaction(final DbTransaction runnable) {
         pushTransactionTask(new Runnable() {
             @Override
@@ -138,19 +139,18 @@ abstract public class SQLiteAgentBase {
                     runnable.run();
                     ok = true;
                     getDB().setTransactionSuccessful();
-                }
-                catch (Exception e) {
+                } catch (final Exception e) {
                     e.printStackTrace();
-                    if (!ok) runnable.onError();
-                }
-                finally {
+                    if (!ok)
+                        runnable.onError();
+                } finally {
                     getDB().endTransaction();
                     popTransactionTask();
                 }
             }
         });
     }
-    
+
     /**
      * LIKE検索のためorig文字列を$文字でエスケープする
      * 
@@ -159,11 +159,11 @@ abstract public class SQLiteAgentBase {
      * @param orig
      * @return
      */
-    static public String escapeLike(String orig) {
-        StringBuilder result = new StringBuilder();
-        int length = orig.length();
+    static public String escapeLike(final String orig) {
+        final StringBuilder result = new StringBuilder();
+        final int length = orig.length();
         for (int i = 0; i < length; i++) {
-            char c = orig.charAt(i);
+            final char c = orig.charAt(i);
             switch (c) {
             case '%':
             case '_':

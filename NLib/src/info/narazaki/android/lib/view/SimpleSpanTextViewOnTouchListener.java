@@ -35,7 +35,8 @@ public class SimpleSpanTextViewOnTouchListener implements OnTouchListener {
         is_pressed_ = false;
     }
 
-    public SimpleSpanTextViewOnTouchListener(final int touch_margin, final int color, final boolean is_longclick_delegate) {
+    public SimpleSpanTextViewOnTouchListener(final int touch_margin, final int color,
+            final boolean is_longclick_delegate) {
         super();
         touch_margin_ = touch_margin;
         bg_color_span_ = new LinkBackgroundColorSpan(color);

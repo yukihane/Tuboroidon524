@@ -5,14 +5,14 @@ import info.narazaki.android.tuboroid.data.BoardData;
 
 public class HttpGetBoardDataTaskMachi extends HttpGetBoardDataTask {
     private static final String TAG = "HttpGetBoardDataTaskMachi";
-    
-    public HttpGetBoardDataTaskMachi(BoardData boardData, Callback callback) {
+
+    public HttpGetBoardDataTaskMachi(final BoardData boardData, final Callback callback) {
         super(boardData, callback);
     }
-    
+
     @Override
     protected String getTextEncode() {
         return CharsetInfo.getEmojiShiftJis();
     }
-    
+
 }

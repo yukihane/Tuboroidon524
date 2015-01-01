@@ -1,5 +1,9 @@
 package info.narazaki.android.lib.agent.http;
 
+import info.narazaki.android.lib.agent.http.task.HttpTaskBase;
+import info.narazaki.android.lib.http.ExternalizableCookieStore;
+import info.narazaki.android.lib.system.NAndroidSystem;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -11,6 +15,14 @@ import java.io.ObjectOutputStream;
 import java.lang.reflect.Method;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -38,83 +50,71 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.protocol.HttpContext;
 
-import info.narazaki.android.lib.agent.http.task.HttpTaskBase;
-import info.narazaki.android.lib.http.ExternalizableCookieStore;
-import info.narazaki.android.lib.system.NAndroidSystem;
 import android.content.Context;
-
-import java.security.KeyManagementException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
 
 public class HttpTaskAgent implements HttpTaskAgentInterface {
     private static final String TAG = "HttpTaskAgent";
-    
+
     public static interface SaveCookieStoreCallback {
         public void saveCookieStore(final String cookie_bare_data);
     }
-    
+
     private static HashMap<String, SSLSocketFactory> ssl_socket_factory_map_ = new HashMap<String, SSLSocketFactory>();
-    
+
     protected Context context_;
     private final ExecutorService executor_;
-    
-    private AbstractHttpClient http_client_;
+
+    private final AbstractHttpClient http_client_;
     private BasicCookieStore cookie_store_;
-    
+
     private int timeout_ms_;
-    
+
     protected SaveCookieStoreCallback save_cookie_callback_;
-    
-    public HttpTaskAgent(Context context, final String user_agent, final HttpHost proxy) {
+
+    public HttpTaskAgent(final Context context, final String user_agent, final HttpHost proxy) {
         super();
         context_ = context;
         executor_ = Executors.newSingleThreadExecutor();
-        
+
         cookie_store_ = createCookieStore();
         http_client_ = createHttpClient(user_agent, proxy);
-        
+
         save_cookie_callback_ = null;
         timeout_ms_ = 10000; // 10秒
     }
-    
+
     @Override
-    public Future<?> send(HttpTaskBase task) {
+    public Future<?> send(final HttpTaskBase task) {
         task.setHttpClient(this, http_client_);
         return executor_.submit(task);
     }
-    
-    public void setSaveCookieCallback(SaveCookieStoreCallback callback) {
+
+    public void setSaveCookieCallback(final SaveCookieStoreCallback callback) {
         save_cookie_callback_ = callback;
     }
-    
+
     @Override
     public boolean isOnline() {
         return NAndroidSystem.isOnline(context_);
     }
-    
+
     public int getTimeoutMS() {
         return timeout_ms_; // デフォルト10秒
     }
-    
-    public void setTimeoutMS(int timeout) {
+
+    public void setTimeoutMS(final int timeout) {
         timeout_ms_ = timeout;
     }
-    
+
     protected AbstractHttpClient createHttpClient(final String user_agent, final HttpHost proxy) {
-        AbstractHttpClient http_client = new DefaultHttpClient();
+        final AbstractHttpClient http_client = new DefaultHttpClient();
         http_client.getParams().setParameter(ClientPNames.COOKIE_POLICY, CookiePolicy.BROWSER_COMPATIBILITY);
         http_client.setCookieStore(cookie_store_);
         http_client.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, getTimeoutMS());
         http_client.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, getTimeoutMS());
-        
-        if(proxy != null) {
-        	http_client.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+
+        if (proxy != null) {
+            http_client.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
         }
         http_client.addRequestInterceptor(new HttpRequestInterceptor() {
             @Override
@@ -131,12 +131,13 @@ public class HttpTaskAgent implements HttpTaskAgentInterface {
         http_client.addResponseInterceptor(new HttpResponseInterceptor() {
             @Override
             public void process(final HttpResponse response, final HttpContext context) throws HttpException,
-                    IOException {
-                HttpEntity entity = response.getEntity();
-                if (entity == null) return;
-                Header ceheader = entity.getContentEncoding();
+            IOException {
+                final HttpEntity entity = response.getEntity();
+                if (entity == null)
+                    return;
+                final Header ceheader = entity.getContentEncoding();
                 if (ceheader != null) {
-                    HeaderElement[] codecs = ceheader.getElements();
+                    final HeaderElement[] codecs = ceheader.getElements();
                     for (int i = 0; i < codecs.length; i++) {
                         if (codecs[i].getName().equalsIgnoreCase("gzip")) {
                             response.setEntity(new GzipDecompressingEntity(response.getEntity()));
@@ -146,95 +147,86 @@ public class HttpTaskAgent implements HttpTaskAgentInterface {
                 }
             }
         });
-        
-        SSLSocketFactory ssl_socket_factory = this.getSSLSocketFactory();
+
+        final SSLSocketFactory ssl_socket_factory = this.getSSLSocketFactory();
         if (ssl_socket_factory != null) {
-            Scheme https_scheme = new Scheme("https", ssl_socket_factory, 443);
+            final Scheme https_scheme = new Scheme("https", ssl_socket_factory, 443);
             http_client.getConnectionManager().getSchemeRegistry().register(https_scheme);
         }
-        
+
         return http_client;
     }
-    
+
     private SSLSocketFactory getSSLSocketFactory() {
         try {
-            Method method = getClass().getMethod("createSSLSocketFactory", new Class[] {});
-            String name = method.getDeclaringClass().getName();
+            final Method method = getClass().getMethod("createSSLSocketFactory", new Class[] {});
+            final String name = method.getDeclaringClass().getName();
             synchronized (ssl_socket_factory_map_) {
                 SSLSocketFactory factory = ssl_socket_factory_map_.get(name);
-                if (factory != null) return factory;
+                if (factory != null)
+                    return factory;
                 factory = createSSLSocketFactory();
                 ssl_socket_factory_map_.put(name, factory);
                 return factory;
             }
-        }
-        catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
             throw new RuntimeException();
         }
     }
-    
+
     public SSLSocketFactory createSSLSocketFactory() {
         try {
-            String keystore_filename = System.getProperty("javax.net.ssl.trustStore");
-            String keystore_password = System.getProperty("javax.net.ssl.trustStorePassword");
-            char[] keystore_password_char = keystore_password != null ? keystore_password.toCharArray() : null;
-            
+            final String keystore_filename = System.getProperty("javax.net.ssl.trustStore");
+            final String keystore_password = System.getProperty("javax.net.ssl.trustStorePassword");
+            final char[] keystore_password_char = keystore_password != null ? keystore_password.toCharArray() : null;
+
             KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
             if (keystore_filename != null) {
                 keystore.load(new FileInputStream(new File(keystore_filename)), keystore_password_char);
-            }
-            else {
+            } else {
                 keystore.load(null, null);
             }
             keystore = setupSSLKeyStore(keystore);
             return new SSLSocketFactory(keystore);
-        }
-        catch (KeyManagementException e) {
+        } catch (final KeyManagementException e) {
+            e.printStackTrace();
+        } catch (final NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (final KeyStoreException e) {
+            e.printStackTrace();
+        } catch (final UnrecoverableKeyException e) {
+            e.printStackTrace();
+        } catch (final CertificateException e) {
+            e.printStackTrace();
+        } catch (final IOException e) {
             e.printStackTrace();
         }
-        catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-        catch (KeyStoreException e) {
-            e.printStackTrace();
-        }
-        catch (UnrecoverableKeyException e) {
-            e.printStackTrace();
-        }
-        catch (CertificateException e) {
-            e.printStackTrace();
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-        
+
         return null;
     }
-    
-    protected KeyStore setupSSLKeyStore(KeyStore keystore) {
+
+    protected KeyStore setupSSLKeyStore(final KeyStore keystore) {
         addGeoTrustGlobalCACertificateEntry(keystore);
         return keystore;
     }
-    
-    static protected KeyStore addCertificateEntry(KeyStore keystore, String alias, String certificate) {
-        ByteArrayInputStream certificate_array = new ByteArrayInputStream(certificate.getBytes());
+
+    static protected KeyStore addCertificateEntry(final KeyStore keystore, final String alias, final String certificate) {
+        final ByteArrayInputStream certificate_array = new ByteArrayInputStream(certificate.getBytes());
         try {
-            CertificateFactory cf = CertificateFactory.getInstance("X.509");
-            X509Certificate cert = (X509Certificate) cf.generateCertificate(certificate_array);
+            final CertificateFactory cf = CertificateFactory.getInstance("X.509");
+            final X509Certificate cert = (X509Certificate) cf.generateCertificate(certificate_array);
             keystore.setCertificateEntry(alias, cert);
-        }
-        catch (KeyStoreException e) {
+        } catch (final KeyStoreException e) {
             e.printStackTrace();
-        }
-        catch (CertificateException e) {
+        } catch (final CertificateException e) {
             e.printStackTrace();
         }
         return keystore;
     }
-    
+
     @Override
-    public void setCookieStoreData(String cookie_bare_data) {
+    public void setCookieStoreData(final String cookie_bare_data) {
         if (cookie_bare_data == null || cookie_bare_data.length() == 0) {
             cookie_store_.clear();
             if (save_cookie_callback_ != null) {
@@ -242,41 +234,39 @@ public class HttpTaskAgent implements HttpTaskAgentInterface {
             }
             return;
         }
-        String cookie_data = URLDecoder.decode(cookie_bare_data);
+        final String cookie_data = URLDecoder.decode(cookie_bare_data);
         try {
-            ByteArrayInputStream is = new ByteArrayInputStream(cookie_data.getBytes("ISO8859-1"));
-            ObjectInputStream ois = new ObjectInputStream(is);
+            final ByteArrayInputStream is = new ByteArrayInputStream(cookie_data.getBytes("ISO8859-1"));
+            final ObjectInputStream ois = new ObjectInputStream(is);
             cookie_store_ = (ExternalizableCookieStore) ois.readObject();
-        }
-        catch (Exception e) {
+        } catch (final Exception e) {
             cookie_store_.clear();
             e.printStackTrace();
         }
         http_client_.setCookieStore(cookie_store_);
     }
-    
+
     @Override
     public void clearCookieStore() {
         cookie_store_.clear();
     }
-    
+
     @Override
     public String getCookieStoreData() {
-        ByteArrayOutputStream cookie_out = new ByteArrayOutputStream();
+        final ByteArrayOutputStream cookie_out = new ByteArrayOutputStream();
         try {
-            ObjectOutputStream oos = new ObjectOutputStream(cookie_out);
+            final ObjectOutputStream oos = new ObjectOutputStream(cookie_out);
             oos.reset();
             oos.writeObject(cookie_store_);
             oos.flush();
             return URLEncoder.encode(cookie_out.toString("ISO8859-1"));
-        }
-        catch (IOException e) {
+        } catch (final IOException e) {
         }
         return "";
     }
-    
+
     @Override
-    public void onHttpTaskFinished(HttpTaskBase task) {
+    public void onHttpTaskFinished(final HttpTaskBase task) {
         executor_.submit(new Runnable() {
             @Override
             public void run() {
@@ -286,31 +276,31 @@ public class HttpTaskAgent implements HttpTaskAgentInterface {
             }
         });
     }
-    
+
     protected BasicCookieStore createCookieStore() {
-        ExternalizableCookieStore cookie_store = new ExternalizableCookieStore();
+        final ExternalizableCookieStore cookie_store = new ExternalizableCookieStore();
         return cookie_store;
     }
-    
+
     static class GzipDecompressingEntity extends HttpEntityWrapper {
         public GzipDecompressingEntity(final HttpEntity entity) {
             super(entity);
         }
-        
+
         @Override
         public InputStream getContent() throws IOException, IllegalStateException {
-            InputStream wrappedin = wrappedEntity.getContent();
+            final InputStream wrappedin = wrappedEntity.getContent();
             return new GZIPInputStream(wrappedin);
         }
-        
+
         @Override
         public long getContentLength() {
             return -1;
         }
     }
-    
-    static private KeyStore addGeoTrustGlobalCACertificateEntry(KeyStore keystore) {
-        String geotrust_certificate = "-----BEGIN CERTIFICATE-----\n"
+
+    static private KeyStore addGeoTrustGlobalCACertificateEntry(final KeyStore keystore) {
+        final String geotrust_certificate = "-----BEGIN CERTIFICATE-----\n"
                 + "MIIDVDCCAjygAwIBAgIDAjRWMA0GCSqGSIb3DQEBBQUAMEIxCzAJBgNVBAYTAlVT\n"
                 + "MRYwFAYDVQQKEw1HZW9UcnVzdCBJbmMuMRswGQYDVQQDExJHZW9UcnVzdCBHbG9i\n"
                 + "YWwgQ0EwHhcNMDIwNTIxMDQwMDAwWhcNMjIwNTIxMDQwMDAwWjBCMQswCQYDVQQG\n"
@@ -329,7 +319,7 @@ public class HttpTaskAgent implements HttpTaskAgentInterface {
                 + "PseKUgzbFbS9bZvlxrFUaKnjaZC2mqUPuLk/IH2uSrW4nOQdtqvmlKXBx4Ot2/Un\n"
                 + "hw4EbNX/3aBd7YdStysVAq45pmp06drE57xNNB6pXE0zX5IJL4hmXXeXxx12E6nV\n"
                 + "5fEWCRE11azbJHFwLJhWC9kXtNHjUStedejV0NxPNO3CBWaAocvmMw==\n" + "-----END CERTIFICATE-----";
-        String geotrust_alias = "GeoTrust Global CA";
+        final String geotrust_alias = "GeoTrust Global CA";
         addCertificateEntry(keystore, geotrust_alias, geotrust_certificate);
         return keystore;
     }

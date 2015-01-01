@@ -1,6 +1,7 @@
 package info.narazaki.android.lib.text.span;
 
 import java.util.ArrayList;
+
 import android.text.Spannable;
 import android.text.Spanned;
 
@@ -11,43 +12,43 @@ import android.text.Spanned;
  */
 public class SpanifyAdapter {
     public static final String TAG = "SpanifyAdapter";
-    
-    private ArrayList<SpanifyFilter> filter_list_;
-    private Spannable.Factory spannable_factory_;
-    
+
+    private final ArrayList<SpanifyFilter> filter_list_;
+    private final Spannable.Factory spannable_factory_;
+
     public SpanifyAdapter() {
         filter_list_ = new ArrayList<SpanifyFilter>();
         spannable_factory_ = Spannable.Factory.getInstance();
     }
-    
-    final public void addFilter(SpanifyFilter filter) {
+
+    final public void addFilter(final SpanifyFilter filter) {
         filter_list_.add(filter);
     }
-    
-    final public Spannable apply(CharSequence text) {
+
+    final public Spannable apply(final CharSequence text) {
         return apply(text, null);
     }
-    
-    final public Spannable apply(CharSequence text, Object arg) {
-        Spannable spannable = spannable_factory_.newSpannable(text);
+
+    final public Spannable apply(final CharSequence text, final Object arg) {
+        final Spannable spannable = spannable_factory_.newSpannable(text);
         apply(spannable, arg);
         return spannable;
     }
-    
-    final public void apply(Spannable text) {
+
+    final public void apply(final Spannable text) {
         apply(text, null);
     }
-    
-    final public void apply(Spannable text, Object arg) {
-        for (SpanifyFilter filter : filter_list_) {
-            SpanSpec[] spec_list = filter.gather(text, arg);
+
+    final public void apply(final Spannable text, final Object arg) {
+        for (final SpanifyFilter filter : filter_list_) {
+            final SpanSpec[] spec_list = filter.gather(text, arg);
             if (spec_list != null) {
-                for (SpanSpec spec : spec_list) {
+                for (final SpanSpec spec : spec_list) {
                     text.setSpan(filter.getSpan(spec.text_, spec, arg), spec.start_, spec.end_,
                             Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
                 }
             }
         }
     }
-    
+
 }

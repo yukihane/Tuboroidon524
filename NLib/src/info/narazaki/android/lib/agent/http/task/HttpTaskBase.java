@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.ProtocolException;
 import org.apache.http.auth.AuthScope;
@@ -26,53 +27,53 @@ import org.apache.http.protocol.HttpContext;
 
 public abstract class HttpTaskBase implements Runnable {
     static private final String TAG = "HttpTaskBase";
-    
+
     private String request_uri_;
     private HttpTaskAgentInterface agent_;
-    
+
     private AbstractHttpClient http_client_;
-    private RedirectHandler redirect_handler_;
+    private final RedirectHandler redirect_handler_;
     private volatile String real_request_uri_;
-    
+
     protected int buf_size_;
-    
+
     private HttpRequestBase req_;
-    
+
     abstract protected boolean sendRequest(String request_uri) throws InterruptedException, ClientProtocolException,
-            IOException;
-    
+    IOException;
+
     abstract protected void onConnectionError(boolean connection_failed);
-    
+
     abstract protected void onInterrupted();
-    
+
     public String getRequestUri() {
         return request_uri_;
     }
-    
+
     public String getRealRequestUri() {
         return real_request_uri_;
     }
-    
-    protected void setRequestUri(String request_uri) {
+
+    protected void setRequestUri(final String request_uri) {
         request_uri_ = request_uri;
         real_request_uri_ = request_uri;
     }
-    
+
     protected String getTextEncode() {
         return "UTF-8";
     }
-    
+
     private class LocalRedirectHandler extends DefaultRedirectHandler {
         @Override
-        public URI getLocationURI(HttpResponse response, HttpContext context) throws ProtocolException {
+        public URI getLocationURI(final HttpResponse response, final HttpContext context) throws ProtocolException {
             if (response.containsHeader("Location")) {
                 real_request_uri_ = response.getFirstHeader("Location").getValue();
             }
             return super.getLocationURI(response, context);
         }
     }
-    
-    public HttpTaskBase(String request_uri) {
+
+    public HttpTaskBase(final String request_uri) {
         request_uri_ = request_uri;
         real_request_uri_ = request_uri;
         agent_ = null;
@@ -81,116 +82,113 @@ public abstract class HttpTaskBase implements Runnable {
         buf_size_ = MigrationConst.getDefaultBufSize(); // TODO
         redirect_handler_ = new LocalRedirectHandler();
     }
-    
-    public void setBufSize(int buf_size) {
+
+    public void setBufSize(final int buf_size) {
         buf_size_ = buf_size;
     }
-    
-    public final void setHttpClient(HttpTaskAgentInterface agent, AbstractHttpClient http_client) {
+
+    public final void setHttpClient(final HttpTaskAgentInterface agent, final AbstractHttpClient http_client) {
         agent_ = agent;
         http_client_ = http_client;
     }
-    
+
     protected void finish() {
-        if (agent_ != null) agent_.onHttpTaskFinished(this);
+        if (agent_ != null)
+            agent_.onHttpTaskFinished(this);
         agent_ = null;
         http_client_ = null;
     }
-    
+
     public final void abort() {
         if (req_ != null) {
             req_.abort();
             req_ = null;
         }
     }
-    
+
     @Override
     public final void run() {
         boolean connection_failed = false;
         try {
             execRequests();
             return;
-        }
-        catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             e.printStackTrace();
             onInterrupted();
             finish();
             return;
-        }
-        catch (ClientProtocolException e) {
+        } catch (final ClientProtocolException e) {
             e.printStackTrace();
             connection_failed = true;
-        }
-        catch (IOException e) {
+        } catch (final IOException e) {
             e.printStackTrace();
             connection_failed = true;
-        }
-        catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
-        
+
         onConnectionError(connection_failed);
         finish();
     }
-    
+
     protected final void execRequests() throws ClientProtocolException, InterruptedException, IOException {
         if (sendRequest(request_uri_)) {
             finish();
         }
     }
-    
-    public static String urlencode(String orig, String encode) {
+
+    public static String urlencode(final String orig, final String encode) {
         try {
             return URLEncoder.encode(orig, encode);
-        }
-        catch (UnsupportedEncodingException e) {
+        } catch (final UnsupportedEncodingException e) {
         }
         return orig;
     }
-    
-    protected final String urlencode(String orig) {
+
+    protected final String urlencode(final String orig) {
         return urlencode(orig, getTextEncode());
     }
-    
-    public void sendTo(HttpTaskAgentInterface http_agent) {
+
+    public void sendTo(final HttpTaskAgentInterface http_agent) {
         http_agent.send(this);
     }
-    
-    public HttpGet factoryGetRequest(String request_uri) {
-        URI uri = URI.create(request_uri);
-        HttpGet req = new HttpGet(uri);
-        
+
+    public HttpGet factoryGetRequest(final String request_uri) {
+        final URI uri = URI.create(request_uri);
+        final HttpGet req = new HttpGet(uri);
+
         setCredentials(req, uri);
-        
+
         return req;
     }
-    
-    public HttpPost factoryPostRequest(String request_uri) {
-        URI uri = URI.create(request_uri);
-        HttpPost req = new HttpPost(uri);
-        
+
+    public HttpPost factoryPostRequest(final String request_uri) {
+        final URI uri = URI.create(request_uri);
+        final HttpPost req = new HttpPost(uri);
+
         setCredentials(req, uri);
-        
+
         return req;
     }
-    
-    protected HttpResponse executeRequest(HttpRequestBase req) throws ClientProtocolException, IOException {
-        if (!agent_.isOnline()) throw new IOException();
+
+    protected HttpResponse executeRequest(final HttpRequestBase req) throws ClientProtocolException, IOException {
+        if (!agent_.isOnline())
+            throw new IOException();
         http_client_.setRedirectHandler(redirect_handler_);
         return http_client_.execute(req);
     }
-    
-    public void setCredentials(HttpRequestBase req, URI uri) {
+
+    public void setCredentials(final HttpRequestBase req, final URI uri) {
         boolean no_auth = true;
         if (uri.getUserInfo() != null) {
-            String user_info = uri.getUserInfo();
-            String[] list = ListUtils.split(":", user_info);
+            final String user_info = uri.getUserInfo();
+            final String[] list = ListUtils.split(":", user_info);
             if (list.length == 2) {
-                HttpParams param = req.getParams();
+                final HttpParams param = req.getParams();
                 param.getBooleanParameter(ClientPNames.HANDLE_AUTHENTICATION, true);
                 req.setParams(param);
-                
-                Credentials cred = new UsernamePasswordCredentials(list[0], list[1]);
+
+                final Credentials cred = new UsernamePasswordCredentials(list[0], list[1]);
                 http_client_.getCredentialsProvider().setCredentials(new AuthScope(uri.getHost(), uri.getPort()), cred);
                 no_auth = false;
             }

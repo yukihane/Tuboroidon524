@@ -29,110 +29,110 @@ import android.widget.TextView.BufferType;
 
 abstract public class ThreadData implements NListAdapterDataInterface {
     private static final String TAG = "ThreadData";
-    
+
     public static class KEY {
         // //////////////////////////////////////////////////
         // スレッドリスト
         // //////////////////////////////////////////////////
         public static final String TABLE = "threads";
-        
+
         public static final String PID = "_id";
-        
+
         public static final String ID = "id";
         public static final String NAME = "name";
-        
+
         // 板情報
         public static final String BOARD_NAME = "board_name";
         public static final String BOARD_SERVER = "board_server";
         public static final String BOARD_TAG = "board_tag";
-        
+
         // オンラインの(板一覧で見た)レス数
         public static final String ONLINE_COUNT = "online_count";
-        
+
         // ローカルに保持しているレス数
         public static final String CACHE_COUNT = "cache_count";
         // ローカルに保持している(2chオリジナルエンコードでの)サイズ
         public static final String CACHE_SIZE = "cache_size";
         public static final String CACHE_ETAG = "cache_etag";
         public static final String CACHE_TIMESTAMP = "cache_timestamp";
-        
+
         // 既読のレス数
         public static final String RECENT_TIME = "recent_time";
         public static final String READ_COUNT = "read_count";
         public static final String RECENT_POS = "recent_pos";
         public static final String RECENT_POS_Y = "recent_pos_y";
-        
+
         public static final String IS_FAVORITE = "is_favorite";
         public static final String IS_ALIVE = "is_alive";
         public static final String IS_DROPPED = "is_dropped";
-        
+
         public static final String ON_EXT_STORAGE = "on_ext_storage";
-        
+
         public static final String EDIT_DRAFT = "edit_draft";
         public static final String RECENT_POST_TIME = "recent_post_time";
-        
+
         public static final String[] FIELD_LIST = new String[] { //
-        PID, //
-                ID, NAME, //
-                BOARD_NAME, BOARD_SERVER, BOARD_TAG, //
-                ONLINE_COUNT, //
-                CACHE_COUNT, CACHE_SIZE, RECENT_TIME, CACHE_ETAG, CACHE_TIMESTAMP, //
-                READ_COUNT, RECENT_POS, RECENT_POS_Y, //
-                IS_FAVORITE, //
-                IS_ALIVE, //
-                IS_DROPPED, //
-                ON_EXT_STORAGE, //
-                EDIT_DRAFT, //
-                RECENT_POST_TIME //
+            PID, //
+            ID, NAME, //
+            BOARD_NAME, BOARD_SERVER, BOARD_TAG, //
+            ONLINE_COUNT, //
+            CACHE_COUNT, CACHE_SIZE, RECENT_TIME, CACHE_ETAG, CACHE_TIMESTAMP, //
+            READ_COUNT, RECENT_POS, RECENT_POS_Y, //
+            IS_FAVORITE, //
+            IS_ALIVE, //
+            IS_DROPPED, //
+            ON_EXT_STORAGE, //
+            EDIT_DRAFT, //
+            RECENT_POST_TIME //
         };
-        
+
         public static final int RECENT_ORDER_READ = 0;
         public static final int RECENT_ORDER_WRITE = 1;
     }
-    
+
     public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-    
+
     public int sort_order_;
     public long thread_pid_;
     public long thread_id_;
-    
+
     public String thread_name_;
-    
+
     public String board_name_;
-    
+
     public BoardIdentifier server_def_;
-    
+
     public int online_count_;
     public int online_speed_x10_;
-    
+
     public int new_online_count_;
-    
+
     public int cache_count_;
     public int cache_size_;
     public String cache_etag_;
     public String cache_timestamp_;
-    
+
     public int working_cache_count_;
     public int working_cache_size_;
     public String working_cache_etag_;
     public String working_cache_timestamp_;
-    
+
     public long recent_time_;
     public int read_count_;
     public long recent_pos_;
     public int recent_pos_y_;
-    
+
     public boolean is_favorite_;
     public boolean is_dropped_;
     public boolean on_ext_storage_;
-    
+
     public String edit_draft_;
     public long recent_post_time_;
-    
+
     /**
      * Copy Constructor
      */
-    public ThreadData(ThreadData threadData) {
+    public ThreadData(final ThreadData threadData) {
         sort_order_ = threadData.sort_order_;
         thread_pid_ = threadData.thread_pid_;
         thread_id_ = threadData.thread_id_;
@@ -160,186 +160,187 @@ abstract public class ThreadData implements NListAdapterDataInterface {
         edit_draft_ = threadData.edit_draft_;
         recent_post_time_ = threadData.recent_post_time_;
     }
-    
-    protected ThreadData(BoardData board_data, int sort_order, long thread_id, String thread_name, int online_count,
-            int online_speed_x10) {
+
+    protected ThreadData(final BoardData board_data, final int sort_order, final long thread_id, final String thread_name, final int online_count,
+            final int online_speed_x10) {
         initData(board_data.board_name_, board_data.server_def_, sort_order, thread_id, thread_name, online_count,
                 online_speed_x10);
     }
-    
-    protected ThreadData(String board_name, BoardIdentifier server_def, int sort_order, long thread_id,
-            String thread_name, int online_count, int online_speed_x10) {
+
+    protected ThreadData(final String board_name, final BoardIdentifier server_def, final int sort_order, final long thread_id,
+            final String thread_name, final int online_count, final int online_speed_x10) {
         initData(board_name, server_def, sort_order, thread_id, thread_name, online_count, online_speed_x10);
     }
-    
-    protected void initData(String board_name, BoardIdentifier server_def, int sort_order, long thread_id,
-            String thread_name, int online_count, int online_speed_x10) {
+
+    protected void initData(final String board_name, final BoardIdentifier server_def, final int sort_order, final long thread_id,
+            final String thread_name, final int online_count, final int online_speed_x10) {
         sort_order_ = sort_order;
-        
+
         board_name_ = board_name;
         server_def_ = server_def;
-        
+
         thread_id_ = thread_id;
         thread_name_ = thread_name;
-        
+
         online_count_ = online_count;
         online_speed_x10_ = online_speed_x10;
-        
+
         new_online_count_ = 0;
-        
+
         cache_count_ = 0;
-        
+
         cache_size_ = 0;
         recent_time_ = 0;
         cache_etag_ = "";
         cache_timestamp_ = "";
-        
+
         working_cache_count_ = 0;
         working_cache_size_ = 0;
         working_cache_etag_ = "";
         working_cache_timestamp_ = "";
-        
+
         read_count_ = 0;
         recent_pos_ = 0;
         recent_pos_y_ = 0;
-        
+
         is_favorite_ = false;
         is_dropped_ = false;
         on_ext_storage_ = false;
-        
+
         edit_draft_ = "";
-        
+
         recent_post_time_ = 0;
     }
-    
-    protected ThreadData(Cursor cursor) {
+
+    protected ThreadData(final Cursor cursor) {
         sort_order_ = 0;
-        
+
         board_name_ = cursor.getString(cursor.getColumnIndex(KEY.BOARD_NAME));
-        String board_server = cursor.getString(cursor.getColumnIndex(KEY.BOARD_SERVER));
-        String board_tag = cursor.getString(cursor.getColumnIndex(KEY.BOARD_TAG));
+        final String board_server = cursor.getString(cursor.getColumnIndex(KEY.BOARD_SERVER));
+        final String board_tag = cursor.getString(cursor.getColumnIndex(KEY.BOARD_TAG));
         server_def_ = new BoardIdentifier(board_server, board_tag, 0, 0);
-        
+
         thread_pid_ = cursor.getLong(cursor.getColumnIndex(KEY.PID));
         thread_id_ = cursor.getLong(cursor.getColumnIndex(KEY.ID));
         thread_name_ = cursor.getString(cursor.getColumnIndex(KEY.NAME));
-        
+
         online_count_ = cursor.getInt(cursor.getColumnIndex(KEY.ONLINE_COUNT));
         online_speed_x10_ = 0;
-        
+
         new_online_count_ = 0;
-        
+
         cache_count_ = cursor.getInt(cursor.getColumnIndex(KEY.CACHE_COUNT));
-        
+
         recent_time_ = cursor.getLong(cursor.getColumnIndex(KEY.RECENT_TIME));
-        
+
         cache_size_ = cursor.getInt(cursor.getColumnIndex(KEY.CACHE_SIZE));
         cache_etag_ = cursor.getString(cursor.getColumnIndex(KEY.CACHE_ETAG));
         cache_timestamp_ = cursor.getString(cursor.getColumnIndex(KEY.CACHE_TIMESTAMP));
-        
+
         working_cache_count_ = cache_count_;
         working_cache_size_ = cache_size_;
         working_cache_etag_ = cache_etag_;
         working_cache_timestamp_ = cache_timestamp_;
-        
+
         read_count_ = cursor.getInt(cursor.getColumnIndex(KEY.READ_COUNT));
         recent_pos_ = cursor.getInt(cursor.getColumnIndex(KEY.RECENT_POS));
         recent_pos_y_ = cursor.getInt(cursor.getColumnIndex(KEY.RECENT_POS_Y));
-        
+
         is_favorite_ = cursor.getInt(cursor.getColumnIndex(KEY.IS_FAVORITE)) != 0;
         is_dropped_ = cursor.getInt(cursor.getColumnIndex(KEY.IS_DROPPED)) != 0;
         on_ext_storage_ = cursor.getInt(cursor.getColumnIndex(KEY.ON_EXT_STORAGE)) != 0;
-        
+
         edit_draft_ = cursor.getString(cursor.getColumnIndex(KEY.EDIT_DRAFT));
         recent_post_time_ = cursor.getLong(cursor.getColumnIndex(KEY.RECENT_POST_TIME));
     }
-    
-    public void up2date(ThreadData online_data) {
+
+    public void up2date(final ThreadData online_data) {
         is_dropped_ = false;
-        
+
         sort_order_ = online_data.sort_order_;
-        
+
         board_name_ = online_data.board_name_;
         server_def_ = online_data.server_def_;
-        
+
         thread_name_ = online_data.thread_name_;
-        
+
         new_online_count_ = online_data.online_count_ - online_count_;
-        
+
         online_count_ = online_data.online_count_;
         online_speed_x10_ = online_data.online_speed_x10_;
     }
-    
+
     public ContentValues getContentValues() {
-        ContentValues values = new ContentValues();
-        
+        final ContentValues values = new ContentValues();
+
         values.put(KEY.BOARD_NAME, board_name_);
         values.put(KEY.BOARD_SERVER, server_def_.board_server_);
         values.put(KEY.BOARD_TAG, server_def_.board_tag_);
-        
+
         values.put(KEY.ID, thread_id_);
         values.put(KEY.NAME, thread_name_);
-        
+
         // values.put(KEY.IS_FAVORITE, is_favorite_ ? 1 : 0);
-        
+
         values.put(KEY.IS_DROPPED, is_dropped_ ? 1 : 0);
         values.put(KEY.ON_EXT_STORAGE, on_ext_storage_ ? 1 : 0);
-        
+
         values.put(KEY.ONLINE_COUNT, online_count_);
-        
+
         values.put(KEY.CACHE_COUNT, cache_count_);
-        
+
         values.put(KEY.CACHE_SIZE, cache_size_);
         values.put(KEY.CACHE_ETAG, cache_etag_);
         values.put(KEY.CACHE_TIMESTAMP, cache_timestamp_);
-        
+
         values.put(KEY.RECENT_TIME, recent_time_);
-        
+
         values.put(KEY.READ_COUNT, read_count_);
         // values.put(KEY.RECENT_POS, recent_pos_);
         // values.put(KEY.RECENT_POS_Y, recent_pos_y_);
-        
+
         return values;
     }
-    
+
     public ContentValues getCacheTagDataContentValues() {
-        ContentValues values = new ContentValues();
-        
+        final ContentValues values = new ContentValues();
+
         values.put(KEY.IS_DROPPED, is_dropped_ ? 1 : 0);
         values.put(KEY.ON_EXT_STORAGE, on_ext_storage_ ? 1 : 0);
-        
+
         values.put(KEY.ONLINE_COUNT, online_count_);
-        
+
         values.put(KEY.CACHE_COUNT, cache_count_);
-        
+
         values.put(KEY.CACHE_SIZE, cache_size_);
         values.put(KEY.CACHE_ETAG, cache_etag_);
         values.put(KEY.CACHE_TIMESTAMP, cache_timestamp_);
-        
+
         values.put(KEY.RECENT_TIME, recent_time_);
-        
+
         return values;
     }
-    
+
     // //////////////////////////////////////////////////
     // 掲示板サイト特有の処理
     // //////////////////////////////////////////////////
     @Override
     abstract public ThreadData clone();
-    
-    public final File getLocalDatFile(Context context) {
-        String filename = "/" + server_def_.board_server_ + "/" + server_def_.board_tag_ + "/" + thread_id_ + ".dat";
-        
+
+    public final File getLocalDatFile(final Context context) {
+        final String filename = "/" + server_def_.board_server_ + "/" + server_def_.board_tag_ + "/" + thread_id_ + ".dat";
+
         if (on_ext_storage_) {
-            File file = TuboroidApplication.getExternalStoragePath(context, filename);
-            if (file != null) return file;
+            final File file = TuboroidApplication.getExternalStoragePath(context, filename);
+            if (file != null)
+                return file;
         }
         return TuboroidApplication.getInternalStoragePath(context, filename);
     }
-    
-    public final File getLocalAttachFileDir(Context context) {
-        String dirname = "/" + server_def_.board_server_ + "/" + server_def_.board_tag_ + "/" + thread_id_ + ".attach";
-        
+
+    public final File getLocalAttachFileDir(final Context context) {
+        final String dirname = "/" + server_def_.board_server_ + "/" + server_def_.board_tag_ + "/" + thread_id_ + ".attach";
+
         File file = null;
         if (on_ext_storage_) {
             file = TuboroidApplication.getExternalStoragePath(context, dirname);
@@ -349,200 +350,194 @@ abstract public class ThreadData implements NListAdapterDataInterface {
         }
         return file;
     }
-    
-    public final File getLocalAttachFile(Context context, String filename) {
-        File dir = getLocalAttachFileDir(context);
+
+    public final File getLocalAttachFile(final Context context, final String filename) {
+        final File dir = getLocalAttachFileDir(context);
         dir.mkdirs();
         return new File(dir, filename);
     }
-    
-    static public ThreadData factory(Uri uri) {
-        String board_server = uri.getHost();
+
+    static public ThreadData factory(final Uri uri) {
+        final String board_server = uri.getHost();
         if (BoardData2ch.is2ch(board_server)) {
             return ThreadData2ch.factory(uri);
-        }
-        else if (BoardDataShitaraba.isShitaraba(board_server)) {
+        } else if (BoardDataShitaraba.isShitaraba(board_server)) {
             return ThreadDataShitaraba.factory(uri);
-        }
-        else if (BoardDataMachi.isMachiBBS(board_server)) {
+        } else if (BoardDataMachi.isMachiBBS(board_server)) {
             return ThreadDataMachi.factory(uri);
         }
         return ThreadData2chCompat.factory(uri);
     }
-    
-    static public ThreadData factory(Cursor cursor) {
-        String board_server = cursor.getString(cursor.getColumnIndex(KEY.BOARD_SERVER));
+
+    static public ThreadData factory(final Cursor cursor) {
+        final String board_server = cursor.getString(cursor.getColumnIndex(KEY.BOARD_SERVER));
         if (BoardData2ch.is2ch(board_server)) {
             return new ThreadData2ch(cursor);
-        }
-        else if (BoardDataShitaraba.isShitaraba(board_server)) {
+        } else if (BoardDataShitaraba.isShitaraba(board_server)) {
             return new ThreadDataShitaraba(cursor);
-        }
-        else if (BoardDataMachi.isMachiBBS(board_server)) {
+        } else if (BoardDataMachi.isMachiBBS(board_server)) {
             return new ThreadDataMachi(cursor);
         }
         return new ThreadData2chCompat(cursor);
     }
-    
-    static public boolean isThreadUri(String uri_string) {
-        Uri uri = Uri.parse(uri_string);
-        String board_server = uri.getHost();
-        if (board_server == null) return false;
+
+    static public boolean isThreadUri(final String uri_string) {
+        final Uri uri = Uri.parse(uri_string);
+        final String board_server = uri.getHost();
+        if (board_server == null)
+            return false;
         if (ThreadData2ch.is2ch(uri)) {
             return true;
-        }
-        else if (ThreadDataShitaraba.isShitaraba(uri)) {
+        } else if (ThreadDataShitaraba.isShitaraba(uri)) {
             return true;
-        }
-        else if (ThreadDataMachi.isMachiBBS(uri)) {
+        } else if (ThreadDataMachi.isMachiBBS(uri)) {
             return true;
-        }
-        else if (ThreadData2chCompat.is2chCompat(uri)) {
+        } else if (ThreadData2chCompat.is2chCompat(uri)) {
             return true;
         }
         return false;
     }
-    
+
     abstract public HttpGetThreadEntryListTask factoryGetThreadHttpGetThreadEntryListTask(String session_key,
             HttpGetThreadEntryListTask.Callback callback);
-    
+
     abstract public PostEntryTask factoryPostEntryTask(TuboroidAgentManager agent_manager);
-    
+
     abstract public ThreadEntryListTask factoryThreadEntryListTask(TuboroidAgentManager agent_manager);
-    
+
     abstract public String getDatFileURI();
-    
+
     abstract public String getSpecialDatFileURI(String session_key);
-    
+
     abstract public String getBoardSubjectsURI();
-    
+
     abstract public String getBoardIndexURI();
-    
+
     abstract public String getThreadURI();
-    
+
     abstract public String getPostEntryURI();
-    
+
     abstract public String getPostEntryRefererURI();
-    
+
     abstract public int getJumpEntryNum(Uri uri);
-    
+
     abstract public boolean isFilled();
-    
+
     abstract public boolean canRetryWithoutMaru();
-        
+
     abstract public boolean canRetryWithMaru(AccountPref account_pref);
-    
+
     abstract public boolean canSpecialPost(AccountPref account_pref);
-    
-    public boolean isSameBoard(BoardData target) {
+
+    public boolean isSameBoard(final BoardData target) {
         return server_def_.equals(target.server_def_);
     }
-    
-    public boolean isSameBoard(ThreadData target) {
+
+    public boolean isSameBoard(final ThreadData target) {
         return server_def_.equals(target.server_def_);
     }
-    
+
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (o instanceof ThreadData) {
-            ThreadData target = (ThreadData) o;
-            if (isSameBoard(target) && thread_id_ == target.thread_id_) return true;
+            final ThreadData target = (ThreadData) o;
+            if (isSameBoard(target) && thread_id_ == target.thread_id_)
+                return true;
             return false;
         }
-        
+
         return super.equals(o);
     }
-    
+
     @Override
     public int hashCode() {
         return (int) (server_def_.hashCode() + thread_id_);
     }
-    
+
     @Override
     public long getId() {
         return thread_id_;
     }
-    
+
     public void initWorkingCacheData() {
         working_cache_count_ = cache_count_;
         working_cache_size_ = cache_size_;
         working_cache_etag_ = cache_etag_;
         working_cache_timestamp_ = cache_timestamp_;
     }
-    
+
     public void flushWorkingCacheData() {
         cache_count_ = working_cache_count_;
         cache_size_ = working_cache_size_;
         cache_etag_ = working_cache_etag_;
         cache_timestamp_ = working_cache_timestamp_;
     }
-    
+
     public int getResCount() {
         return (online_count_ == 0 && cache_count_ != 0) ? cache_count_ : online_count_;
     }
-    
+
     public boolean hasUnread() {
         return getResCount() > read_count_;
     }
-    
-    public static View initView(View view, TuboroidApplication.ViewConfig view_config) {
-    	
-    	int smallFontSize = (int)(view_config.thread_list_base_ * 0.8);
-        TextView thread_id_view = (TextView) view.findViewById(R.id.thread_list_timestamp);
+
+    public static View initView(final View view, final TuboroidApplication.ViewConfig view_config) {
+
+        final int smallFontSize = (int) (view_config.thread_list_base_ * 0.8);
+        final TextView thread_id_view = (TextView) view.findViewById(R.id.thread_list_timestamp);
         thread_id_view.setTextSize(smallFontSize);
-        
-        TextView thread_name_view = (TextView) view.findViewById(R.id.thread_list_name);
+
+        final TextView thread_name_view = (TextView) view.findViewById(R.id.thread_list_name);
         thread_name_view.setTextSize(view_config.thread_list_base_);
-        
-        //thread_name_view.setMinLines(2);
-        
-        TextView online_count_view = (TextView) view.findViewById(R.id.thread_list_online_count);
+
+        // thread_name_view.setMinLines(2);
+
+        final TextView online_count_view = (TextView) view.findViewById(R.id.thread_list_online_count);
         online_count_view.setTextSize(smallFontSize);
-        
+
         return view;
     }
-    
-    public View setView(View view, TuboroidApplication.ViewConfig view_config, ViewStyle style) {
-        LinearLayout row_view = (LinearLayout) view;
-        
+
+    public View setView(final View view, final TuboroidApplication.ViewConfig view_config, final ViewStyle style) {
+        final LinearLayout row_view = (LinearLayout) view;
+
         // thread id(スレが立った時間)
-        Date date = new Date(thread_id_ * 1000);
-        TextView thread_id_view = (TextView) row_view.findViewById(R.id.thread_list_timestamp);
+        final Date date = new Date(thread_id_ * 1000);
+        final TextView thread_id_view = (TextView) row_view.findViewById(R.id.thread_list_timestamp);
         thread_id_view.setText(DATE_FORMAT.format(date));
-        
+
         // スレのタイトル
-        TextView thread_name_view = (TextView) row_view.findViewById(R.id.thread_list_name);
+        final TextView thread_name_view = (TextView) row_view.findViewById(R.id.thread_list_name);
         thread_name_view.setText(thread_name_);
-        
+
         // スレのレス総数
-        StringBuilder buf = new StringBuilder(20);
-        TextView online_count_view = (TextView) row_view.findViewById(R.id.thread_list_online_count);
+        final StringBuilder buf = new StringBuilder(20);
+        final TextView online_count_view = (TextView) row_view.findViewById(R.id.thread_list_online_count);
         final String res_count_string = String.valueOf(getResCount());
         final int res_count_length = res_count_string.length() + 1;
         buf.append(res_count_string);
         buf.append(' ');
-        
+
         // 新着レス数
         int read_count_length = 0;
         if (read_count_ != 0) {
-        	int res_count = getResCount();
+            final int res_count = getResCount();
             if (res_count > read_count_) {
-            	final String read_count_string = String.valueOf(res_count - read_count_);
+                final String read_count_string = String.valueOf(res_count - read_count_);
                 buf.append('(');
                 buf.append(read_count_string);
                 buf.append(") ");
                 read_count_length = 3 + read_count_string.length();
-            }
-            else {
-            	read_count_length = 4;
+            } else {
+                read_count_length = 4;
                 buf.append("(0) ");
             }
         }
-        
+
         // 勢い
         int online_speed_length = 0;
         if (online_speed_x10_ > 0) {
-        	final String online_speed_string = String.valueOf((float) online_speed_x10_ / 10);
+            final String online_speed_string = String.valueOf((float) online_speed_x10_ / 10);
             buf.append('(');
             buf.append(online_speed_string);
             buf.append("/day)");
@@ -550,7 +545,7 @@ abstract public class ThreadData implements NListAdapterDataInterface {
         }
 
         // SPAN適用
-        SpannableString spannable = new SpannableString(buf);
+        final SpannableString spannable = new SpannableString(buf);
         spannable.setSpan(style.thread_list_online_count_span_, 0, res_count_length, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
         if (read_count_length > 0) {
             spannable.setSpan(style.thread_list_online_count_diff_span_, res_count_length, res_count_length
@@ -560,100 +555,108 @@ abstract public class ThreadData implements NListAdapterDataInterface {
             spannable.setSpan(style.thread_list_online_count_speed_span_, res_count_length + read_count_length,
                     res_count_length + read_count_length + online_speed_length, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
         }
-        
+
         online_count_view.setText(spannable, BufferType.SPANNABLE);
         return view;
     }
-    
+
     static public class ViewStyle {
         public TextAppearanceSpan thread_list_online_count_span_;
         public TextAppearanceSpan thread_list_online_count_diff_span_;
         public TextAppearanceSpan thread_list_online_count_speed_span_;
-        
-        public ViewStyle(Activity activity) {
+
+        public ViewStyle(final Activity activity) {
             thread_list_online_count_span_ = new TextAppearanceSpan(activity, R.style.ThreadListResCount);
             thread_list_online_count_diff_span_ = new TextAppearanceSpan(activity, R.style.ThreadListResCountDiff);
             thread_list_online_count_speed_span_ = new TextAppearanceSpan(activity, R.style.ThreadListResCountSpeed);
         }
     }
-    
+
     public static class Order {
         public static final int ORDER_DEFAULT = 0;
         public static final int ORDER_SPEED = 1;
         public static final int ORDER_NEW = 2;
         public static final int ORDER_CACHED = 3;
-        
+
         static private class BaseComparator implements Comparator<ThreadData> {
             @Override
-            public int compare(ThreadData object1, ThreadData object2) {
+            public int compare(final ThreadData object1, final ThreadData object2) {
                 if (object1.is_dropped_ != object2.is_dropped_) {
                     return object1.is_dropped_ ? 1 : -1;
                 }
                 return 0;
             }
-            
-            protected int defaultCompare(ThreadData object1, ThreadData object2) {
-                if (object1.sort_order_ == object2.sort_order_) return 0;
-                if (object1.sort_order_ == 0) return 1;
-                if (object2.sort_order_ == 0) return -1;
+
+            protected int defaultCompare(final ThreadData object1, final ThreadData object2) {
+                if (object1.sort_order_ == object2.sort_order_)
+                    return 0;
+                if (object1.sort_order_ == 0)
+                    return 1;
+                if (object2.sort_order_ == 0)
+                    return -1;
                 return object1.sort_order_ - object2.sort_order_;
             }
         }
-        
+
         static private class DefaultComparator extends BaseComparator {
             @Override
-            public int compare(ThreadData object1, ThreadData object2) {
-                int base = super.compare(object1, object2);
-                if (base != 0) return base;
+            public int compare(final ThreadData object1, final ThreadData object2) {
+                final int base = super.compare(object1, object2);
+                if (base != 0)
+                    return base;
                 return defaultCompare(object1, object2);
             }
         }
-        
+
         private static final Comparator<ThreadData> COMP_DEFAULT = new DefaultComparator();
-        
+
         private static final Comparator<ThreadData> COMP_SPEED = new BaseComparator() {
             @Override
-            public int compare(ThreadData object1, ThreadData object2) {
-                int base = super.compare(object1, object2);
-                if (base != 0) return base;
+            public int compare(final ThreadData object1, final ThreadData object2) {
+                final int base = super.compare(object1, object2);
+                if (base != 0)
+                    return base;
                 return object2.online_speed_x10_ - object1.online_speed_x10_;
             }
         };
-        
+
         private static final Comparator<ThreadData> COMP_NEW = new BaseComparator() {
             @Override
-            public int compare(ThreadData object1, ThreadData object2) {
-                int base = super.compare(object1, object2);
-                if (base != 0) return base;
+            public int compare(final ThreadData object1, final ThreadData object2) {
+                final int base = super.compare(object1, object2);
+                if (base != 0)
+                    return base;
                 return (int) (object2.thread_id_ - object1.thread_id_);
             }
         };
-        
+
         private static final Comparator<ThreadData> COMP_CACHED = new BaseComparator() {
             @Override
-            public int compare(ThreadData object1, ThreadData object2) {
-                int base = super.compare(object1, object2);
-                if (base != 0) return base;
-                
+            public int compare(final ThreadData object1, final ThreadData object2) {
+                final int base = super.compare(object1, object2);
+                if (base != 0)
+                    return base;
+
                 // 片方だけ既読
                 if ((object1.read_count_ > 0) != (object2.read_count_ > 0)) {
                     return object2.read_count_ - object1.read_count_;
                 }
                 if (object1.read_count_ > 0) {
                     // 両方既読 未読数の多い順
-                    int read_count = (object1.read_count_ - object1.online_count_)
+                    final int read_count = (object1.read_count_ - object1.online_count_)
                             - (object2.read_count_ - object2.online_count_);
-                    if (read_count != 0) return read_count;
-                    
+                    if (read_count != 0)
+                        return read_count;
+
                     // 未読数が同じなら最近読んだ順
                     return (int) (object2.recent_time_ - object1.recent_time_);
                 }
-                
+
                 return defaultCompare(object1, object2);
             }
         };
-        
-        public static Comparator<ThreadData> getComparator(int sort_order) {
+
+        public static Comparator<ThreadData> getComparator(final int sort_order) {
             switch (sort_order) {
             case 1:
                 return COMP_SPEED;
@@ -666,5 +669,5 @@ abstract public class ThreadData implements NListAdapterDataInterface {
             }
         }
     }
-    
+
 }

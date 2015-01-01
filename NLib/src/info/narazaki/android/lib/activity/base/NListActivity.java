@@ -11,88 +11,93 @@ import android.widget.ListView;
 
 public class NListActivity extends ListActivity implements NAbstractListScrollManager.Target {
     private static final String TAG = "NListActivity";
-    private final static int SCROLL_ANIMATION_TIME = 350; 
-    
+    private final static int SCROLL_ANIMATION_TIME = 350;
+
     private boolean on_first_shown_ = true;
     private NAbstractListScrollManager scroll_manager_ = null;
     private ListViewScroller scroller;
     private long prevScrollTime;
-    
+
     public static class PositionData {
         public int position_;
         public int y_;
-        
-        public PositionData(int position, int y) {
+
+        public PositionData(final int position, final int y) {
             super();
             position_ = position;
             y_ = y;
         }
-        
-        public PositionData(PositionData orig) {
+
+        public PositionData(final PositionData orig) {
             super();
             position_ = orig.position_;
             y_ = orig.y_;
         }
-        
+
         @Override
-        public boolean equals(Object o) {
+        public boolean equals(final Object o) {
             if (o instanceof PositionData) {
                 return (position_ == ((PositionData) o).position_) && (y_ == ((PositionData) o).y_);
             }
             return super.equals(o);
         }
     }
-    
+
     private class ListScrollManager extends NAbstractListScrollManager {
-        
-        public ListScrollManager(Target target) {
+
+        public ListScrollManager(final Target target) {
             super(target);
         }
-        
+
         @Override
         protected int getChildTopPos() {
-            ListView view = getListView();
-            if (view == null) return 0;
+            final ListView view = getListView();
+            if (view == null)
+                return 0;
             return view.getChildAt(0).getTop();
         }
-        
+
         @Override
         protected int getFirstVisiblePosition() {
-            ListView view = getListView();
-            if (view == null) return 0;
+            final ListView view = getListView();
+            if (view == null)
+                return 0;
             return view.getFirstVisiblePosition();
         }
-        
+
         @Override
         protected int getListViewHeight() {
-            ListView view = getListView();
-            if (view == null) return 0;
+            final ListView view = getListView();
+            if (view == null)
+                return 0;
             return view.getHeight();
         }
-        
+
         @Override
-        protected boolean postForView(Runnable action) {
-            ListView view = getListView();
-            if (view == null) return false;
+        protected boolean postForView(final Runnable action) {
+            final ListView view = getListView();
+            if (view == null)
+                return false;
             return view.post(action);
         }
-        
+
         @Override
-        protected void setListPosition(int position, Runnable callback) {
+        protected void setListPosition(final int position, final Runnable callback) {
             NListActivity.this.setListPosition(position, callback);
         }
-        
+
         @Override
-        protected void setSelectionFromTop(int position, int y) {
-            ListView view = getListView();
-            if (view == null) return;
+        protected void setSelectionFromTop(final int position, final int y) {
+            final ListView view = getListView();
+            if (view == null)
+                return;
             view.setSelectionFromTop(position, y);
         }
-        
+
     }
-    
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         on_first_shown_ = true;
         scroll_manager_ = new ListScrollManager(this);
         scroll_manager_.onCreate(savedInstanceState);
@@ -100,16 +105,16 @@ public class NListActivity extends ListActivity implements NAbstractListScrollMa
         getListView().setOnScrollListener(scroll_manager_);
         super.onCreate(savedInstanceState);
     }
-    
+
     protected NApplication getNApplication() {
         return (NApplication) getApplication();
     }
-    
+
     @Override
     public int getScrollingAmount() {
         return getNApplication().getScrollingAmount();
     }
-    
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -118,74 +123,80 @@ public class NListActivity extends ListActivity implements NAbstractListScrollMa
         if (on_first_shown_) {
             onFirstResume();
             on_first_shown_ = false;
-        }
-        else {
+        } else {
             onSecondResume();
         }
     }
-    
-    protected void onFirstResume() {}
-    
-    protected void onSecondResume() {}
-    
+
+    protected void onFirstResume() {
+    }
+
+    protected void onSecondResume() {
+    }
+
     @Override
     protected void onPause() {
         scroll_manager_.onPause();
         super.onPause();
     }
-    
+
     @Override
     protected void onDestroy() {
         scroll_manager_.onDestroy();
         getNApplication().onActivityDestroy(this);
         super.onDestroy();
     }
-    
+
     public void redrawListView() {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                ListAdapter adapter = getListAdapter();
-                if (adapter == null) return;
-                
+                final ListAdapter adapter = getListAdapter();
+                if (adapter == null)
+                    return;
+
                 if (adapter instanceof BaseAdapter) {
-                    BaseAdapter base_adapter = (BaseAdapter) adapter;
+                    final BaseAdapter base_adapter = (BaseAdapter) adapter;
                     base_adapter.notifyDataSetChanged();
                 }
             }
         });
     }
-    
+
     public PositionData getCurrentPosition() {
-        ListView view = getListView();
-        if (view == null) return new PositionData(0, 0);
-        
-        int pos = view.getFirstVisiblePosition();
-        View top_view = getListView().getChildAt(0);
-        int y = top_view != null ? top_view.getTop() : 0;
+        final ListView view = getListView();
+        if (view == null)
+            return new PositionData(0, 0);
+
+        final int pos = view.getFirstVisiblePosition();
+        final View top_view = getListView().getChildAt(0);
+        final int y = top_view != null ? top_view.getTop() : 0;
         return new PositionData(pos, y);
     }
-    
+
     public int getCurrentBottomPosition() {
-        ListView view = getListView();
-        if (view == null) return 0;
-        
-        int pos = view.getLastVisiblePosition();
-        if (pos != -1) return pos;
-        
-        ListAdapter adapter = getListAdapter();
-        if (adapter == null) return 0;
+        final ListView view = getListView();
+        if (view == null)
+            return 0;
+
+        final int pos = view.getLastVisiblePosition();
+        if (pos != -1)
+            return pos;
+
+        final ListAdapter adapter = getListAdapter();
+        if (adapter == null)
+            return 0;
         return adapter.getCount() - 1;
     }
-    
+
     public void setListPosition(final int position, final Runnable callback) {
         setListPositionFromTop(position, 0, callback);
     }
-    
+
     public void setListPositionFromTop(final int position, final int y, final Runnable callback) {
         setListPositionFromTopImpl(position, y, callback);
     }
-    
+
     public void setListPositionFromTopImpl(final int position, final int y, final Runnable callback) {
         final ListAdapter adapter = getListAdapter();
         final ListView view = getListView();
@@ -194,83 +205,85 @@ public class NListActivity extends ListActivity implements NAbstractListScrollMa
                 view.setSelectionFromTop(position, y);
             }
         }
-        if (callback != null) callback.run();
+        if (callback != null)
+            callback.run();
     }
-    
+
     public void setListPositionTop(final Runnable callback) {
         setListPositionFromTopImpl(0, 0, callback);
     }
-    
+
     public void setListPositionBottom(final Runnable callback) {
-        ListAdapter adapter = getListAdapter();
+        final ListAdapter adapter = getListAdapter();
         if (adapter != null) {
             setListPositionFromTopImpl(adapter.getCount() - 1, 0, callback);
         }
     }
-    
+
     // ///////////////////////////////////////////////
     // scrolling
     // ///////////////////////////////////////////////
-    
+
     @Override
-    public void onScrollReachedTop() {}
-    
+    public void onScrollReachedTop() {
+    }
+
     @Override
-    public void onScrollReachedBottom() {}
-    
+    public void onScrollReachedBottom() {
+    }
+
     @Override
-    public void onScrollReleasedTop() {}
-    
+    public void onScrollReleasedTop() {
+    }
+
     @Override
-    public void onScrollReleasedBottom() {}
-    
+    public void onScrollReleasedBottom() {
+    }
+
     @Override
     public boolean hasScrollingListData() {
         final ListAdapter adapter = getListAdapter();
         final ListView view = getListView();
-        if (adapter == null || view == null || view.getCount() <= 0) return false;
+        if (adapter == null || view == null || view.getCount() <= 0)
+            return false;
         return true;
     }
-    
+
     public void setListRollUp(final Runnable callback) {
         scroll_manager_.setListRollUp(callback);
     }
-    
+
     public void setListPageUp() {
-        //scroll_manager_.setListPageUp();
-    	int scrollAmount = getScrollingAmount();
-    	if (scrollAmount == 0) {
-    		setListRollUp(null);
-    	}
-    	else {
-    		scroller.scroll(getListView(), -scrollAmount/110.0f,
-    				getScrollAnimationTime());
-    	}
+        // scroll_manager_.setListPageUp();
+        final int scrollAmount = getScrollingAmount();
+        if (scrollAmount == 0) {
+            setListRollUp(null);
+        } else {
+            scroller.scroll(getListView(), -scrollAmount / 110.0f, getScrollAnimationTime());
+        }
     }
-    
+
     public void setListRollDown(final Runnable callback) {
         scroll_manager_.setListRollDown(callback);
     }
-    
+
     public void setListPageDown() {
-        //scroll_manager_.setListPageDown();
-    	int scrollAmount = getScrollingAmount();
-    	if (scrollAmount == 0) {
-    		setListRollDown(null);
-    	}
-    	else {
-        	scroller.scroll(getListView(), scrollAmount/110.0f,
-        			getScrollAnimationTime());
-    	}
+        // scroll_manager_.setListPageDown();
+        final int scrollAmount = getScrollingAmount();
+        if (scrollAmount == 0) {
+            setListRollDown(null);
+        } else {
+            scroller.scroll(getListView(), scrollAmount / 110.0f, getScrollAnimationTime());
+        }
     }
-    
+
     private int getScrollAnimationTime() {
-    	long now = System.currentTimeMillis();
-    	int animationTime = 0;
-    	if (now - prevScrollTime > SCROLL_ANIMATION_TIME) {
-    		animationTime = SCROLL_ANIMATION_TIME;
-    	} 
-    	prevScrollTime = now;
-    	return animationTime;
+        final long now = System.currentTimeMillis();
+        int animationTime = 0;
+        if (now - prevScrollTime > SCROLL_ANIMATION_TIME) {
+            animationTime = SCROLL_ANIMATION_TIME;
+        }
+        prevScrollTime = now;
+        return animationTime;
     }
 }

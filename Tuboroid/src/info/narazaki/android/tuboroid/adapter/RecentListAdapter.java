@@ -15,58 +15,56 @@ import android.view.ViewGroup;
 // アダプタ
 // ////////////////////////////////////////////////////////////
 public class RecentListAdapter extends FavoriteListAdapterBase<ThreadData> {
-	final ThreadData.ViewStyle view_style_;
-    
-    public RecentListAdapter(Activity activity, TuboroidApplication.ViewConfig view_config) {
+    final ThreadData.ViewStyle view_style_;
+
+    public RecentListAdapter(final Activity activity, final TuboroidApplication.ViewConfig view_config) {
         super(activity, view_config);
         view_style_ = new ThreadData.ViewStyle(activity);
     }
-    
+
     @Override
-    public void setShowUpdatedOnly(boolean updated_only) {
+    public void setShowUpdatedOnly(final boolean updated_only) {
         if (updated_only) {
             setFilter(new Filter<ThreadData>() {
                 @Override
-                public boolean filter(ThreadData data) {
+                public boolean filter(final ThreadData data) {
                     return data.online_count_ > data.read_count_;
                 }
             }, null);
-        }
-        else {
+        } else {
             setFilter(null, null);
         }
     }
-    
+
     @Override
-    protected View createView(ThreadData data) {
-        LayoutInflater layout_inflater = LayoutInflater.from(activity_);
-        View view = layout_inflater.inflate(R.layout.thread_list_row, null);
+    protected View createView(final ThreadData data) {
+        final LayoutInflater layout_inflater = LayoutInflater.from(activity_);
+        final View view = layout_inflater.inflate(R.layout.thread_list_row, null);
         ThreadData.initView(view, view_config_);
-        
+
         return view;
     }
-    
+
     @Override
-    protected View setView(View view, ThreadData data, ViewGroup parent) {
+    protected View setView(final View view, final ThreadData data, final ViewGroup parent) {
         return data.setView(view, view_config_, view_style_);
     }
-    
+
     public interface DeleteFilledCallback {
         public void onDeleted(ArrayList<ThreadData> delete_list);
     }
-    
+
     public void deleteFilled(final DeleteFilledCallback callback) {
         postAdapterThread(new Runnable() {
             @Override
             public void run() {
                 final ArrayList<ThreadData> delete_list = new ArrayList<ThreadData>();
                 final ArrayList<ThreadData> new_list = new ArrayList<ThreadData>();
-                
-                for (ThreadData data : inner_data_list_) {
+
+                for (final ThreadData data : inner_data_list_) {
                     if (data.isFilled()) {
                         delete_list.add(data);
-                    }
-                    else {
+                    } else {
                         new_list.add(data);
                     }
                 }
@@ -79,19 +77,18 @@ public class RecentListAdapter extends FavoriteListAdapterBase<ThreadData> {
             }
         });
     }
-    
+
     public void deleteExceptFavorite(final DeleteFilledCallback callback) {
         postAdapterThread(new Runnable() {
             @Override
             public void run() {
                 final ArrayList<ThreadData> delete_list = new ArrayList<ThreadData>();
                 final ArrayList<ThreadData> new_list = new ArrayList<ThreadData>();
-                
-                for (ThreadData data : inner_data_list_) {
+
+                for (final ThreadData data : inner_data_list_) {
                     if (!data.is_favorite_) {
                         delete_list.add(data);
-                    }
-                    else {
+                    } else {
                         new_list.add(data);
                     }
                 }

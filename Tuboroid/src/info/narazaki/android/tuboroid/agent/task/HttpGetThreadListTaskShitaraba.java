@@ -17,48 +17,52 @@ import org.apache.http.HttpResponse;
 public class HttpGetThreadListTaskShitaraba extends TextHttpGetTaskBase implements HttpGetThreadListTask {
     private static final String TAG = "HttpGetThreadListTaskShitaraba";
     private static final int RECV_PROGRESS_INTERVAL = 1000;
-    
+
     private Callback callback_;
     private BoardData board_data_;
-    
+
     @Override
     protected String getTextEncode() {
         return "EUC_JP";
     }
-    
-    public HttpGetThreadListTaskShitaraba(BoardData board_data, Callback callback) {
+
+    public HttpGetThreadListTaskShitaraba(final BoardData board_data, final Callback callback) {
         super(board_data.getSubjectsURI());
         callback_ = callback;
         board_data_ = board_data;
     }
-    
+
     @Override
-    protected void dispatchHttpTextResponse(HttpResponse res, BufferedReader reader) throws InterruptedException,
+    protected void dispatchHttpTextResponse(final HttpResponse res, final BufferedReader reader) throws InterruptedException,
             IOException {
         List<ThreadData> data_list = new LinkedList<ThreadData>();
-        
+
         try {
-            long current_time = System.currentTimeMillis() / 1000;
+            final long current_time = System.currentTimeMillis() / 1000;
             int sort_order = 1;
             long progress = System.currentTimeMillis();
             reader.readLine(); // 1行目は捨てる(最新書き込みスレみたい、重複してる)
             while (true) {
-                String line = reader.readLine();
-                if (line == null) break;
-                int index_dat = line.indexOf(".cgi,");
-                if (index_dat <= 0) break;
-                int index_count = line.lastIndexOf("(");
-                if (index_count <= 0) break;
-                
-                long thread_id = TextUtils.parseLong(line, 0, index_dat);
-                String thread_name = HtmlUtils.stripAllHtmls(line.substring(index_dat + 5, index_count).trim(), false);
-                int online_count = TextUtils.parseInt(line, index_count + 1, line.length() - 1);
-                
+                final String line = reader.readLine();
+                if (line == null)
+                    break;
+                final int index_dat = line.indexOf(".cgi,");
+                if (index_dat <= 0)
+                    break;
+                final int index_count = line.lastIndexOf("(");
+                if (index_count <= 0)
+                    break;
+
+                final long thread_id = TextUtils.parseLong(line, 0, index_dat);
+                final String thread_name = HtmlUtils.stripAllHtmls(line.substring(index_dat + 5, index_count).trim(), false);
+                final int online_count = TextUtils.parseInt(line, index_count + 1, line.length() - 1);
+
                 long thread_age = current_time - thread_id;
-                if (thread_age <= 0) thread_age = 1;
-                int online_speed_x10 = (int) (online_count * 60 * 60 * 24 * 10 / thread_age);
-                
-                ThreadData data = new ThreadDataShitaraba(board_data_, sort_order, thread_id, thread_name,
+                if (thread_age <= 0)
+                    thread_age = 1;
+                final int online_speed_x10 = (int) (online_count * 60 * 60 * 24 * 10 / thread_age);
+
+                final ThreadData data = new ThreadDataShitaraba(board_data_, sort_order, thread_id, thread_name,
                         online_count, online_speed_x10);
                 data_list.add(data);
                 sort_order++;
@@ -71,19 +75,20 @@ public class HttpGetThreadListTaskShitaraba extends TextHttpGetTaskBase implemen
             if (data_list.size() > 0) {
                 onRequestProgress(data_list);
             }
-        }
-        finally {
+        } finally {
             reader.close();
         }
-        if (Thread.interrupted()) throw new InterruptedException();
-        
+        if (Thread.interrupted())
+            throw new InterruptedException();
+
         onRequestFinished();
     }
-    
+
     private void onRequestProgress(final List<ThreadData> data_list) {
-        if (callback_ != null) callback_.onReceived(data_list);
+        if (callback_ != null)
+            callback_.onReceived(data_list);
     }
-    
+
     private void onRequestFinished() {
         if (callback_ != null) {
             callback_.onCompleted();
@@ -91,19 +96,19 @@ public class HttpGetThreadListTaskShitaraba extends TextHttpGetTaskBase implemen
         callback_ = null;
         board_data_ = null;
     }
-    
+
     @Override
-    protected void onConnectionError(boolean connectionFailed) {
+    protected void onConnectionError(final boolean connectionFailed) {
         if (callback_ != null) {
             callback_.onConnectionFailed();
         }
         callback_ = null;
         board_data_ = null;
     }
-    
+
     @Override
     protected void onRequestCanceled() {
         onRequestFinished();
     }
-    
+
 }

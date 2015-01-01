@@ -254,7 +254,6 @@ public class ThreadEntryData implements NListAdapterDataInterface {
         }
     }
 
-
     static public class ViewStyle {
         public int style_header_color_default_;
         public int style_header_color_emphasis_;

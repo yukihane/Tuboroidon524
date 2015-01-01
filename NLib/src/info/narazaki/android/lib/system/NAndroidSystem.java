@@ -5,19 +5,18 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
 public class NAndroidSystem {
-    
-    public static boolean isOnline(Context context) {
+
+    public static boolean isOnline(final Context context) {
         try {
-            ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo info = manager.getActiveNetworkInfo();
+            final ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            final NetworkInfo info = manager.getActiveNetworkInfo();
             if (info != null) {
                 return manager.getActiveNetworkInfo().isConnected();
             }
             return false;
-        }
-        catch (Exception e) {
+        } catch (final Exception e) {
         }
         return true;
     }
-    
+
 }

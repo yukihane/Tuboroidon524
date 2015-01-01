@@ -9,11 +9,11 @@ import android.os.Bundle;
 
 public class IntentReceiverActivity extends TuboroidActivity {
     private Uri uri_;
-    
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+
         uri_ = getIntent().getData();
         if (uri_ == null) {
             if (getIntent().hasExtra(Intent.EXTRA_TEXT)) {
@@ -21,11 +21,11 @@ public class IntentReceiverActivity extends TuboroidActivity {
             }
         }
     }
-    
+
     @Override
     protected void onResume() {
         super.onResume();
-        
+
         if (uri_ == null) {
             finish();
             return;
@@ -33,18 +33,19 @@ public class IntentReceiverActivity extends TuboroidActivity {
         forwardView();
         finish();
     }
-    
+
     private boolean forwardView() {
-        if (!is_active_) return false;
-        
+        if (!is_active_)
+            return false;
+
         if (ThreadData.isThreadUri(uri_.toString())) {
-            Intent intent = new Intent(this, ThreadEntryListActivity.class);
+            final Intent intent = new Intent(this, ThreadEntryListActivity.class);
             intent.setData(uri_);
             MigrationSDK5.Intent_addFlagNoAnimation(intent);
             startActivity(intent);
             return true;
         }
-        Intent intent = new Intent(this, ThreadListActivity.class);
+        final Intent intent = new Intent(this, ThreadListActivity.class);
         intent.setData(uri_);
         MigrationSDK5.Intent_addFlagNoAnimation(intent);
         startActivity(intent);

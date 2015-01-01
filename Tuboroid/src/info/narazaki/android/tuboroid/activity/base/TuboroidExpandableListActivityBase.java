@@ -12,94 +12,93 @@ import android.os.Bundle;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
+import android.view.WindowManager;
 
 abstract public class TuboroidExpandableListActivityBase extends NSimpleExpandableListActivity {
     private static final String TAG = "TuboroidExpandableListActivityBase";
-    
+
     private SettingInvalidateChecker setting_invalidate_checker_;
-    protected ListViewScrollButton btnListScroll; 
-    
+    protected ListViewScrollButton btnListScroll;
+
     protected TuboroidApplication getTuboroidApplication() {
         return ((TuboroidApplication) getApplication());
     }
-    
+
     public TuboroidAgent getAgent() {
         return getTuboroidApplication().getAgent();
     }
-    
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         if (getTuboroidApplication().isFullScreenMode()) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        }
-        else {
+        } else {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
         }
-        
+
         setRequestedOrientation(getTuboroidApplication().getCurrentScreenOrientation());
-        
+
         getTuboroidApplication().applyTheme(this);
         setting_invalidate_checker_ = getTuboroidApplication().getSettingInvalidateChecker();
-        
+
         super.onCreate(savedInstanceState);
         ForwardableActivityUtil.onCreate(this);
     }
 
     @Override
-    public void startActivity(Intent intent) {
-    	startActivityForResult(intent, 0);
+    public void startActivity(final Intent intent) {
+        startActivityForResult(intent, 0);
     }
-    
+
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    	ForwardableActivityUtil.onActivityResult(this, data);
-    	super.onActivityResult(requestCode, resultCode, data);
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        ForwardableActivityUtil.onActivityResult(this, data);
+        super.onActivityResult(requestCode, resultCode, data);
     }
-    
+
     @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-    	super.onPostCreate(savedInstanceState);
-    	
+    protected void onPostCreate(final Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+
         final GestureDetector gd = ForwardableActivityUtil.createFlickGestureDetector(this);
-    	
-    	getExpandableListView().setOnTouchListener(new OnTouchListener() {
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				return gd.onTouchEvent(event);
-			}
-		});
+
+        getExpandableListView().setOnTouchListener(new OnTouchListener() {
+            @Override
+            public boolean onTouch(final View v, final MotionEvent event) {
+                return gd.onTouchEvent(event);
+            }
+        });
     }
-    
+
     @Override
     protected void onRestart() {
         super.onRestart();
         if (setting_invalidate_checker_.isInvalidated()) {
-            Intent intent = new Intent(this, this.getClass());
+            final Intent intent = new Intent(this, this.getClass());
             MigrationSDK5.Intent_addFlagNoAnimation(intent);
             startActivity(intent);
             finish();
             return;
         }
     }
-    
+
     @Override
     public void onContentChanged() {
-    	super.onContentChanged();
-    	
-    	btnListScroll = TuboroidListActivity.createScrollButton(this, getExpandableListView());
-    	if (btnListScroll != null) {
-    		btnListScroll.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					setListPageDown();
-				}
-			});
-            TuboroidListActivity.setScrollButtonPosition(btnListScroll, 
-            		getTuboroidApplication().view_config_.scroll_button_position);
-    	}
+        super.onContentChanged();
+
+        btnListScroll = TuboroidListActivity.createScrollButton(this, getExpandableListView());
+        if (btnListScroll != null) {
+            btnListScroll.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(final View v) {
+                    setListPageDown();
+                }
+            });
+            TuboroidListActivity.setScrollButtonPosition(btnListScroll,
+                    getTuboroidApplication().view_config_.scroll_button_position);
+        }
     }
-   
+
 }

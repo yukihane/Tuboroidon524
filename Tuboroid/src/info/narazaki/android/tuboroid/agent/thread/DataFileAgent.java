@@ -23,17 +23,17 @@ import java.util.concurrent.Executors;
 public class DataFileAgent {
     private static final String TAG = "DataFileAgent";
     private static final String SWAP_SUFFIX = ".swap";
-    
+
     private final ExecutorService executor_;
-    
+
     public HashMap<File, LinkedList<Runnable>> task_list_map_;
-    
-    public DataFileAgent(int threads_num) {
+
+    public DataFileAgent(final int threads_num) {
         super();
         executor_ = Executors.newFixedThreadPool(threads_num);
         task_list_map_ = new HashMap<File, LinkedList<Runnable>>();
     }
-    
+
     private synchronized void pushTask(final File key, final Runnable runnable) {
         LinkedList<Runnable> task_list = task_list_map_.get(key);
         if (task_list == null) {
@@ -45,63 +45,62 @@ public class DataFileAgent {
             executor_.submit(runnable);
         }
     }
-    
+
     private synchronized void popTask(final File key) {
-        LinkedList<Runnable> task_list = task_list_map_.get(key);
-        if (task_list == null) return;
+        final LinkedList<Runnable> task_list = task_list_map_.get(key);
+        if (task_list == null)
+            return;
         task_list.removeFirst();
         if (task_list.size() == 0) {
             task_list_map_.remove(key);
             return;
         }
-        Runnable runnable = task_list.getFirst();
+        final Runnable runnable = task_list.getFirst();
         executor_.submit(runnable);
     }
-    
+
     public static interface FileReadCallback {
         public void read(final InputStream stream);
     }
-    
+
     public static interface FileReadUTF8Callback {
         public void read(final BufferedReader reader);
     }
-    
+
     public static interface FileWroteCallback {
         public void onFileWrote(final boolean succeeded);
     }
-    
+
     public static interface FileWriteStreamCallback {
         public void write(final OutputStream stream);
     }
-    
+
     public static interface FileWriteUTF8StreamCallback {
         public void write(final Writer writer) throws IOException;
     }
-    
+
     public void readFile(final String filename, final FileReadUTF8Callback callback) {
         readFile(filename, new FileReadCallback() {
-            
+
             @Override
-            public void read(InputStream stream) {
+            public void read(final InputStream stream) {
                 if (stream == null) {
                     callback.read(null);
                     return;
                 }
                 try {
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(stream, "UTF-8"), 8 * 1024);
+                    final BufferedReader reader = new BufferedReader(new InputStreamReader(stream, "UTF-8"), 8 * 1024);
                     callback.read(reader);
                     reader.close();
-                }
-                catch (UnsupportedEncodingException e) {
+                } catch (final UnsupportedEncodingException e) {
                     e.printStackTrace();
-                }
-                catch (IOException e) {
+                } catch (final IOException e) {
                     e.printStackTrace();
                 }
             }
         });
     }
-    
+
     public void readFile(final String filename, final FileReadCallback callback) {
         final File file = new File(filename);
         pushTask(file, new Runnable() {
@@ -111,24 +110,22 @@ public class DataFileAgent {
             }
         });
     }
-    
+
     protected void execReadFile(final File file, final FileReadCallback callback) {
         try {
             final FileInputStream is = new FileInputStream(file);
             callback.read(is);
             popTask(file);
             return;
-        }
-        catch (FileNotFoundException e) {
+        } catch (final FileNotFoundException e) {
             // e.printStackTrace();
-        }
-        catch (SecurityException e) {
+        } catch (final SecurityException e) {
             // e.printStackTrace();
         }
         callback.read(null);
         popTask(file);
     }
-    
+
     public void writeFile(final String filename, final FileWriteUTF8StreamCallback writer, final boolean append,
             final boolean mkdir, final boolean atomic, final FileWroteCallback callback) {
         writeFile(filename, new FileWriteStreamCallback() {
@@ -138,27 +135,23 @@ public class DataFileAgent {
                 try {
                     osw = new OutputStreamWriter(stream, "UTF-8");
                     writer.write(osw);
-                }
-                catch (UnsupportedEncodingException e) {
+                } catch (final UnsupportedEncodingException e) {
                     e.printStackTrace();
-                }
-                catch (IOException e) {
+                } catch (final IOException e) {
                     e.printStackTrace();
-                }
-                finally {
+                } finally {
                     if (osw != null) {
                         try {
                             osw.close();
-                        }
-                        catch (IOException e1) {
+                        } catch (final IOException e1) {
                         }
                     }
                 }
-                
+
             }
         }, append, mkdir, atomic, callback);
     }
-    
+
     public void writeFile(final String filename, final FileWriteStreamCallback stream_writer, final boolean append,
             final boolean mkdir, final boolean atomic, final FileWroteCallback callback) {
         final File file = new File(filename);
@@ -169,17 +162,20 @@ public class DataFileAgent {
             }
         });
     }
-    
+
     protected void execWriteFile(final File file, final FileWriteStreamCallback stream_writer, final boolean append,
             final boolean mkdir, boolean atomic, final FileWroteCallback callback) {
-        if (append) atomic = false;
+        if (append)
+            atomic = false;
         try {
             final File target = atomic ? File.createTempFile(file.getName(), SWAP_SUFFIX, file.getParentFile()) : file;
             if (!file.canWrite() || !target.canWrite()) {
                 // mkdir
-                if (!mkdir) throw new IOException();
-                File dir = target.getParentFile();
-                if (dir == null) throw new IOException();
+                if (!mkdir)
+                    throw new IOException();
+                final File dir = target.getParentFile();
+                if (dir == null)
+                    throw new IOException();
                 dir.mkdirs();
             }
             final FileOutputStream os = new FileOutputStream(target, append);
@@ -187,19 +183,21 @@ public class DataFileAgent {
             stream_writer.write(os_buf);
             os_buf.close();
             os.close();
-            
-            if (atomic) target.renameTo(file);
-            if (callback != null) callback.onFileWrote(true);
+
+            if (atomic)
+                target.renameTo(file);
+            if (callback != null)
+                callback.onFileWrote(true);
             popTask(file);
             return;
-        }
-        catch (IOException e) {
+        } catch (final IOException e) {
             e.printStackTrace();
         }
-        if (callback != null) callback.onFileWrote(false);
+        if (callback != null)
+            callback.onFileWrote(false);
         popTask(file);
     }
-    
+
     public void deleteFile(final String filename, final FileWroteCallback callback) {
         final File file = new File(filename);
         pushTask(file, new Runnable() {
@@ -209,21 +207,21 @@ public class DataFileAgent {
             }
         });
     }
-    
+
     protected void execDeleteFile(final File file, final FileWroteCallback callback) {
-        boolean result = false;
+        final boolean result = false;
         try {
             if (file.exists()) {
                 execDeleteRecursive(file);
             }
-        }
-        catch (SecurityException e) {
+        } catch (final SecurityException e) {
             // e.printStackTrace();
         }
-        if (callback != null) callback.onFileWrote(result);
+        if (callback != null)
+            callback.onFileWrote(result);
         popTask(file);
     }
-    
+
     public void deleteFiles(final List<String> filenames, final FileWroteCallback callback) {
         executor_.submit(new Runnable() {
             @Override
@@ -232,7 +230,7 @@ public class DataFileAgent {
             }
         });
     }
-    
+
     public void deleteFiles(final String[] filenames, final FileWroteCallback callback) {
         executor_.submit(new Runnable() {
             @Override
@@ -241,53 +239,55 @@ public class DataFileAgent {
             }
         });
     }
-    
+
     protected void execDeleteFiles(final List<String> filenames, final FileWroteCallback callback) {
-        boolean result = false;
+        final boolean result = false;
         try {
-            for (String filename : filenames) {
-                File file = new File(filename);
+            for (final String filename : filenames) {
+                final File file = new File(filename);
                 if (file.exists()) {
                     execDeleteRecursive(file);
                 }
             }
-        }
-        catch (SecurityException e) {
+        } catch (final SecurityException e) {
             // e.printStackTrace();
         }
-        if (callback != null) callback.onFileWrote(result);
+        if (callback != null)
+            callback.onFileWrote(result);
     }
-    
+
     protected void execDeleteFiles(final String[] filenames, final FileWroteCallback callback) {
-        boolean result = false;
+        final boolean result = false;
         try {
-            for (String filename : filenames) {
-                File file = new File(filename);
+            for (final String filename : filenames) {
+                final File file = new File(filename);
                 if (file.exists()) {
                     execDeleteRecursive(file);
                 }
             }
-        }
-        catch (SecurityException e) {
+        } catch (final SecurityException e) {
             // e.printStackTrace();
         }
-        if (callback != null) callback.onFileWrote(result);
+        if (callback != null)
+            callback.onFileWrote(result);
     }
-    
+
     protected void execDeleteRecursive(final File dir) {
-        if (!dir.exists()) return;
-        
-        if (dir.isFile()) dir.delete();
-        
+        if (!dir.exists())
+            return;
+
+        if (dir.isFile())
+            dir.delete();
+
         if (dir.isDirectory()) {
-            File[] files = dir.listFiles();
+            final File[] files = dir.listFiles();
             for (int i = 0; i < files.length; i++) {
                 execDeleteRecursive(files[i]);
             }
             dir.delete();
         }
     }
-    
+
     public void moveFilesInDirectory(final String from_dir, final String to_dir, final Runnable callback) {
         final File from_dir_file = new File(from_dir);
         final File to_dir_file = new File(to_dir);
@@ -298,35 +298,40 @@ public class DataFileAgent {
             }
         });
     }
-    
+
     protected void execMoveFilesInDirectory(final File from_dir_file, final File to_dir_file, final Runnable callback) {
         try {
-            if (!from_dir_file.exists()) throw new SecurityException(from_dir_file + " not found");
-            if (!from_dir_file.isDirectory()) throw new SecurityException(from_dir_file + " is not directory");
-            if (!from_dir_file.canRead()) throw new SecurityException(from_dir_file + " is not readable");
-            
-            if (to_dir_file.exists() && !to_dir_file.isDirectory()) throw new SecurityException(to_dir_file
-                    + " is not directory");
-            if (!to_dir_file.exists()) to_dir_file.mkdirs();
-            if (!to_dir_file.canWrite()) throw new SecurityException(from_dir_file + " is not writable");
-            
-            File[] files = from_dir_file.listFiles();
-            for (File file : files) {
+            if (!from_dir_file.exists())
+                throw new SecurityException(from_dir_file + " not found");
+            if (!from_dir_file.isDirectory())
+                throw new SecurityException(from_dir_file + " is not directory");
+            if (!from_dir_file.canRead())
+                throw new SecurityException(from_dir_file + " is not readable");
+
+            if (to_dir_file.exists() && !to_dir_file.isDirectory())
+                throw new SecurityException(to_dir_file + " is not directory");
+            if (!to_dir_file.exists())
+                to_dir_file.mkdirs();
+            if (!to_dir_file.canWrite())
+                throw new SecurityException(from_dir_file + " is not writable");
+
+            final File[] files = from_dir_file.listFiles();
+            for (final File file : files) {
                 if (file.isFile()) {
                     file.renameTo(new File(to_dir_file, file.getName()));
                 }
             }
-        }
-        catch (SecurityException e) {
+        } catch (final SecurityException e) {
             // e.printStackTrace();
         }
-        if (callback != null) callback.run();
+        if (callback != null)
+            callback.run();
     }
-    
+
     public void copyFile(final String orig, final String dist, final boolean mkdir, final FileWroteCallback callback) {
         final File file_orig = new File(orig);
         final File file_dist = new File(dist);
-        
+
         pushTask(file_dist, new Runnable() {
             @Override
             public void run() {
@@ -335,61 +340,63 @@ public class DataFileAgent {
                             file_dist.getParentFile());
                     execCopyFile(file_orig, file_swap, mkdir, new FileWroteCallback() {
                         @Override
-                        public void onFileWrote(boolean succeeded) {
+                        public void onFileWrote(final boolean succeeded) {
                             if (!succeeded) {
-                                if (callback != null) callback.onFileWrote(false);
+                                if (callback != null)
+                                    callback.onFileWrote(false);
                                 return;
                             }
-                            if (callback != null) callback.onFileWrote(file_swap.renameTo(file_dist));
+                            if (callback != null)
+                                callback.onFileWrote(file_swap.renameTo(file_dist));
                         }
                     });
-                }
-                catch (IOException e) {
-                    if (callback != null) callback.onFileWrote(false);
+                } catch (final IOException e) {
+                    if (callback != null)
+                        callback.onFileWrote(false);
                 }
             }
         });
     }
-    
+
     protected void execCopyFile(final File orig, final File dist, final boolean mkdir, final FileWroteCallback callback) {
         try {
-            if (!orig.canRead()) throw new IOException();
+            if (!orig.canRead())
+                throw new IOException();
             if (!dist.canWrite()) {
                 // mkdir
-                if (!mkdir) throw new IOException();
-                File dir = dist.getParentFile();
-                if (dir == null) throw new IOException();
+                if (!mkdir)
+                    throw new IOException();
+                final File dir = dist.getParentFile();
+                if (dir == null)
+                    throw new IOException();
                 dir.mkdirs();
             }
-            
-            FileChannel src_channel = new FileInputStream(orig).getChannel();
-            FileChannel dest_channel = new FileOutputStream(dist).getChannel();
+
+            final FileChannel src_channel = new FileInputStream(orig).getChannel();
+            final FileChannel dest_channel = new FileOutputStream(dist).getChannel();
             try {
                 src_channel.transferTo(0, src_channel.size(), dest_channel);
-            }
-            finally {
+            } finally {
                 src_channel.close();
                 dest_channel.close();
             }
-            
-            if (callback != null) callback.onFileWrote(true);
+
+            if (callback != null)
+                callback.onFileWrote(true);
             popTask(dist);
             return;
-        }
-        catch (FileNotFoundException e) {
+        } catch (final FileNotFoundException e) {
             // e.printStackTrace();
-        }
-        catch (SecurityException e) {
+        } catch (final SecurityException e) {
             // e.printStackTrace();
-        }
-        catch (UnsupportedEncodingException e) {
+        } catch (final UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (final IOException e) {
             e.printStackTrace();
         }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-        if (callback != null) callback.onFileWrote(false);
+        if (callback != null)
+            callback.onFileWrote(false);
         popTask(dist);
     }
-    
+
 }

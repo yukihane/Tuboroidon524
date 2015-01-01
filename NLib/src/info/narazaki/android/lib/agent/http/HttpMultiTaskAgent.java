@@ -18,58 +18,62 @@ public class HttpMultiTaskAgent implements HttpTaskAgentInterface {
     final private Context context_;
     final private String user_agent_;
     final private HttpHost proxy_;
-    
-    private HashMap<String, SoftReference<HttpTaskAgent>> agent_map_;
-    
-    public HttpMultiTaskAgent(Context context, final String user_agent, final HttpHost proxy) {
+
+    private final HashMap<String, SoftReference<HttpTaskAgent>> agent_map_;
+
+    public HttpMultiTaskAgent(final Context context, final String user_agent, final HttpHost proxy) {
         super();
         context_ = context;
         user_agent_ = user_agent;
         proxy_ = proxy;
         agent_map_ = new HashMap<String, SoftReference<HttpTaskAgent>>();
     }
-    
+
     @Override
     public String getCookieStoreData() {
         return "";
     }
-    
-    private synchronized HttpTaskAgent getHttpAgent(HttpTaskBase task) {
-        String host = Uri.parse(task.getRequestUri()).getHost();
-        SoftReference<HttpTaskAgent> agent_ref = agent_map_.get(host);
+
+    private synchronized HttpTaskAgent getHttpAgent(final HttpTaskBase task) {
+        final String host = Uri.parse(task.getRequestUri()).getHost();
+        final SoftReference<HttpTaskAgent> agent_ref = agent_map_.get(host);
         if (agent_ref != null) {
-            HttpTaskAgent agent = agent_ref.get();
-            if (agent != null) return agent;
+            final HttpTaskAgent agent = agent_ref.get();
+            if (agent != null)
+                return agent;
             agent_map_.remove(host);
         }
-        
-        HttpTaskAgent agent = new HttpTaskAgent(context_, user_agent_, proxy_);
+
+        final HttpTaskAgent agent = new HttpTaskAgent(context_, user_agent_, proxy_);
         agent_map_.put(host, new SoftReference<HttpTaskAgent>(agent));
         return agent;
     }
-    
+
     @Override
-    public Future<?> send(HttpTaskBase task) {
+    public Future<?> send(final HttpTaskBase task) {
         return getHttpAgent(task).send(task);
     }
-    
+
     @Override
-    public void setCookieStoreData(String cookieBareData) {}
-    
+    public void setCookieStoreData(final String cookieBareData) {
+    }
+
     @Override
     public synchronized void clearCookieStore() {
-        for (Entry<String, SoftReference<HttpTaskAgent>> agent_set : agent_map_.entrySet()) {
-            SoftReference<HttpTaskAgent> agent_ref = agent_set.getValue();
+        for (final Entry<String, SoftReference<HttpTaskAgent>> agent_set : agent_map_.entrySet()) {
+            final SoftReference<HttpTaskAgent> agent_ref = agent_set.getValue();
             if (agent_ref != null) {
-                HttpTaskAgent agent = agent_ref.get();
-                if (agent != null) agent.clearCookieStore();
+                final HttpTaskAgent agent = agent_ref.get();
+                if (agent != null)
+                    agent.clearCookieStore();
             }
         }
     }
-    
+
     @Override
-    public void onHttpTaskFinished(HttpTaskBase task) {}
-    
+    public void onHttpTaskFinished(final HttpTaskBase task) {
+    }
+
     @Override
     public boolean isOnline() {
         return NAndroidSystem.isOnline(context_);

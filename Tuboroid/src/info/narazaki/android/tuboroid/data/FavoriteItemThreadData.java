@@ -6,66 +6,66 @@ import android.view.View;
 
 public class FavoriteItemThreadData extends FavoriteItemData {
     ThreadData thread_data_;
-    
-    public FavoriteItemThreadData(ThreadData thread_data) {
+
+    public FavoriteItemThreadData(final ThreadData thread_data) {
         super();
         thread_data_ = thread_data.clone();
     }
-    
-    public FavoriteItemThreadData(Cursor cursor) {
+
+    public FavoriteItemThreadData(final Cursor cursor) {
         super();
         thread_data_ = ThreadData.factory(cursor);
     }
-    
+
     @Override
     public String getURI() {
         return thread_data_.getThreadURI();
     }
-    
+
     @Override
     public long getId() {
         return 0;
     }
-    
+
     @Override
     public boolean isThread() {
         return true;
     }
-    
+
     @Override
     public ThreadData getThreadData() {
         return thread_data_;
     }
-    
+
     @Override
     public boolean isSearchKey() {
         return false;
     }
-    
+
     @Override
     public Find2chKeyData getSearchKey() {
         return null;
     }
-    
+
     @Override
     public BoardData getBoardData() {
         return null;
     }
-    
+
     @Override
     public boolean isBoard() {
         return false;
     }
-    
+
     @Override
     public BoardIdentifier getServerDef() {
         return thread_data_.server_def_;
     }
-    
+
     @Override
-    public View setView(View view, TuboroidApplication.ViewConfig view_config, ThreadData.ViewStyle style) {
+    public View setView(final View view, final TuboroidApplication.ViewConfig view_config, final ThreadData.ViewStyle style) {
         thread_data_.setView(view, view_config, style);
         return view;
     }
-    
+
 }

@@ -7,22 +7,22 @@ import info.narazaki.android.tuboroid.data.ThreadData;
 
 public class ThreadEntryListTask2ch extends ThreadEntryListTask {
     private static final String TAG = "ThreadEntryListTask2ch";
-    
-    public ThreadEntryListTask2ch(TuboroidAgentManager agent_manager) {
+
+    public ThreadEntryListTask2ch(final TuboroidAgentManager agent_manager) {
         super(agent_manager);
     }
-    
+
     @Override
     protected void doReloadSpecialThreadEntryList(final ThreadData thread_data, final AccountPref account_pref,
             final String user_agent, final ThreadEntryListFetchedCallback callback) {
-        HttpBoardLoginTask2chMaru task = new HttpBoardLoginTask2chMaru(account_pref, user_agent,
+        final HttpBoardLoginTask2chMaru task = new HttpBoardLoginTask2chMaru(account_pref, user_agent,
                 new MaruLoginCallback() {
                     @Override
                     public void onLoginFailed() {
                         callback.onConnectionFailed(false);
                         popFetchTask();
                     }
-                    
+
                     @Override
                     public void onLogin(final String session_key) {
                         clearThreadEntryListCache(thread_data, new Runnable() {
@@ -35,5 +35,5 @@ public class ThreadEntryListTask2ch extends ThreadEntryListTask {
                 });
         task.sendTo(agent_manager_.getMaruHttpAgent());
     }
-    
+
 }

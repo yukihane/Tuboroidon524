@@ -10,29 +10,30 @@ import android.widget.Toast;
  */
 public class ManagedToast extends Toast {
     private static Toast toast_ = null;
-    
-    public ManagedToast(Context context) {
+
+    public ManagedToast(final Context context) {
         super(context);
     }
-    
+
     @Override
     public void show() {
         updateToast(this);
         super.show();
     }
-    
-    private static synchronized void updateToast(Toast new_toast) {
-        if (toast_ != null) toast_.cancel();
+
+    private static synchronized void updateToast(final Toast new_toast) {
+        if (toast_ != null)
+            toast_.cancel();
         toast_ = new_toast;
     }
-    
+
     /**
      * 簡単なToastを出力する
      */
     public static void raiseToast(final Context context, final String str) {
         raiseToast(context, str, Toast.LENGTH_LONG);
     }
-    
+
     /**
      * 簡単なToastを出力する
      * 
@@ -45,7 +46,7 @@ public class ManagedToast extends Toast {
             Toast.makeText(context, str, duration).show();
         }
     }
-    
+
     /**
      * 簡単なToastを出力する
      * 
@@ -56,7 +57,7 @@ public class ManagedToast extends Toast {
     public static void raiseToast(final Context context, final int resid) {
         raiseToast(context, resid, Toast.LENGTH_LONG);
     }
-    
+
     /**
      * 簡単なToastを出力する
      * 

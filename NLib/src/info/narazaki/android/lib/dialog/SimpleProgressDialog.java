@@ -6,9 +6,10 @@ import android.content.DialogInterface;
 
 public class SimpleProgressDialog {
     ProgressDialog dialog_;
-    
-    public void show(Activity activity, int label_id, DialogInterface.OnCancelListener on_cancel_listener) {
-        if (dialog_ != null) return;
+
+    public void show(final Activity activity, final int label_id, final DialogInterface.OnCancelListener on_cancel_listener) {
+        if (dialog_ != null)
+            return;
         dialog_ = new ProgressDialog(activity);
         dialog_.setMessage(activity.getString(label_id));
         dialog_.setIndeterminate(true);
@@ -16,16 +17,17 @@ public class SimpleProgressDialog {
         dialog_.setOnCancelListener(on_cancel_listener);
         dialog_.show();
     }
-    
-    public void showModal(Activity activity, int label_id) {
-        if (dialog_ != null) hide();
+
+    public void showModal(final Activity activity, final int label_id) {
+        if (dialog_ != null)
+            hide();
         dialog_ = new ProgressDialog(activity);
         dialog_.setMessage(activity.getString(label_id));
         dialog_.setIndeterminate(true);
         dialog_.setCancelable(false);
         dialog_.show();
     }
-    
+
     public void hide() {
         if (dialog_ != null) {
             dialog_.setOnCancelListener(null);

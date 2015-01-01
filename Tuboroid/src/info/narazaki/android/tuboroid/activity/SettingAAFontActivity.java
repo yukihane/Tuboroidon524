@@ -18,55 +18,53 @@ import android.widget.TextView;
 
 public class SettingAAFontActivity extends TuboroidActivity {
     private static final String TAG = "SettingAAFontActivity";
-    
+
     private SimpleProgressDialog progress_dialog_;
-    
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.setting_font_view);
         setTitle(R.string.title_install_aa_font);
         progress_dialog_ = new SimpleProgressDialog();
     }
-    
+
     @Override
     protected void onResume() {
         super.onResume();
-        WebView web_view = (WebView) findViewById(R.id.aa_font_license);
+        final WebView web_view = (WebView) findViewById(R.id.aa_font_license);
         web_view.loadUrl(getString(R.string.const_font_license_url));
-        
-        TextView already_installed_view = (TextView) findViewById(R.id.aa_font_already_installed);
-        Button install_button = (Button) findViewById(R.id.aa_font_install);
+
+        final TextView already_installed_view = (TextView) findViewById(R.id.aa_font_already_installed);
+        final Button install_button = (Button) findViewById(R.id.aa_font_install);
         if (getTuboroidApplication().view_config_.use_ext_aa_font_) {
             already_installed_view.setVisibility(View.VISIBLE);
             install_button.setEnabled(false);
-        }
-        else {
+        } else {
             already_installed_view.setVisibility(View.GONE);
             install_button.setEnabled(true);
             install_button.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View v) {
+                public void onClick(final View v) {
                     beginDownloadFont();
                 }
             });
         }
-        
-        TextView aa_font_path_view = (TextView) findViewById(R.id.aa_font_path);
-        aa_font_path_view.setText(
-        		String.format(getText(R.string.dialog_aa_font_path).toString()
-        			, getTuboroidApplication().getExternalFontFile().getPath()));
+
+        final TextView aa_font_path_view = (TextView) findViewById(R.id.aa_font_path);
+        aa_font_path_view.setText(String.format(getText(R.string.dialog_aa_font_path).toString(),
+                getTuboroidApplication().getExternalFontFile().getPath()));
     }
-    
+
     @Override
     protected void onPause() {
         progress_dialog_.hide();
         super.onPause();
         getTuboroidApplication().reloadPreferences(true);
     }
-    
+
     private void beginDownloadFont() {
-        File ext_font_file = getTuboroidApplication().getExternalFontFile();
+        final File ext_font_file = getTuboroidApplication().getExternalFontFile();
         if (ext_font_file == null) {
             onDownloadFontFailed();
             return;
@@ -81,13 +79,14 @@ public class SettingAAFontActivity extends TuboroidActivity {
                     }
                 });
             }
-            
+
             @Override
             public void onCompleted() {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if (!is_active_) return;
+                        if (!is_active_)
+                            return;
                         ManagedToast.raiseToast(SettingAAFontActivity.this, R.string.toast_ext_font_succeeded);
                         finish();
                     }
@@ -96,19 +95,21 @@ public class SettingAAFontActivity extends TuboroidActivity {
         });
         progress_dialog_.show(this, R.string.dialog_loading_progress, new DialogInterface.OnCancelListener() {
             @Override
-            public void onCancel(DialogInterface dialog) {
+            public void onCancel(final DialogInterface dialog) {
                 future.cancel(true);
-                if (!is_active_) return;
+                if (!is_active_)
+                    return;
                 finish();
             }
         });
-        
+
     }
-    
+
     private void onDownloadFontFailed() {
-        if (!is_active_) return;
+        if (!is_active_)
+            return;
         ManagedToast.raiseToast(SettingAAFontActivity.this, R.string.toast_ext_font_failed);
         finish();
     }
-    
+
 }

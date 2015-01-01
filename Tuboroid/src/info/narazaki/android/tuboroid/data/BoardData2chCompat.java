@@ -10,44 +10,45 @@ import android.text.TextUtils;
 
 public class BoardData2chCompat extends BoardData2ch {
     static private final String CATEGORY_NAME = "2ch互換";
-    
-    public static boolean is2chCompat(String board_server) {
+
+    public static boolean is2chCompat(final String board_server) {
         return false;
     }
-    
+
     @Override
     public int getSortOrder() {
         return 10000;
     }
-    
-    protected BoardData2chCompat(BoardData2chCompat boardData) {
+
+    protected BoardData2chCompat(final BoardData2chCompat boardData) {
         super(boardData);
         board_category_ = CATEGORY_NAME;
     }
-    
-    protected BoardData2chCompat(long id, boolean isFavorite, boolean is_external, String boardName,
-            BoardIdentifier server_def) {
+
+    protected BoardData2chCompat(final long id, final boolean isFavorite, final boolean is_external, final String boardName,
+            final BoardIdentifier server_def) {
         super(id, isFavorite, is_external, boardName, server_def);
         board_category_ = CATEGORY_NAME;
     }
-    
-    protected BoardData2chCompat(long orderId, String boardName, String boardCategory, BoardIdentifier server_def) {
+
+    protected BoardData2chCompat(final long orderId, final String boardName, final String boardCategory, final BoardIdentifier server_def) {
         super(orderId, boardName, CATEGORY_NAME, server_def);
     }
-    
-    static public BoardIdentifier createBoardIdentifier(Uri uri) {
-        LinkedList<String> board_server_list = new LinkedList<String>();
+
+    static public BoardIdentifier createBoardIdentifier(final Uri uri) {
+        final LinkedList<String> board_server_list = new LinkedList<String>();
         String board_tag = null;
         long thread_id = 0;
         int entry_id = 0;
         try {
-            //String host_name = uri.getHost();
-            //if (uri.getUserInfo() != null) host_name = uri.getUserInfo() + "@" + host_name;
-            String host_name = uri.getEncodedAuthority();
+            // String host_name = uri.getHost();
+            // if (uri.getUserInfo() != null) host_name = uri.getUserInfo() +
+            // "@" + host_name;
+            final String host_name = uri.getEncodedAuthority();
             board_server_list.add(host_name);
-            List<String> segments = uri.getPathSegments();
+            final List<String> segments = uri.getPathSegments();
             for (int i = 0; i < segments.size(); i++) {
-                String token = segments.get(i);
+                final String token = segments.get(i);
                 if (token.equals("test") && segments.get(i + 1).equals("read.cgi")) {
                     board_tag = segments.get(i + 2);
                     // スレは .../test/read.cgi/[板タグ]/[スレID]/[レス番指定] になる
@@ -57,11 +58,11 @@ public class BoardData2chCompat extends BoardData2ch {
                     if (segments.size() > i + 4 && segments.get(i + 4).length() > 0) {
                         // l : 指定件数の最新レスを表示する（レス１も表示）→ めんどくさいのでデフォルト表示
                         // n : １を除外する → 無視して良い
-                        String opt = segments.get(i + 4);
-                        Pattern pattern = Pattern.compile("^([n|l]*)(\\d+)?(-)?(\\d+)?$");
-                        Matcher matcher = pattern.matcher(opt);
+                        final String opt = segments.get(i + 4);
+                        final Pattern pattern = Pattern.compile("^([n|l]*)(\\d+)?(-)?(\\d+)?$");
+                        final Matcher matcher = pattern.matcher(opt);
                         if (matcher.find() && matcher.group(1) != null && matcher.group(1).indexOf('l') == -1) {
-                            String target = matcher.group(2);
+                            final String target = matcher.group(2);
                             if (target != null && target.length() > 0) {
                                 entry_id = info.narazaki.android.lib.text.TextUtils.parseInt(target);
                             }
@@ -81,8 +82,7 @@ public class BoardData2chCompat extends BoardData2ch {
                 board_server_list.removeLast();
             }
             return new BoardIdentifier(TextUtils.join("/", board_server_list), board_tag, thread_id, entry_id);
-        }
-        catch (IndexOutOfBoundsException e) {
+        } catch (final IndexOutOfBoundsException e) {
         }
         return new BoardIdentifier("", "", 0, 0);
     }

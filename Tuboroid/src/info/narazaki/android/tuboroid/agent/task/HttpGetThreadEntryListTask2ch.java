@@ -27,80 +27,81 @@ import android.util.Log;
 public class HttpGetThreadEntryListTask2ch extends HttpTaskBase implements HttpGetThreadEntryListTask {
     static private final String TAG = "HttpGetThreadEntryListTask2ch";
     private static final int RECV_PROGRESS_INTERVAL = 1000;
-    
+
     public class AboneFoundException extends Exception {
         private static final long serialVersionUID = 1L;
     }
-    
+
     public class DatDroppedException extends Exception {
         private static final long serialVersionUID = 1L;
     }
-    
+
     public class BrokenDataException extends Exception {
         private static final long serialVersionUID = 1L;
     }
-    
+
     public class UpToDateException extends Exception {
         private static final long serialVersionUID = 1L;
     }
-    
+
     ThreadData thread_data_;
     String session_key_;
-    
+
     Callback callback_;
-    
+
     @Override
-    public void sendTo(HttpTaskAgentInterface httpAgent) {
+    public void sendTo(final HttpTaskAgentInterface httpAgent) {
         httpAgent.send(this);
     }
-    
-    public HttpGetThreadEntryListTask2ch(ThreadData thread_data, String session_key, Callback callback) {
+
+    public HttpGetThreadEntryListTask2ch(final ThreadData thread_data, final String session_key, final Callback callback) {
         super(session_key == null ? thread_data.getDatFileURI() : thread_data.getSpecialDatFileURI(session_key));
         session_key_ = session_key;
         thread_data_ = thread_data;
         callback_ = callback;
     }
-    
+
     @Override
     protected String getTextEncode() {
         return CharsetInfo.getEmojiShiftJis();
     }
-    
+
     @Override
     protected void finish() {
         super.finish();
         thread_data_ = null;
         callback_ = null;
     }
-    
+
     @Override
-    protected boolean sendRequest(String request_uri) throws InterruptedException, ClientProtocolException, IOException {
+    protected boolean sendRequest(final String request_uri) throws InterruptedException, ClientProtocolException, IOException {
         // Log.d(TAG, "sendRequest=" + request_uri + " cache=" +
         // thread_data_.working_cache_count_);
-        if (Thread.interrupted()) throw new InterruptedException();
+        if (Thread.interrupted())
+            throw new InterruptedException();
         callback_.onFetchStarted();
         try {
-            HttpGet req = factoryGetRequest(request_uri);
-            
+            final HttpGet req = factoryGetRequest(request_uri);
+
             boolean full_content = true;
             if (thread_data_.working_cache_size_ > 1) {
                 if (thread_data_.working_cache_timestamp_.length() > 0 && thread_data_.working_cache_etag_.length() > 0) {
                     req.addHeader("If-Modified-Since", thread_data_.working_cache_timestamp_);
                     req.addHeader("If-None-Match", thread_data_.working_cache_etag_);
                 }
-                
+
                 req.addHeader("Range", "bytes= " + (thread_data_.working_cache_size_ - 1) + "-");
                 full_content = false;
             }
-            
-            HttpResponse res = executeRequest(req);
-            StatusLine statusLine = res.getStatusLine();
-            
+
+            final HttpResponse res = executeRequest(req);
+            final StatusLine statusLine = res.getStatusLine();
+
             // あぼーんチェックフラグ
             boolean check_partial_abone = false;
-            
-            int status_code = statusLine.getStatusCode();
-            
+
+            final int status_code = statusLine.getStatusCode();
+
             switch (status_code) {
             case HttpStatus.SC_OK:
                 thread_data_.working_cache_count_ = 0;
@@ -125,10 +126,11 @@ public class HttpGetThreadEntryListTask2ch extends HttpTaskBase implements HttpG
                 Log.i(TAG, "Request Failed Code:" + statusLine.getStatusCode());
                 throw new IOException();
             }
-            
-            if (Thread.interrupted()) throw new InterruptedException();
-            
-            InputStream is = res.getEntity().getContent();
+
+            if (Thread.interrupted())
+                throw new InterruptedException();
+
+            final InputStream is = res.getEntity().getContent();
             // 部分取得の時は最初の1バイトであぼーんチェック
             // (1バイト手前から読んでいるので直前の終端=LF=0x0Aで始まっていること)
             if (check_partial_abone) {
@@ -136,7 +138,7 @@ public class HttpGetThreadEntryListTask2ch extends HttpTaskBase implements HttpG
                     throw new AboneFoundException();
                 }
             }
-            
+
             if (res.containsHeader("Last-Modified")) {
                 thread_data_.working_cache_timestamp_ = res.getFirstHeader("Last-Modified").getValue();
             }
@@ -145,78 +147,72 @@ public class HttpGetThreadEntryListTask2ch extends HttpTaskBase implements HttpG
                 thread_new_etag = res.getFirstHeader("ETag").getValue();
                 thread_data_.working_cache_etag_ = thread_new_etag.replace("-gzip", "");
             }
-            
+
             dispatchHttpResponse(is, full_content, check_partial_abone);
-        }
-        catch (AboneFoundException e) {
+        } catch (final AboneFoundException e) {
             Log.i(TAG, "abone found");
             callback_.onAboneFound();
-        }
-        catch (DatDroppedException e) {
+        } catch (final DatDroppedException e) {
             callback_.onDatDropped();
-        }
-        catch (UpToDateException e) {
+        } catch (final UpToDateException e) {
             callback_.onNoUpdated();
-        }
-        catch (BrokenDataException e) {
+        } catch (final BrokenDataException e) {
             // dat file broken Error
             callback_.onDatBroken();
-        }
-        catch (ClientProtocolException e) {
+        } catch (final ClientProtocolException e) {
             // Connection Error
             // redirect loopとか発生することがあるので……
-            Throwable cause = e.getCause();
+            final Throwable cause = e.getCause();
             if (cause instanceof CircularRedirectException) {
                 callback_.onDatDropped();
-            }
-            else {
+            } else {
                 throw e;
             }
         }
         return true;
     }
-    
+
     @Override
-    protected void onConnectionError(boolean connectionFailed) {
+    protected void onConnectionError(final boolean connectionFailed) {
         callback_.onConnectionFailed(connectionFailed);
     }
-    
+
     @Override
     protected void onInterrupted() {
         callback_.onInterrupted();
     }
-    
-    protected void dispatchHttpResponse(final InputStream is, final boolean full_content, boolean check_partial_abone)
+
+    protected void dispatchHttpResponse(final InputStream is, final boolean full_content, final boolean check_partial_abone)
             throws InterruptedException, IOException, BrokenDataException {
         List<ThreadEntryData> data_list = new LinkedList<ThreadEntryData>();
-        DelegateInputStream dis = new DelegateInputStream(is);
-        BufferedReader reader = new BufferedReader(new InputStreamReader(dis, getTextEncode()), buf_size_);
-        
+        final DelegateInputStream dis = new DelegateInputStream(is);
+        final BufferedReader reader = new BufferedReader(new InputStreamReader(dis, getTextEncode()), buf_size_);
+
         long thread_cur_count = thread_data_.working_cache_count_;
         long progress = System.currentTimeMillis();
         // ●使用の時、1行目はスキップ
         boolean skip_head = session_key_ != null;
         try {
             while (true) {
-                String line = reader.readLine();
-                if (line == null) break;
-                
-                String[] tokens = ListUtils.split("<>", line);
-                
+                final String line = reader.readLine();
+                if (line == null)
+                    break;
+
+                final String[] tokens = ListUtils.split("<>", line);
+
                 if (skip_head && thread_cur_count == 0) {
                     skip_head = false;
                     continue;
                 }
-                
+
                 ThreadEntryData data;
                 thread_cur_count++;
-                
+
                 if (tokens.length < 2) {
                     // <>が2個未満になるほど破損しているものは論外。多分datファイルですらない
                     Log.i(TAG, "BROKEN DATA :" + line);
                     throw new BrokenDataException();
-                }
-                else if (tokens.length < 4) {
+                } else if (tokens.length < 4) {
                     // >>1が破損しているのは論外。多分datファイルですらない
                     if (thread_cur_count == 1) {
                         Log.i(TAG, "BROKEN >>1");
@@ -224,37 +220,34 @@ public class HttpGetThreadEntryListTask2ch extends HttpTaskBase implements HttpG
                     }
                     Log.w(TAG, "Invalid Token : " + line);
                     data = new ThreadEntryData(false, thread_cur_count, "", "", "", "", "", "", "", "");
-                }
-                else {
-                    String author_name = tokens[0];
-                    String author_mail = tokens[1];
-                    String time_and_id = tokens[2];
-                    String entry_body = tokens[3];
-                    
+                } else {
+                    final String author_name = tokens[0];
+                    final String author_mail = tokens[1];
+                    final String time_and_id = tokens[2];
+                    final String entry_body = tokens[3];
+
                     if (thread_cur_count == 1 && tokens.length >= 5 && tokens[4].length() > 0) {
                         thread_data_.thread_name_ = HtmlUtils.stripAllHtmls(tokens[4], false);
                     }
-                    
+
                     String author_id = "";
                     String author_be = "";
                     String entry_time;
-                    int index_author_id = time_and_id.indexOf(" ID:");
+                    final int index_author_id = time_and_id.indexOf(" ID:");
                     if (index_author_id <= 1) {
                         entry_time = time_and_id;
-                    }
-                    else {
+                    } else {
                         entry_time = time_and_id.substring(0, index_author_id);
-                        String author_id_str = time_and_id.substring(index_author_id + 4);
-                        int index_author_be = author_id_str.indexOf(' ');
+                        final String author_id_str = time_and_id.substring(index_author_id + 4);
+                        final int index_author_be = author_id_str.indexOf(' ');
                         if (index_author_be <= 1) {
                             author_id = author_id_str;
-                        }
-                        else {
+                        } else {
                             author_id = author_id_str.substring(0, index_author_be);
                             author_be = author_id_str.substring(index_author_be + 1);
                         }
                     }
-                    
+
                     data = new ThreadEntryData(false, thread_cur_count, author_name, author_mail, entry_body,
                             author_id, author_be, entry_time, "", "");
                 }
@@ -268,83 +261,86 @@ public class HttpGetThreadEntryListTask2ch extends HttpTaskBase implements HttpG
             if (data_list.size() > 0) {
                 callback_.onReceived(data_list);
             }
-        }
-        finally {
+        } finally {
             reader.close();
         }
-        if (Thread.interrupted()) throw new InterruptedException();
-        
+        if (Thread.interrupted())
+            throw new InterruptedException();
+
         thread_data_.working_cache_count_ = (int) thread_cur_count;
         thread_data_.working_cache_size_ += dis.getReadSize();
-        
+
         callback_.onCompleted();
     }
-    
+
     static private class DelegateInputStream extends InputStream {
         private final InputStream input_stream_;
         private int read_size_;
-        
-        public DelegateInputStream(InputStream input_stream) {
+
+        public DelegateInputStream(final InputStream input_stream) {
             super();
             input_stream_ = input_stream;
             read_size_ = 0;
         }
-        
+
         public int getReadSize() {
             return read_size_;
         }
-        
+
         @Override
         public int read() throws IOException {
-            int c = input_stream_.read();
-            if (c != -1) read_size_++;
+            final int c = input_stream_.read();
+            if (c != -1)
+                read_size_++;
             return c;
         }
-        
+
         @Override
-        public int read(byte[] b, int offset, int length) throws IOException {
-            int size = input_stream_.read(b, offset, length);
-            if (size > 0) read_size_ += size;
+        public int read(final byte[] b, final int offset, final int length) throws IOException {
+            final int size = input_stream_.read(b, offset, length);
+            if (size > 0)
+                read_size_ += size;
             return size;
         }
-        
+
         @Override
-        public int read(byte[] b) throws IOException {
-            int size = input_stream_.read(b);
-            if (size > 0) read_size_ += size;
+        public int read(final byte[] b) throws IOException {
+            final int size = input_stream_.read(b);
+            if (size > 0)
+                read_size_ += size;
             return size;
         }
-        
+
         @Override
         public synchronized void reset() throws IOException {
             input_stream_.reset();
         }
-        
+
         @Override
-        public long skip(long n) throws IOException {
+        public long skip(final long n) throws IOException {
             return input_stream_.skip(n);
         }
-        
+
         @Override
         public int available() throws IOException {
             return input_stream_.available();
         }
-        
+
         @Override
         public void close() throws IOException {
             input_stream_.close();
             super.close();
         }
-        
+
         @Override
-        public void mark(int readlimit) {
+        public void mark(final int readlimit) {
             input_stream_.mark(readlimit);
         }
-        
+
         @Override
         public boolean markSupported() {
             return input_stream_.markSupported();
         }
-        
+
     }
 }

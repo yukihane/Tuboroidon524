@@ -9,58 +9,60 @@ import java.io.IOException;
 import org.apache.http.HttpResponse;
 
 abstract public class HttpGetBoardDataTask extends TextHttpGetTaskBase {
-    
+
     static public interface Callback {
         void onCompleted(final BoardData new_board_data);
-        
+
         void onFailed();
     }
-    
+
     BoardData board_data_;
     Callback callback_;
-    
-    public HttpGetBoardDataTask(BoardData board_data, Callback callback) {
+
+    public HttpGetBoardDataTask(final BoardData board_data, final Callback callback) {
         super(board_data.getBoardTopURI());
         board_data_ = board_data;
         callback_ = callback;
     }
-    
+
     @Override
-    protected void dispatchHttpTextResponse(HttpResponse res, BufferedReader reader) throws InterruptedException,
+    protected void dispatchHttpTextResponse(final HttpResponse res, final BufferedReader reader) throws InterruptedException,
             IOException {
         try {
-            StringBuilder buf = new StringBuilder();
+            final StringBuilder buf = new StringBuilder();
             while (true) {
-                String line = reader.readLine();
-                if (line == null) break;
-                if (line.toLowerCase().indexOf("</head>") != -1) break;
+                final String line = reader.readLine();
+                if (line == null)
+                    break;
+                if (line.toLowerCase().indexOf("</head>") != -1)
+                    break;
                 buf.append(line);
             }
-            String str = buf.toString();
-            String str_lc = str.toLowerCase();
-            int title_index = str_lc.indexOf("<title>");
-            int title_end_index = str_lc.indexOf("</title>");
+            final String str = buf.toString();
+            final String str_lc = str.toLowerCase();
+            final int title_index = str_lc.indexOf("<title>");
+            final int title_end_index = str_lc.indexOf("</title>");
             if (title_index != -1 && title_end_index != -1) {
                 board_data_.board_name_ = str.substring(title_index + 7, title_end_index);
             }
-        }
-        finally {
+        } finally {
             reader.close();
         }
-        if (Thread.interrupted()) throw new InterruptedException();
-        
+        if (Thread.interrupted())
+            throw new InterruptedException();
+
         if (callback_ != null) {
             callback_.onCompleted(board_data_);
         }
         callback_ = null;
         board_data_ = null;
     }
-    
+
     @Override
-    protected void onConnectionError(boolean connectionFailed) {
+    protected void onConnectionError(final boolean connectionFailed) {
         onRequestCanceled();
     }
-    
+
     @Override
     protected void onRequestCanceled() {
         if (callback_ != null) {
@@ -69,5 +71,5 @@ abstract public class HttpGetBoardDataTask extends TextHttpGetTaskBase {
         callback_ = null;
         board_data_ = null;
     }
-    
+
 }

@@ -264,17 +264,17 @@ public class ImageViewerActivity extends TuboroidActivity {
 
                 getAgent().copyFile(image_local_file_.getAbsolutePath(), target_path,
                         new DataFileAgent.FileWroteCallback() {
-                    @Override
-                    public void onFileWrote(final boolean succeeded) {
-                        if (succeeded) {
-                            ManagedToast.raiseToast(getApplicationContext(), R.string.toast_image_saved,
-                                    Toast.LENGTH_LONG);
-                        } else {
-                            ManagedToast.raiseToast(getApplicationContext(),
-                                    R.string.toast_image_failed_to_save, Toast.LENGTH_LONG);
-                        }
-                    }
-                });
+                            @Override
+                            public void onFileWrote(final boolean succeeded) {
+                                if (succeeded) {
+                                    ManagedToast.raiseToast(getApplicationContext(), R.string.toast_image_saved,
+                                            Toast.LENGTH_LONG);
+                                } else {
+                                    ManagedToast.raiseToast(getApplicationContext(),
+                                            R.string.toast_image_failed_to_save, Toast.LENGTH_LONG);
+                                }
+                            }
+                        });
             }
             return;
         }

@@ -175,49 +175,49 @@ public class BoardListActivity extends TuboroidExpandableListActivityBase {
     private void doDeleteBoard(final BoardData board_data) {
         SimpleDialog.showYesNo(this, R.string.ctx_menu_delete_board, R.string.ctx_menu_delete_board_confirm,
                 new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(final DialogInterface dialog, final int which) {
-                getAgent().deleteBoard(board_data, new Runnable() {
                     @Override
-                    public void run() {
-                        runOnUiThread(new Runnable() {
+                    public void onClick(final DialogInterface dialog, final int which) {
+                        getAgent().deleteBoard(board_data, new Runnable() {
                             @Override
                             public void run() {
-                                reloadBoardList(true, false);
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        reloadBoardList(true, false);
+                                    }
+                                });
                             }
                         });
                     }
-                });
-            }
-        }, null);
+                }, null);
     }
 
     private void doEditBoard(final BoardData board_data) {
         SimpleEditTextDialog.show(this, board_data.board_name_, R.string.ctx_menu_edit_board_confirm,
                 android.R.string.ok, new SimpleEditTextDialog.OnSubmitListener() {
-            @Override
-            public void onSubmitted(String data) {
-                data = data.trim();
-                if (data.length() == 0)
-                    return;
-                board_data.board_name_ = data;
-                getAgent().updateBoard(board_data, new Runnable() {
                     @Override
-                    public void run() {
-                        runOnUiThread(new Runnable() {
+                    public void onSubmitted(String data) {
+                        data = data.trim();
+                        if (data.length() == 0)
+                            return;
+                        board_data.board_name_ = data;
+                        getAgent().updateBoard(board_data, new Runnable() {
                             @Override
                             public void run() {
-                                reloadBoardList(true, false);
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        reloadBoardList(true, false);
+                                    }
+                                });
                             }
                         });
                     }
-                });
-            }
 
-            @Override
-            public void onCanceled() {
-            }
-        });
+                    @Override
+                    public void onCanceled() {
+                    }
+                });
     }
 
     // ////////////////////////////////////////////////////////////
@@ -330,52 +330,52 @@ public class BoardListActivity extends TuboroidExpandableListActivityBase {
 
         final boolean cached = getAgent().fetchBoardList(no_cache, force_reload,
                 new BoardListAgent.BoardListFetchedCallback() {
-            @Override
-            public void onBoardListFetched(final ArrayList<String> board_groups,
-                    final ArrayList<ArrayList<BoardData>> board_list,
-                    final NSimpleExpandableListActivity.StatData board_list_stat) {
-                runOnUiThread(new Runnable() {
                     @Override
-                    public void run() {
-                        if (!is_active_)
-                            return;
-                        ((BoardListAdapter) list_adapter_).setDataList(board_groups, board_list);
-                        progress_dialog_.hide();
-                        setResumePosition(board_list_stat);
-                        onEndReload();
+                    public void onBoardListFetched(final ArrayList<String> board_groups,
+                            final ArrayList<ArrayList<BoardData>> board_list,
+                            final NSimpleExpandableListActivity.StatData board_list_stat) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (!is_active_)
+                                    return;
+                                ((BoardListAdapter) list_adapter_).setDataList(board_groups, board_list);
+                                progress_dialog_.hide();
+                                setResumePosition(board_list_stat);
+                                onEndReload();
+                            }
+                        });
                     }
-                });
-            }
 
-            @Override
-            public void onBoardListConnectionFailed() {
-                runOnUiThread(new Runnable() {
                     @Override
-                    public void run() {
-                        if (!is_active_)
-                            return;
-                        ManagedToast
-                        .raiseToast(BoardListActivity.this, R.string.toast_reload_board_list_failed);
-                        progress_dialog_.hide();
-                        onEndReload();
+                    public void onBoardListConnectionFailed() {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (!is_active_)
+                                    return;
+                                ManagedToast
+                                        .raiseToast(BoardListActivity.this, R.string.toast_reload_board_list_failed);
+                                progress_dialog_.hide();
+                                onEndReload();
+                            }
+                        });
                     }
-                });
-            }
 
-            @Override
-            public void onConnectionOffline() {
-                runOnUiThread(new Runnable() {
                     @Override
-                    public void run() {
-                        if (!is_active_)
-                            return;
-                        ManagedToast.raiseToast(BoardListActivity.this, R.string.toast_network_is_offline);
-                        progress_dialog_.hide();
-                        onEndReload();
+                    public void onConnectionOffline() {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (!is_active_)
+                                    return;
+                                ManagedToast.raiseToast(BoardListActivity.this, R.string.toast_network_is_offline);
+                                progress_dialog_.hide();
+                                onEndReload();
+                            }
+                        });
                     }
                 });
-            }
-        });
 
         if (!cached) {
             progress_dialog_.show(this, R.string.dialog_loading_progress, new DialogInterface.OnCancelListener() {

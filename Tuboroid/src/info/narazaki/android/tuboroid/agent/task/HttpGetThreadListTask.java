@@ -8,14 +8,14 @@ import java.util.List;
 public interface HttpGetThreadListTask {
     static public interface Callback {
         void onReceived(final List<ThreadData> data_list);
-        
+
         void onCompleted();
-        
+
         void onConnectionFailed();
-        
+
         void onInterrupted();
     }
-    
+
     public void sendTo(HttpTaskAgentInterface http_agent);
-    
+
 }

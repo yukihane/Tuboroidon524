@@ -6,17 +6,17 @@ import android.preference.PreferenceActivity;
 
 public class NPreferenceActivity extends PreferenceActivity {
     private boolean on_first_shown_ = true;
-    
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         on_first_shown_ = true;
         super.onCreate(savedInstanceState);
     }
-    
+
     protected NApplication getNApplication() {
         return (NApplication) getApplication();
     }
-    
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -24,16 +24,17 @@ public class NPreferenceActivity extends PreferenceActivity {
         if (on_first_shown_) {
             onFirstResume();
             on_first_shown_ = false;
-        }
-        else {
+        } else {
             onSecondResume();
         }
     }
-    
-    protected void onFirstResume() {}
-    
-    protected void onSecondResume() {}
-    
+
+    protected void onFirstResume() {
+    }
+
+    protected void onSecondResume() {
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
