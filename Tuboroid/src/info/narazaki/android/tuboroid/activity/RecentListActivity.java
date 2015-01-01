@@ -8,6 +8,7 @@ import info.narazaki.android.tuboroid.TuboroidApplication;
 import info.narazaki.android.tuboroid.activity.base.FavoriteListBaseActivity;
 import info.narazaki.android.tuboroid.adapter.RecentListAdapter;
 import info.narazaki.android.tuboroid.agent.ThreadListAgent;
+import info.narazaki.android.tuboroid.contents.thread_entry_list.view.ThreadEntryListActivity;
 import info.narazaki.android.tuboroid.data.ThreadData;
 import info.narazaki.android.tuboroid.dialog.ThreadInfoDialog;
 import info.narazaki.android.tuboroid.service.ITuboroidService;

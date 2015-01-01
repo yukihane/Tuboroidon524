@@ -8,6 +8,7 @@ import info.narazaki.android.tuboroid.TuboroidApplication;
 import info.narazaki.android.tuboroid.activity.base.FavoriteListBaseActivity;
 import info.narazaki.android.tuboroid.adapter.FavoriteListAdapter;
 import info.narazaki.android.tuboroid.agent.FavoriteCacheListAgent;
+import info.narazaki.android.tuboroid.contents.thread_entry_list.view.ThreadEntryListActivity;
 import info.narazaki.android.tuboroid.data.BoardData;
 import info.narazaki.android.tuboroid.data.FavoriteItemData;
 import info.narazaki.android.tuboroid.data.Find2chKeyData;

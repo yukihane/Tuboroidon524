@@ -2,6 +2,7 @@ package info.narazaki.android.tuboroid.activity;
 
 import info.narazaki.android.lib.system.MigrationSDK5;
 import info.narazaki.android.tuboroid.activity.base.TuboroidActivity;
+import info.narazaki.android.tuboroid.contents.thread_entry_list.view.ThreadEntryListActivity;
 import info.narazaki.android.tuboroid.data.ThreadData;
 import android.content.Intent;
 import android.net.Uri;

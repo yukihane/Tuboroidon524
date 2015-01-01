@@ -12,6 +12,7 @@ import info.narazaki.android.tuboroid.agent.BoardListAgent;
 import info.narazaki.android.tuboroid.agent.FavoriteCacheListAgent;
 import info.narazaki.android.tuboroid.agent.ThreadListAgent;
 import info.narazaki.android.tuboroid.agent.TuboroidAgent;
+import info.narazaki.android.tuboroid.contents.thread_entry_list.view.ThreadEntryListActivity;
 import info.narazaki.android.tuboroid.data.BoardData;
 import info.narazaki.android.tuboroid.data.ThreadData;
 import info.narazaki.android.tuboroid.dialog.ThreadInfoDialog;

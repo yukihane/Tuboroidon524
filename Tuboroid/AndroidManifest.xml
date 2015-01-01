@@ -35,7 +35,7 @@
 			</intent-filter>
 		</activity>
 		<activity android:name=".activity.ThreadListActivity"></activity>
-		<activity android:name=".activity.ThreadEntryListActivity"></activity>
+		<activity android:name="info.narazaki.android.tuboroid.contents.thread_entry_list.view.ThreadEntryListActivity"></activity>
 
 		<activity android:name=".activity.Find2chSearchActivity"></activity>
 		<activity android:name=".activity.SimilarThreadListActivity"></activity>

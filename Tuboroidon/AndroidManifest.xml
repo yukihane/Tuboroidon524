@@ -53,7 +53,7 @@
 		<activity
 			android:name="info.narazaki.android.tuboroid.activity.ThreadListActivity"></activity>
 		<activity
-			android:name="info.narazaki.android.tuboroid.activity.ThreadEntryListActivity"></activity>
+			android:name="info.narazaki.android.tuboroid.contents.thread_entry_list.view.ThreadEntryListActivity"></activity>
 
 		<activity
 			android:name="info.narazaki.android.tuboroid.activity.Find2chSearchActivity"></activity>

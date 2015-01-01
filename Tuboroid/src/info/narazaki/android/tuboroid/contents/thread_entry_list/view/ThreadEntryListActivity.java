@@ -1,4 +1,4 @@
-package info.narazaki.android.tuboroid.activity;
+package info.narazaki.android.tuboroid.contents.thread_entry_list.view;
 
 import info.narazaki.android.lib.adapter.SimpleListAdapterBase;
 import info.narazaki.android.lib.dialog.SimpleDialog;
@@ -8,6 +8,10 @@ import info.narazaki.android.lib.view.SimpleSpanTextViewOnTouchListener;
 import info.narazaki.android.tuboroid.R;
 import info.narazaki.android.tuboroid.TuboroidApplication;
 import info.narazaki.android.tuboroid.TuboroidApplication.ViewConfig;
+import info.narazaki.android.tuboroid.activity.ForwardableActivityUtil;
+import info.narazaki.android.tuboroid.activity.SimilarThreadListActivity;
+import info.narazaki.android.tuboroid.activity.ThreadEntryEditActivity;
+import info.narazaki.android.tuboroid.activity.ThreadListActivity;
 import info.narazaki.android.tuboroid.activity.base.SearchableListActivity;
 import info.narazaki.android.tuboroid.adapter.ThreadEntryListAdapter;
 import info.narazaki.android.tuboroid.agent.FavoriteCacheListAgent.NextFavoriteThreadFetchedCallback;

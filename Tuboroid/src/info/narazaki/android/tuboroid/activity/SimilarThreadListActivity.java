@@ -10,6 +10,7 @@ import info.narazaki.android.tuboroid.activity.base.TuboroidListActivity;
 import info.narazaki.android.tuboroid.adapter.ThreadListAdapter;
 import info.narazaki.android.tuboroid.agent.BoardListAgent;
 import info.narazaki.android.tuboroid.agent.ThreadListAgent.ThreadListFetchedCallback;
+import info.narazaki.android.tuboroid.contents.thread_entry_list.view.ThreadEntryListActivity;
 import info.narazaki.android.tuboroid.data.BoardData;
 import info.narazaki.android.tuboroid.data.ThreadData;
 
