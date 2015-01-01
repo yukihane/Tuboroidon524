@@ -17,6 +17,9 @@ import info.narazaki.android.tuboroid.adapter.ThreadEntryListAdapter;
 import info.narazaki.android.tuboroid.agent.FavoriteCacheListAgent.NextFavoriteThreadFetchedCallback;
 import info.narazaki.android.tuboroid.agent.ThreadEntryListAgent;
 import info.narazaki.android.tuboroid.agent.thread.SQLiteAgent;
+import info.narazaki.android.tuboroid.contents.thread_entry_list.presenter.ThreadEntryListPresenter;
+import info.narazaki.android.tuboroid.contents.thread_entry_list.presenter.ThreadEntryListPresenterImpl;
+import info.narazaki.android.tuboroid.contents.thread_entry_list.presenter.ThreadEntryListView;
 import info.narazaki.android.tuboroid.data.IgnoreData;
 import info.narazaki.android.tuboroid.data.ThreadData;
 import info.narazaki.android.tuboroid.data.ThreadEntryData;
@@ -91,7 +94,7 @@ import android.widget.ToggleButton;
 /**
  * (予想)1つの「スレ」を表示するためのアクティビティ.
  */
-public class ThreadEntryListActivity extends SearchableListActivity {
+public class ThreadEntryListActivity extends SearchableListActivity implements ThreadEntryListView {
     public static final String TAG = "ThreadEntryListActivity";
 
     public static final String INTENT_KEY_URL = "KEY_URL";
@@ -177,11 +180,16 @@ public class ThreadEntryListActivity extends SearchableListActivity {
     // 画像表示用ダイアログ
     private ImageViewerDialog image_viewer_dialog_;
 
+    private ThreadEntryListPresenter presenter;
+
     // ////////////////////////////////////////////////////////////
     // ステート管理系
     // ////////////////////////////////////////////////////////////
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
+
+        presenter = new ThreadEntryListPresenterImpl(this, this);
+
         requestWindowFeature(Window.FEATURE_ACTION_BAR);
 
         super.onCreate(savedInstanceState);
