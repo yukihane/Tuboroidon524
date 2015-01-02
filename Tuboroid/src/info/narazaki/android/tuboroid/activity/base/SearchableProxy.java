@@ -43,6 +43,11 @@ public abstract class SearchableProxy {
         this.activity = Objects.requireNonNull(activity);
     }
 
+    protected TuboroidListActivity getActivity() {
+        return activity;
+    }
+
+
     /**
      * 委譲元のonResumeメソッド内で実行してください.
      */
@@ -151,7 +156,7 @@ public abstract class SearchableProxy {
         updateFilter(edit_text.getText().toString());
     }
 
-    protected void cancelSearchBar() {
+    public void cancelSearchBar() {
         onCanceledSearchBar();
     }
 
@@ -198,7 +203,7 @@ public abstract class SearchableProxy {
     // メニュー
     // ////////////////////////////////////////////////////////////////
 
-    protected void createToolBarOptionMenu(final Menu menu, final int menu_id_tool_bar_show,
+    public void createToolBarOptionMenu(final Menu menu, final int menu_id_tool_bar_show,
             final int menu_id_tool_bar_hide, final int menu_id_search_bar_show, final int menu_id_search_bar_hide) {
         menu_id_tool_bar_show_ = menu_id_tool_bar_show;
         menu_id_tool_bar_hide_ = menu_id_tool_bar_hide;
