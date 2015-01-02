@@ -1,13 +1,21 @@
 package info.narazaki.android.tuboroid.contents.thread_entry_list.view;
 
+import static info.narazaki.android.tuboroid.contents.thread_entry_list.model.Constants.INTENT_ID_SHOW_ENTRY_EDITOR;
+import static info.narazaki.android.tuboroid.contents.thread_entry_list.model.Constants.MENU_KEY_COMPOSE;
+import static info.narazaki.android.tuboroid.contents.thread_entry_list.model.Constants.MENU_KEY_SEARCH_BAR_1;
+import static info.narazaki.android.tuboroid.contents.thread_entry_list.model.Constants.MENU_KEY_SEARCH_BAR_2;
+import static info.narazaki.android.tuboroid.contents.thread_entry_list.model.Constants.MENU_KEY_TOOLBAR_1;
+import static info.narazaki.android.tuboroid.contents.thread_entry_list.model.Constants.MENU_KEY_TOOLBAR_2;
 import info.narazaki.android.lib.adapter.SimpleListAdapterBase;
 import info.narazaki.android.tuboroid.R;
+import info.narazaki.android.tuboroid.activity.ThreadEntryEditActivity;
 import info.narazaki.android.tuboroid.activity.base.TuboroidListActivity;
 import info.narazaki.android.tuboroid.contents.thread_entry_list.presenter.ThreadEntryListPresenter;
 import info.narazaki.android.tuboroid.contents.thread_entry_list.presenter.ThreadEntryListPresenterImpl;
 import info.narazaki.android.tuboroid.contents.thread_entry_list.presenter.ThreadEntryListView;
 import info.narazaki.android.tuboroid.data.ThreadEntryData;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -124,7 +132,18 @@ public class ThreadEntryListActivity extends TuboroidListActivity implements Thr
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
         log("onCreateOptionsMenu called");
-        return super.onCreateOptionsMenu(menu);
+        super.onCreateOptionsMenu(menu);
+
+        // ツールバー
+        searchableProxy.onCreateOptionsMenu(menu, MENU_KEY_TOOLBAR_1, MENU_KEY_TOOLBAR_2, MENU_KEY_SEARCH_BAR_1,
+                MENU_KEY_SEARCH_BAR_2);
+
+        // 書き込み
+        final MenuItem compose_item = menu.add(0, MENU_KEY_COMPOSE, MENU_KEY_COMPOSE,
+                getString(R.string.label_menu_compose));
+        compose_item.setIcon(R.drawable.ic_menu_compose);
+
+        return presenter.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -191,5 +210,18 @@ public class ThreadEntryListActivity extends TuboroidListActivity implements Thr
     public boolean onPrepareOptionsMenu(final Menu menu) {
         log("onPrepareOptionsMenu called");
         return searchableProxy.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public MenuItem getMenuItemCompose(Menu menu) {
+        return menu.findItem(MENU_KEY_COMPOSE);
+    }
+
+    @Override
+    public void showEntryEditor(Uri data) {
+        log("showEntryEditor called");
+        final Intent intent = new Intent(this, ThreadEntryEditActivity.class);
+        intent.setData(data);
+        startActivityForResult(intent, INTENT_ID_SHOW_ENTRY_EDITOR);
     }
 }
