@@ -177,80 +177,80 @@ public class SimilarThreadListActivity extends TuboroidListActivity {
         getAgent().fetchSimilarThreadList(board_data_, target_thread_id_, search_key_, force_reload,
                 new ThreadListFetchedCallback() {
 
+            @Override
+            public void onThreadListFetchCompleted() {
+                postListViewAndUiThread(new Runnable() {
                     @Override
-                    public void onThreadListFetchCompleted() {
-                        postListViewAndUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (reload_terminator.is_terminated_)
-                                    return;
-                                onSearchCompleted();
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onThreadListFetchedCache(final List<ThreadData> dataList) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (reload_terminator.is_terminated_)
-                                    return;
-                                ((ThreadListAdapter) list_adapter_).setDataList(dataList, null);
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onThreadListFetched(final List<ThreadData> dataList) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (reload_terminator.is_terminated_)
-                                    return;
-                                ((ThreadListAdapter) list_adapter_).addDataList(dataList, null);
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onInterrupted() {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (reload_terminator.is_terminated_)
-                                    return;
-                                onEndReload();
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onThreadListFetchFailed(final boolean maybe_moved) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (reload_terminator.is_terminated_)
-                                    return;
-                                onSearchFailed();
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onConnectionOffline() {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (reload_terminator.is_terminated_)
-                                    return;
-                                onSearchOffline();
-                            }
-                        });
+                    public void run() {
                         if (reload_terminator.is_terminated_)
                             return;
+                        onSearchCompleted();
                     }
                 });
+            }
+
+            @Override
+            public void onThreadListFetchedCache(final List<ThreadData> dataList) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (reload_terminator.is_terminated_)
+                            return;
+                        ((ThreadListAdapter) list_adapter_).setDataList(dataList, null);
+                    }
+                });
+            }
+
+            @Override
+            public void onThreadListFetched(final List<ThreadData> dataList) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (reload_terminator.is_terminated_)
+                            return;
+                        ((ThreadListAdapter) list_adapter_).addDataList(dataList, null);
+                    }
+                });
+            }
+
+            @Override
+            public void onInterrupted() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (reload_terminator.is_terminated_)
+                            return;
+                        onEndReload();
+                    }
+                });
+            }
+
+            @Override
+            public void onThreadListFetchFailed(final boolean maybe_moved) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (reload_terminator.is_terminated_)
+                            return;
+                        onSearchFailed();
+                    }
+                });
+            }
+
+            @Override
+            public void onConnectionOffline() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (reload_terminator.is_terminated_)
+                            return;
+                        onSearchOffline();
+                    }
+                });
+                if (reload_terminator.is_terminated_)
+                    return;
+            }
+        });
 
     }
 
