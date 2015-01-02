@@ -1,5 +1,7 @@
 package info.narazaki.android.tuboroid.activity;
 
+import static info.narazaki.android.tuboroid.contents.thread_entry_list.model.Constants.INTENT_KEY_MAYBE_ONLINE_COUNT;
+import static info.narazaki.android.tuboroid.contents.thread_entry_list.model.Constants.INTENT_KEY_MAYBE_THREAD_NAME;
 import info.narazaki.android.lib.adapter.SimpleListAdapterBase;
 import info.narazaki.android.lib.dialog.SimpleDialog;
 import info.narazaki.android.lib.system.MigrationSDK5;
@@ -108,8 +110,8 @@ public class FavoriteListActivity extends FavoriteListBaseActivity {
             final ThreadData thread_data = data.getThreadData();
             final String uri = thread_data.getThreadURI();
             intent.setData(Uri.parse(uri));
-            intent.putExtra(ThreadEntryListActivity.INTENT_KEY_MAYBE_THREAD_NAME, thread_data.thread_name_);
-            intent.putExtra(ThreadEntryListActivity.INTENT_KEY_MAYBE_ONLINE_COUNT, thread_data.online_count_);
+            intent.putExtra(INTENT_KEY_MAYBE_THREAD_NAME, thread_data.thread_name_);
+            intent.putExtra(INTENT_KEY_MAYBE_ONLINE_COUNT, thread_data.online_count_);
             MigrationSDK5.Intent_addFlagNoAnimation(intent);
             startActivity(intent);
         } else if (data.isSearchKey()) {
