@@ -8,7 +8,7 @@ import info.narazaki.android.lib.system.MigrationSDK5;
 import info.narazaki.android.lib.toast.ManagedToast;
 import info.narazaki.android.tuboroid.R;
 import info.narazaki.android.tuboroid.TuboroidApplication;
-import info.narazaki.android.tuboroid.activity.base.SearchableListActivity;
+import info.narazaki.android.tuboroid.activity.base.TuboroidListActivity;
 import info.narazaki.android.tuboroid.adapter.ThreadListAdapter;
 import info.narazaki.android.tuboroid.agent.BoardListAgent;
 import info.narazaki.android.tuboroid.agent.FavoriteCacheListAgent;
@@ -46,7 +46,7 @@ import android.widget.ListView;
 /**
  * (予想)ある板のスレッドタイトルを一覧表示するためのアクティビティ.
  */
-public class ThreadListActivity extends SearchableListActivity {
+public class ThreadListActivity extends TuboroidListActivity {
     public static final String TAG = "ThreadListActivity";
 
     public static final String PREF_KEY_THREAD_SORT_ORDER = "PREF_KEY_THREAD_SORT_ORDER";
@@ -85,9 +85,9 @@ public class ThreadListActivity extends SearchableListActivity {
     private int reload_progress_cur_ = 0;
 
     private BoardData board_data_;
-    private String filter_ = null;
 
     private BroadcastReceiver reload_intent_receiver_;
+    private ThreadListSearchable searchProxy;
 
     // ////////////////////////////////////////////////////////////
     // ステート管理系
@@ -99,6 +99,9 @@ public class ThreadListActivity extends SearchableListActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.thread_list);
+
+        searchProxy = new ThreadListSearchable(this);
+
         registerForContextMenu(getListView());
 
         reload_on_resume_ = false;
@@ -137,6 +140,8 @@ public class ThreadListActivity extends SearchableListActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        searchProxy.onResume();
+
         registerReceiver(reload_intent_receiver_, new IntentFilter(TuboroidAgent.THREAD_DATA_UPDATED_ACTION));
         ((ThreadListAdapter) getListAdapter()).setFontSize(getTuboroidApplication().view_config_);
         if (board_data_ == null) {
@@ -186,8 +191,8 @@ public class ThreadListActivity extends SearchableListActivity {
 
     @Override
     public boolean onKeyDown(final int keyCode, final KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK && (filter_ != null || hasVisibleSearchBar())) {
-            cancelSearchBar();
+        if (keyCode == KeyEvent.KEYCODE_BACK && (searchProxy.getFilter() != null || searchProxy.hasVisibleSearchBar())) {
+            searchProxy.cancelSearchBar();
             return true;
         }
 
@@ -255,6 +260,16 @@ public class ThreadListActivity extends SearchableListActivity {
         return true;
     }
 
+    @Override
+    public boolean onSearchRequested() {
+        return searchProxy.onSearchRequested();
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(final Menu menu) {
+        return searchProxy.onPrepareOptionsMenu(menu);
+    }
+
     private void copyToClipboard(final ThreadData thread_data) {
         final String[] menu_strings = new String[] { getString(R.string.label_submenu_copy_thread_info_title),
                 getString(R.string.label_submenu_copy_thread_info_url),
@@ -299,7 +314,7 @@ public class ThreadListActivity extends SearchableListActivity {
         super.onCreateOptionsMenu(menu);
 
         // ツールバー
-        createToolBarOptionMenu(menu, MENU_KEY_TOOLBAR_1, MENU_KEY_TOOLBAR_2, MENU_KEY_SEARCH_BAR_1,
+        searchProxy.createToolBarOptionMenu(menu, MENU_KEY_TOOLBAR_1, MENU_KEY_TOOLBAR_2, MENU_KEY_SEARCH_BAR_1,
                 MENU_KEY_SEARCH_BAR_2);
 
         // ソート
@@ -537,28 +552,6 @@ public class ThreadListActivity extends SearchableListActivity {
 
     protected TuboroidApplication.ViewConfig getListFontPref() {
         return getTuboroidApplication().view_config_;
-    }
-
-    @Override
-    protected void updateFilter(final String filter) {
-        new Exception().printStackTrace();
-        if (!getIsActive())
-            return;
-
-        filter_ = filter;
-        if (filter_ == null || filter_.length() == 0) {
-            ((ThreadListAdapter) getListAdapter()).setFilter(null, null);
-        } else {
-            final String filter_lc = filter_.toLowerCase();
-            ((ThreadListAdapter) getListAdapter()).setFilter(new ThreadListAdapter.Filter<ThreadData>() {
-                @Override
-                public boolean filter(final ThreadData data) {
-                    if (data.thread_name_.toLowerCase().indexOf(filter_lc) == -1)
-                        return false;
-                    return true;
-                }
-            }, null);
-        }
     }
 
     private void initSortOrder() {
