@@ -161,7 +161,7 @@ public class SimilarThreadListActivity extends TuboroidListActivity {
     // ////////////////////////////////////////////////////////////
     @Override
     protected void reloadList(final boolean force_reload) {
-        if (!is_active_)
+        if (!getIsActive())
             return;
 
         if (!onBeginReload())
@@ -170,7 +170,7 @@ public class SimilarThreadListActivity extends TuboroidListActivity {
         progress_dialog_.show(this, R.string.dialog_loading_progress, new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(final DialogInterface dialog) {
-                if (is_active_)
+                if (getIsActive())
                     finish();
             }
         });
@@ -257,7 +257,7 @@ public class SimilarThreadListActivity extends TuboroidListActivity {
     }
 
     private void onSearchCompleted() {
-        if (!is_active_)
+        if (!getIsActive())
             return;
         progress_dialog_.hide();
         ((ThreadListAdapter) list_adapter_).notifyDataSetChanged();
@@ -265,7 +265,7 @@ public class SimilarThreadListActivity extends TuboroidListActivity {
     }
 
     private void onSearchFailed() {
-        if (!is_active_)
+        if (!getIsActive())
             return;
         progress_dialog_.hide();
         ManagedToast.raiseToast(getApplicationContext(), R.string.toast_reload_entry_list_failed);
@@ -273,7 +273,7 @@ public class SimilarThreadListActivity extends TuboroidListActivity {
     }
 
     private void onSearchOffline() {
-        if (!is_active_)
+        if (!getIsActive())
             return;
         progress_dialog_.hide();
         ManagedToast.raiseToast(getApplicationContext(), R.string.toast_network_is_offline);

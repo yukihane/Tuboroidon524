@@ -421,7 +421,7 @@ public class ThreadListActivity extends SearchableListActivity {
     // ////////////////////////////////////////////////////////////
     @Override
     protected void reloadList(final boolean force_reload) {
-        if (!is_active_)
+        if (!getIsActive())
             return;
 
         if (!onBeginReload())
@@ -542,7 +542,7 @@ public class ThreadListActivity extends SearchableListActivity {
     @Override
     protected void updateFilter(final String filter) {
         new Exception().printStackTrace();
-        if (!is_active_)
+        if (!getIsActive())
             return;
 
         filter_ = filter;

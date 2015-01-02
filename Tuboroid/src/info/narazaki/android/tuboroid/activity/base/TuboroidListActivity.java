@@ -331,7 +331,7 @@ abstract public class TuboroidListActivity extends NSimpleListActivity {
     }
 
     protected void setFavorite(final boolean is_favorite) {
-        if (!is_active_)
+        if (!getIsActive())
             return;
         if (isFavorite() != is_favorite) {
             if (is_favorite) {

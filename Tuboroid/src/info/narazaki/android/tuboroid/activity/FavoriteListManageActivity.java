@@ -185,7 +185,7 @@ public class FavoriteListManageActivity extends TuboroidListActivity {
     // リロード
     // ////////////////////////////////////////////////////////////
     protected void reloadList() {
-        if (!is_active_)
+        if (!getIsActive())
             return;
 
         getAgent().fetchFavoriteList(new FavoriteCacheListAgent.FavoriteListFetchedCallback() {
@@ -195,7 +195,7 @@ public class FavoriteListManageActivity extends TuboroidListActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if (!is_active_)
+                        if (!getIsActive())
                             return;
                         final ArrayList<FavoriteManageItemData> new_list = new ArrayList<FavoriteManageItemData>();
                         for (final FavoriteItemData data : dataList) {

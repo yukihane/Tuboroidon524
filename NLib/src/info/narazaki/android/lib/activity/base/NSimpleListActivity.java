@@ -12,7 +12,7 @@ abstract public class NSimpleListActivity extends NListActivity {
     private static final String INTENT_KEY_RESUME_ITEM_POS = "__TuboroidListActivity_resume_item_pos";
     private static final String INTENT_KEY_RESUME_ITEM_TOP = "__TuboroidListActivity_resume_item_top";
 
-    protected boolean is_active_;
+    private boolean is_active_;
     protected SimpleListAdapterBase<?> list_adapter_ = null;
 
     private boolean reload_in_progress_ = false;
@@ -276,4 +276,7 @@ abstract public class NSimpleListActivity extends NListActivity {
         }
     }
 
+    public boolean getIsActive() {
+        return is_active_;
+    }
 }

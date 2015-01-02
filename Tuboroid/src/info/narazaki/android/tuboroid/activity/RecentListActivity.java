@@ -300,7 +300,7 @@ public class RecentListActivity extends FavoriteListBaseActivity {
 
     @Override
     protected void reloadList() {
-        if (!is_active_)
+        if (!getIsActive())
             return;
 
         final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());

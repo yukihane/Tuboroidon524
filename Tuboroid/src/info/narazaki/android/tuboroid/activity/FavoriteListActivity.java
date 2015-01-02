@@ -363,7 +363,7 @@ public class FavoriteListActivity extends FavoriteListBaseActivity {
 
     @Override
     protected void reloadList() {
-        if (!is_active_)
+        if (!getIsActive())
             return;
         final ReloadTerminator reload_terminator = getNewReloadTerminator();
         getAgent().fetchFavoriteList(new FavoriteCacheListAgent.FavoriteListFetchedCallback() {

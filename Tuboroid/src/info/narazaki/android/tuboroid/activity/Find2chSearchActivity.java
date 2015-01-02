@@ -344,7 +344,7 @@ public class Find2chSearchActivity extends TuboroidListActivity {
     }
 
     private void onSearchProgress(final ArrayList<Find2chResultData> data_list) {
-        if (!is_active_)
+        if (!getIsActive())
             return;
         if (data_list == null) {
             onSearchFailed();
@@ -358,7 +358,7 @@ public class Find2chSearchActivity extends TuboroidListActivity {
 
     private void onSearchCompleted(final String key) {
         current_find_2ch_task_ = null;
-        if (!is_active_)
+        if (!getIsActive())
             return;
         setProgressBar(reload_progress_max_, reload_progress_max_);
         showProgressBar(false);
@@ -368,7 +368,7 @@ public class Find2chSearchActivity extends TuboroidListActivity {
 
     private void onSearchFailed() {
         current_find_2ch_task_ = null;
-        if (!is_active_)
+        if (!getIsActive())
             return;
         ManagedToast.raiseToast(getApplicationContext(), R.string.toast_search_find2ch_failed);
         showProgressBar(false);
@@ -377,7 +377,7 @@ public class Find2chSearchActivity extends TuboroidListActivity {
 
     private void onSearchOffline() {
         current_find_2ch_task_ = null;
-        if (!is_active_)
+        if (!getIsActive())
             return;
         ManagedToast.raiseToast(getApplicationContext(), R.string.toast_network_is_offline);
         showProgressBar(false);
