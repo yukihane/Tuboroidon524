@@ -198,7 +198,7 @@ public class SimilarThreadListActivity extends TuboroidListActivity {
                     public void run() {
                         if (reload_terminator.is_terminated_)
                             return;
-                        ((ThreadListAdapter) list_adapter_).setDataList(dataList, null);
+                        ((ThreadListAdapter) getListAdapter()).setDataList(dataList, null);
                     }
                 });
             }
@@ -210,7 +210,7 @@ public class SimilarThreadListActivity extends TuboroidListActivity {
                     public void run() {
                         if (reload_terminator.is_terminated_)
                             return;
-                        ((ThreadListAdapter) list_adapter_).addDataList(dataList, null);
+                        ((ThreadListAdapter) getListAdapter()).addDataList(dataList, null);
                     }
                 });
             }
@@ -260,7 +260,7 @@ public class SimilarThreadListActivity extends TuboroidListActivity {
         if (!getIsActive())
             return;
         progress_dialog_.hide();
-        ((ThreadListAdapter) list_adapter_).notifyDataSetChanged();
+        ((ThreadListAdapter) getListAdapter()).notifyDataSetChanged();
         onEndReload();
     }
 

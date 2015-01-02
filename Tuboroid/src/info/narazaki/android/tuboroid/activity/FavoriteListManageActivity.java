@@ -201,7 +201,7 @@ public class FavoriteListManageActivity extends TuboroidListActivity {
                         for (final FavoriteItemData data : dataList) {
                             new_list.add(new FavoriteManageItemData(data));
                         }
-                        ((FavoriteListManageAdapter) list_adapter_).setDataList(new_list);
+                        ((FavoriteListManageAdapter) getListAdapter()).setDataList(new_list);
                     }
                 });
             }

@@ -315,7 +315,7 @@ public class RecentListActivity extends FavoriteListBaseActivity {
                     public void run() {
                         if (reload_terminator.is_terminated_)
                             return;
-                        ((RecentListAdapter) list_adapter_).setDataList(data_list, new Runnable() {
+                        ((RecentListAdapter) getListAdapter()).setDataList(data_list, new Runnable() {
                             @Override
                             public void run() {
                                 onEndReload();

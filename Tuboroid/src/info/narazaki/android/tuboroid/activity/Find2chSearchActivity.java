@@ -282,7 +282,7 @@ public class Find2chSearchActivity extends TuboroidListActivity {
                             return;
                         reload_progress_max_ = found_items;
                         setProgressBar(reload_progress_cur_, reload_progress_max_);
-                        ((Find2chResultAdapter) list_adapter_).clear();
+                        ((Find2chResultAdapter) getListAdapter()).clear();
                     }
                 });
             }
@@ -351,9 +351,9 @@ public class Find2chSearchActivity extends TuboroidListActivity {
             return;
         } else {
             hasInitialData(true);
-            ((Find2chResultAdapter) list_adapter_).addDataList(data_list);
+            ((Find2chResultAdapter) getListAdapter()).addDataList(data_list);
         }
-        setProgressBar(((Find2chResultAdapter) list_adapter_).getCount(), reload_progress_max_);
+        setProgressBar(((Find2chResultAdapter) getListAdapter()).getCount(), reload_progress_max_);
     }
 
     private void onSearchCompleted(final String key) {
@@ -362,7 +362,7 @@ public class Find2chSearchActivity extends TuboroidListActivity {
             return;
         setProgressBar(reload_progress_max_, reload_progress_max_);
         showProgressBar(false);
-        updateSeachKeyData(key, ((Find2chResultAdapter) list_adapter_).getCount());
+        updateSeachKeyData(key, ((Find2chResultAdapter) getListAdapter()).getCount());
         onEndReload();
     }
 

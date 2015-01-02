@@ -445,7 +445,7 @@ public class ThreadListActivity extends SearchableListActivity {
                             return;
                         setProgress(10000);
                         showProgressBar(false);
-                        ((ThreadListAdapter) list_adapter_).applyFilter(new Runnable() {
+                        ((ThreadListAdapter) getListAdapter()).applyFilter(new Runnable() {
                             @Override
                             public void run() {
                                 onEndReload();
@@ -480,7 +480,7 @@ public class ThreadListActivity extends SearchableListActivity {
                     public void run() {
                         if (reload_terminator.is_terminated_)
                             return;
-                        ((ThreadListAdapter) list_adapter_).setDataList(data_list, null);
+                        ((ThreadListAdapter) getListAdapter()).setDataList(data_list, null);
                         if (reload_progress_cur_ * 100 / reload_progress_max_ > DEFAULT_FAKE_PROGRESS) {
                             reload_progress_cur_ += (reload_progress_max_ - reload_progress_cur_) / 5;
                         } else {
@@ -498,7 +498,7 @@ public class ThreadListActivity extends SearchableListActivity {
                     public void run() {
                         if (reload_terminator.is_terminated_)
                             return;
-                        ((ThreadListAdapter) list_adapter_).addDataList(data_list, null);
+                        ((ThreadListAdapter) getListAdapter()).addDataList(data_list, null);
                         reload_progress_cur_ += DEFAULT_DB_PROGRESS;
                         setProgressBar(reload_progress_cur_, reload_progress_max_);
                     }
@@ -547,10 +547,10 @@ public class ThreadListActivity extends SearchableListActivity {
 
         filter_ = filter;
         if (filter_ == null || filter_.length() == 0) {
-            ((ThreadListAdapter) list_adapter_).setFilter(null, null);
+            ((ThreadListAdapter) getListAdapter()).setFilter(null, null);
         } else {
             final String filter_lc = filter_.toLowerCase();
-            ((ThreadListAdapter) list_adapter_).setFilter(new ThreadListAdapter.Filter<ThreadData>() {
+            ((ThreadListAdapter) getListAdapter()).setFilter(new ThreadListAdapter.Filter<ThreadData>() {
                 @Override
                 public boolean filter(final ThreadData data) {
                     if (data.thread_name_.toLowerCase().indexOf(filter_lc) == -1)
@@ -568,7 +568,7 @@ public class ThreadListActivity extends SearchableListActivity {
     }
 
     private void updateSortOrder(final int sort_order) {
-        ((ThreadListAdapter) list_adapter_).setComparer(ThreadData.Order.getComparator(sort_order), null);
+        ((ThreadListAdapter) getListAdapter()).setComparer(ThreadData.Order.getComparator(sort_order), null);
     }
 
 }
