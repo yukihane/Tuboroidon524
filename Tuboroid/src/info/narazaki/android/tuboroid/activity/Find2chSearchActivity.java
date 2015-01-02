@@ -271,74 +271,74 @@ public class Find2chSearchActivity extends TuboroidListActivity {
         current_find_2ch_task_ = getAgent().searchViaFind2ch(key, order, force_reload,
                 new Find2chTask.Find2chFetchedCallback() {
 
+            @Override
+            public void onFirstReceived(final int found_items) {
+                runOnUiThread(new Runnable() {
                     @Override
-                    public void onFirstReceived(final int found_items) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (reload_terminator.is_terminated_)
-                                    return;
-                                reload_progress_max_ = found_items;
-                                setProgressBar(reload_progress_cur_, reload_progress_max_);
-                                ((Find2chResultAdapter) list_adapter_).clear();
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onCompleted() {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (reload_terminator.is_terminated_)
-                                    return;
-                                onSearchCompleted(key);
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onReceived(final ArrayList<Find2chResultData> data_list) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (reload_terminator.is_terminated_)
-                                    return;
-                                onSearchProgress(data_list);
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onFailed() {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (reload_terminator.is_terminated_)
-                                    return;
-                                onSearchFailed();
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onInterrupted() {
+                    public void run() {
                         if (reload_terminator.is_terminated_)
                             return;
-                    }
-
-                    @Override
-                    public void onOffline() {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (reload_terminator.is_terminated_)
-                                    return;
-                                onSearchOffline();
-                            }
-                        });
+                        reload_progress_max_ = found_items;
+                        setProgressBar(reload_progress_cur_, reload_progress_max_);
+                        ((Find2chResultAdapter) list_adapter_).clear();
                     }
                 });
+            }
+
+            @Override
+            public void onCompleted() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (reload_terminator.is_terminated_)
+                            return;
+                        onSearchCompleted(key);
+                    }
+                });
+            }
+
+            @Override
+            public void onReceived(final ArrayList<Find2chResultData> data_list) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (reload_terminator.is_terminated_)
+                            return;
+                        onSearchProgress(data_list);
+                    }
+                });
+            }
+
+            @Override
+            public void onFailed() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (reload_terminator.is_terminated_)
+                            return;
+                        onSearchFailed();
+                    }
+                });
+            }
+
+            @Override
+            public void onInterrupted() {
+                if (reload_terminator.is_terminated_)
+                    return;
+            }
+
+            @Override
+            public void onOffline() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (reload_terminator.is_terminated_)
+                            return;
+                        onSearchOffline();
+                    }
+                });
+            }
+        });
     }
 
     private void onSearchProgress(final ArrayList<Find2chResultData> data_list) {
