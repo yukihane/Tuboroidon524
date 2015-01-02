@@ -50,6 +50,7 @@ public class ThreadEntryListActivity extends TuboroidListActivity implements Thr
         setContentView(R.layout.entry_list);
 
         presenter = new ThreadEntryListPresenterImpl(this, this);
+        presenter.onCreate(savedInstanceState);
         searchableProxy = new SearchableProxyImpl(this);
     }
 

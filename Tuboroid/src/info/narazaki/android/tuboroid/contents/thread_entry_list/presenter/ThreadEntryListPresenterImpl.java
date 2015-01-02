@@ -1,19 +1,12 @@
 package info.narazaki.android.tuboroid.contents.thread_entry_list.presenter;
 
-import static info.narazaki.android.tuboroid.contents.thread_entry_list.model.Constants.MENU_KEY_COPY_INFO;
-import static info.narazaki.android.tuboroid.contents.thread_entry_list.model.Constants.MENU_KEY_SIMILAR;
-import info.narazaki.android.lib.system.MigrationSDK5;
-import info.narazaki.android.tuboroid.R;
-import info.narazaki.android.tuboroid.activity.SimilarThreadListActivity;
-import info.narazaki.android.tuboroid.activity.base.SearchableProxy;
-import info.narazaki.android.tuboroid.contents.thread_entry_list.view.ThreadEntryListActivity;
+import static info.narazaki.android.tuboroid.contents.thread_entry_list.model.Constants.INTENT_KEY_URL;
 import info.narazaki.android.tuboroid.data.ThreadData;
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MenuItem.OnMenuItemClickListener;
 
 public class ThreadEntryListPresenterImpl implements ThreadEntryListPresenter {
     //
@@ -27,10 +20,10 @@ public class ThreadEntryListPresenterImpl implements ThreadEntryListPresenter {
     // private final static int CTX_MENU_DELETE_IGNORE = 5;
     // private final static int CTX_MENU_COPY_TO_CLIPBOARD = 6;
     // private final static int CTX_MENU_DELETE_IMAGES = 10;
-    //
-    // // スレ情報
-    // /** (予想)本Activityの表示対象スレURL. */
-    // private Uri thread_uri_;
+
+    // スレ情報
+    /** (予想)本Activityの表示対象スレURL. */
+    private Uri thread_uri_;
     /** (予想)本Activityの表示対象スレが持つ情報. */
     private ThreadData thread_data_;
     // private int maybe_online_count_;
@@ -84,149 +77,148 @@ public class ThreadEntryListPresenterImpl implements ThreadEntryListPresenter {
         this.context = context;
     }
 
-    // // ////////////////////////////////////////////////////////////
-    // // ステート管理系
-    // // ////////////////////////////////////////////////////////////
-    // protected void onCreate(final Bundle savedInstanceState) {
-    //
-    // registerForContextMenu(getListView());
-    //
-    // if (savedInstanceState == null) {
-    // reload_on_resume_ = true;
-    // } else {
-    // reload_on_resume_ = false;
-    // }
-    // service_intent_receiver_ = new BroadcastReceiver() {
-    // @Override
-    // public void onReceive(final Context context, final Intent intent) {
-    // runOnUiThread(new Runnable() {
-    // @Override
-    // public void run() {
-    // onCheckUpdateFinished(intent);
-    // }
-    // });
-    // }
-    // };
-    //
-    // // スレッド情報の取得(URLから作れる範囲の暫定のもの)
-    // thread_uri_ = getIntent().getData();
-    // if (thread_uri_ == null) {
-    // if (savedInstanceState != null &&
-    // savedInstanceState.containsKey(INTENT_KEY_URL)) {
-    // thread_uri_ = Uri.parse(savedInstanceState.getString(INTENT_KEY_URL));
-    // }
-    // }
-    // if (thread_uri_ == null)
-    // return;
-    // thread_data_ = ThreadData.factory(thread_uri_);
-    // if (thread_data_ == null)
-    // return;
-    //
-    // // 板情報がない時のために作成処理
-    // getAgent().getBoardData(Uri.parse(thread_data_.getBoardIndexURI()),
-    // false, null);
-    //
-    // // 暫定スレ情報
-    // maybe_online_count_ = DEFAULT_MAX_PROGRESS;
-    // final Bundle extras = getIntent().getExtras();
-    // if (extras != null) {
-    // if (extras.containsKey(INTENT_KEY_MAYBE_ONLINE_COUNT)) {
-    // maybe_online_count_ = extras.getInt(INTENT_KEY_MAYBE_ONLINE_COUNT);
-    // } else if (savedInstanceState != null &&
-    // savedInstanceState.containsKey(INTENT_KEY_MAYBE_ONLINE_COUNT)) {
-    // maybe_online_count_ =
-    // savedInstanceState.getInt(INTENT_KEY_MAYBE_ONLINE_COUNT);
-    // }
-    // if (extras.containsKey(INTENT_KEY_MAYBE_THREAD_NAME)) {
-    // thread_data_.thread_name_ =
-    // extras.getString(INTENT_KEY_MAYBE_THREAD_NAME);
-    // } else if (savedInstanceState != null &&
-    // savedInstanceState.containsKey(INTENT_KEY_MAYBE_THREAD_NAME)) {
-    // thread_data_.thread_name_ =
-    // savedInstanceState.getString(INTENT_KEY_MAYBE_THREAD_NAME);
-    // }
-    // }
-    //
-    // // フィルタ
-    // filter_ = new ParcelableFilterData();
-    // resume_entry_id_ = Long.MAX_VALUE;
-    // resume_entry_y_ = 0;
-    //
-    // anchor_jump_stack_ = new LinkedList<Integer>();
-    //
-    // if (savedInstanceState != null) {
-    // if (savedInstanceState.containsKey(INTENT_KEY_RESUME_ENTRY_ID)) {
-    // resume_entry_id_ =
-    // savedInstanceState.getLong(INTENT_KEY_RESUME_ENTRY_ID);
-    // }
-    // if (savedInstanceState.containsKey(INTENT_KEY_RESUME_Y)) {
-    // resume_entry_y_ = savedInstanceState.getInt(INTENT_KEY_RESUME_Y);
-    // }
-    // if (savedInstanceState.containsKey(INTENT_KEY_ANCHOR_JUMP_STACK)) {
-    // anchor_jump_stack_ = new LinkedList<Integer>(
-    // savedInstanceState.getIntegerArrayList(INTENT_KEY_ANCHOR_JUMP_STACK));
-    // }
-    // if (savedInstanceState.containsKey(INTENT_KEY_FILTER_PARCELABLE)) {
-    // filter_ = savedInstanceState.getParcelable(INTENT_KEY_FILTER_PARCELABLE);
-    // }
-    // }
-    //
-    // // スレ情報読み込み
-    // getAgent().initNewThreadData(thread_data_, null);
-    //
-    // // リロード時ジャンプ
-    // final int jump_on_reloaded_num =
-    // thread_data_.getJumpEntryNum(thread_uri_);
-    // if (jump_on_reloaded_num > 0) {
-    // setResumeItemPos(jump_on_reloaded_num - 1, 0);
-    // }
-    //
-    // // アンカーバー初期化
-    // updateAnchorBar();
-    //
-    // global_resume_data_ = null;
-    //
-    // // フッタ
-    // next_thread_data_ = null;
-    // favorite_check_update_progress_ = false;
-    // unread_thread_count_ = 0;
-    // final View footer_row =
-    // LayoutInflater.from(this).inflate(R.layout.entry_list_footer_row, null);
-    // footer_view_ = footer_row.findViewById(R.id.entry_footer_box);
-    //
-    // footer_row.setOnClickListener(new View.OnClickListener() {
-    // @Override
-    // public void onClick(final View v) {
-    // onFooterClicked();
-    // }
-    // });
-    // footer_view_.setVisibility(View.GONE);
-    // getListView().addFooterView(footer_row);
-    //
-    // // TypedArray ta = obtainStyledAttributes(new int [] {
-    // // R.attr.toolbarDarkColor });
-    // // getListView().setDivider(new ColorDrawable(ta.getColor(0,
-    // // 0x40888888)));
-    // getListView().setDivider(new ColorDrawable(0x80606060));
-    //
-    // // スクロールキー
-    // final SharedPreferences pref =
-    // PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-    // use_scroll_key_ = pref.getBoolean("pref_use_page_up_down_key", true);
-    //
-    // image_viewer_dialog_ = new ImageViewerDialog(this, thread_data_);
-    // image_viewer_dialog_.setOnDismissListener(new OnDismissListener() {
-    //
-    // @Override
-    // public void onDismiss(final DialogInterface dialog) {
-    // list_adapter_.notifyDataSetChanged();
-    // getListView().invalidateViews();
-    // }
-    // });
-    //
-    // applyViewConfig(getListFontPref());
-    // }
-    //
+    @Override
+    public void onCreate(final Bundle savedInstanceState) {
+        //
+        // registerForContextMenu(getListView());
+        //
+        // if (savedInstanceState == null) {
+        // reload_on_resume_ = true;
+        // } else {
+        // reload_on_resume_ = false;
+        // }
+        // service_intent_receiver_ = new BroadcastReceiver() {
+        // @Override
+        // public void onReceive(final Context context, final Intent intent) {
+        // runOnUiThread(new Runnable() {
+        // @Override
+        // public void run() {
+        // onCheckUpdateFinished(intent);
+        // }
+        // });
+        // }
+        // };
+
+        // スレッド情報の取得(URLから作れる範囲の暫定のもの)
+        thread_uri_ = view.getIntent().getData();
+        if (thread_uri_ == null) {
+            if (savedInstanceState != null && savedInstanceState.containsKey(INTENT_KEY_URL)) {
+                thread_uri_ = Uri.parse(savedInstanceState.getString(INTENT_KEY_URL));
+            }
+        }
+        if (thread_uri_ == null)
+            return;
+        thread_data_ = ThreadData.factory(thread_uri_);
+        if (thread_data_ == null)
+            return;
+
+        // // 板情報がない時のために作成処理
+        // getAgent().getBoardData(Uri.parse(thread_data_.getBoardIndexURI()),
+        // false, null);
+        //
+        // // 暫定スレ情報
+        // maybe_online_count_ = DEFAULT_MAX_PROGRESS;
+        // final Bundle extras = getIntent().getExtras();
+        // if (extras != null) {
+        // if (extras.containsKey(INTENT_KEY_MAYBE_ONLINE_COUNT)) {
+        // maybe_online_count_ = extras.getInt(INTENT_KEY_MAYBE_ONLINE_COUNT);
+        // } else if (savedInstanceState != null &&
+        // savedInstanceState.containsKey(INTENT_KEY_MAYBE_ONLINE_COUNT)) {
+        // maybe_online_count_ =
+        // savedInstanceState.getInt(INTENT_KEY_MAYBE_ONLINE_COUNT);
+        // }
+        // if (extras.containsKey(INTENT_KEY_MAYBE_THREAD_NAME)) {
+        // thread_data_.thread_name_ =
+        // extras.getString(INTENT_KEY_MAYBE_THREAD_NAME);
+        // } else if (savedInstanceState != null &&
+        // savedInstanceState.containsKey(INTENT_KEY_MAYBE_THREAD_NAME)) {
+        // thread_data_.thread_name_ =
+        // savedInstanceState.getString(INTENT_KEY_MAYBE_THREAD_NAME);
+        // }
+        // }
+        //
+        // // フィルタ
+        // filter_ = new ParcelableFilterData();
+        // resume_entry_id_ = Long.MAX_VALUE;
+        // resume_entry_y_ = 0;
+        //
+        // anchor_jump_stack_ = new LinkedList<Integer>();
+        //
+        // if (savedInstanceState != null) {
+        // if (savedInstanceState.containsKey(INTENT_KEY_RESUME_ENTRY_ID)) {
+        // resume_entry_id_ =
+        // savedInstanceState.getLong(INTENT_KEY_RESUME_ENTRY_ID);
+        // }
+        // if (savedInstanceState.containsKey(INTENT_KEY_RESUME_Y)) {
+        // resume_entry_y_ = savedInstanceState.getInt(INTENT_KEY_RESUME_Y);
+        // }
+        // if (savedInstanceState.containsKey(INTENT_KEY_ANCHOR_JUMP_STACK)) {
+        // anchor_jump_stack_ = new LinkedList<Integer>(
+        // savedInstanceState.getIntegerArrayList(INTENT_KEY_ANCHOR_JUMP_STACK));
+        // }
+        // if (savedInstanceState.containsKey(INTENT_KEY_FILTER_PARCELABLE)) {
+        // filter_ =
+        // savedInstanceState.getParcelable(INTENT_KEY_FILTER_PARCELABLE);
+        // }
+        // }
+        //
+        // // スレ情報読み込み
+        // getAgent().initNewThreadData(thread_data_, null);
+        //
+        // // リロード時ジャンプ
+        // final int jump_on_reloaded_num =
+        // thread_data_.getJumpEntryNum(thread_uri_);
+        // if (jump_on_reloaded_num > 0) {
+        // setResumeItemPos(jump_on_reloaded_num - 1, 0);
+        // }
+        //
+        // // アンカーバー初期化
+        // updateAnchorBar();
+        //
+        // global_resume_data_ = null;
+        //
+        // // フッタ
+        // next_thread_data_ = null;
+        // favorite_check_update_progress_ = false;
+        // unread_thread_count_ = 0;
+        // final View footer_row =
+        // LayoutInflater.from(this).inflate(R.layout.entry_list_footer_row,
+        // null);
+        // footer_view_ = footer_row.findViewById(R.id.entry_footer_box);
+        //
+        // footer_row.setOnClickListener(new View.OnClickListener() {
+        // @Override
+        // public void onClick(final View v) {
+        // onFooterClicked();
+        // }
+        // });
+        // footer_view_.setVisibility(View.GONE);
+        // getListView().addFooterView(footer_row);
+        //
+        // // TypedArray ta = obtainStyledAttributes(new int [] {
+        // // R.attr.toolbarDarkColor });
+        // // getListView().setDivider(new ColorDrawable(ta.getColor(0,
+        // // 0x40888888)));
+        // getListView().setDivider(new ColorDrawable(0x80606060));
+        //
+        // // スクロールキー
+        // final SharedPreferences pref =
+        // PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        // use_scroll_key_ = pref.getBoolean("pref_use_page_up_down_key", true);
+        //
+        // image_viewer_dialog_ = new ImageViewerDialog(this, thread_data_);
+        // image_viewer_dialog_.setOnDismissListener(new OnDismissListener() {
+        //
+        // @Override
+        // public void onDismiss(final DialogInterface dialog) {
+        // list_adapter_.notifyDataSetChanged();
+        // getListView().invalidateViews();
+        // }
+        // });
+        //
+        // applyViewConfig(getListFontPref());
+    }
+
     // protected void onPostCreate(final Bundle savedInstanceState) {
     // super.onPostCreate(savedInstanceState);
     //
@@ -963,37 +955,44 @@ public class ThreadEntryListPresenterImpl implements ThreadEntryListPresenter {
         final Uri threadUri = Uri.parse(thread_data_.getThreadURI());
         MenuItem compose_item = view.getMenuItemCompose(menu);
         compose_item.setOnMenuItemClickListener(new ComposeMenuItemClickListener(view, threadUri));
-//
-//        // 類似検索
-//        final MenuItem similar_item = menu.add(0, MENU_KEY_SIMILAR, MENU_KEY_SIMILAR,
-//                getString(R.string.label_menu_find_similar_thread));
-//        similar_item.setIcon(android.R.drawable.ic_menu_gallery);
-//        similar_item.setOnMenuItemClickListener(new OnMenuItemClickListener() {
-//            @Override
-//            public boolean onMenuItemClick(final MenuItem item) {
-//                final Intent intent = new Intent(ThreadEntryListActivity.this, SimilarThreadListActivity.class);
-//                intent.setData(Uri.parse(thread_data_.getBoardSubjectsURI()));
-//                intent.putExtra(SimilarThreadListActivity.KEY_SEARCH_KEY_NAME, thread_data_.thread_name_);
-//                intent.putExtra(SimilarThreadListActivity.KEY_SEARCH_THREAD_ID, thread_data_.thread_id_);
-//                MigrationSDK5.Intent_addFlagNoAnimation(intent);
-//                startActivity(intent);
-//                return false;
-//            }
-//        });
-//
-//        // スレ情報コピー
-//        final MenuItem copy_info_item = menu.add(0, MENU_KEY_COPY_INFO, MENU_KEY_COPY_INFO,
-//                getString(R.string.label_menu_copy_thread_info));
-//        copy_info_item.setIcon(android.R.drawable.ic_menu_agenda);
-//        copy_info_item.setOnMenuItemClickListener(new OnMenuItemClickListener() {
-//            @Override
-//            public boolean onMenuItemClick(final MenuItem item) {
-//                showDialogCopyThreadInfoToClipboard();
-//                return false;
-//            }
-//        });
-//
-//        getMenuInflater().inflate(R.menu.thread_entry_list_menu, menu);
+        //
+        // // 類似検索
+        // final MenuItem similar_item = menu.add(0, MENU_KEY_SIMILAR,
+        // MENU_KEY_SIMILAR,
+        // getString(R.string.label_menu_find_similar_thread));
+        // similar_item.setIcon(android.R.drawable.ic_menu_gallery);
+        // similar_item.setOnMenuItemClickListener(new OnMenuItemClickListener()
+        // {
+        // @Override
+        // public boolean onMenuItemClick(final MenuItem item) {
+        // final Intent intent = new Intent(ThreadEntryListActivity.this,
+        // SimilarThreadListActivity.class);
+        // intent.setData(Uri.parse(thread_data_.getBoardSubjectsURI()));
+        // intent.putExtra(SimilarThreadListActivity.KEY_SEARCH_KEY_NAME,
+        // thread_data_.thread_name_);
+        // intent.putExtra(SimilarThreadListActivity.KEY_SEARCH_THREAD_ID,
+        // thread_data_.thread_id_);
+        // MigrationSDK5.Intent_addFlagNoAnimation(intent);
+        // startActivity(intent);
+        // return false;
+        // }
+        // });
+        //
+        // // スレ情報コピー
+        // final MenuItem copy_info_item = menu.add(0, MENU_KEY_COPY_INFO,
+        // MENU_KEY_COPY_INFO,
+        // getString(R.string.label_menu_copy_thread_info));
+        // copy_info_item.setIcon(android.R.drawable.ic_menu_agenda);
+        // copy_info_item.setOnMenuItemClickListener(new
+        // OnMenuItemClickListener() {
+        // @Override
+        // public boolean onMenuItemClick(final MenuItem item) {
+        // showDialogCopyThreadInfoToClipboard();
+        // return false;
+        // }
+        // });
+        //
+        // getMenuInflater().inflate(R.menu.thread_entry_list_menu, menu);
         return true;
     }
     //

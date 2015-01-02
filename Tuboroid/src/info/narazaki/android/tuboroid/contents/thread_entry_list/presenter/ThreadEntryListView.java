@@ -1,5 +1,7 @@
 package info.narazaki.android.tuboroid.contents.thread_entry_list.presenter;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.net.Uri;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,5 +22,10 @@ public interface ThreadEntryListView {
      *            書き込み対象スレッドのURL.
      */
     void showEntryEditor(Uri threadUri);
+
+    /**
+     * @return {@link Activity#getIntent()}
+     */
+    Intent getIntent();
 
 }
