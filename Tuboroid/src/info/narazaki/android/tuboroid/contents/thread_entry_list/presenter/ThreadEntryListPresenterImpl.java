@@ -290,7 +290,6 @@ public class ThreadEntryListPresenterImpl implements ThreadEntryListPresenter {
         applyViewConfig(getListFontPref());
     }
 
-    @Override
     protected void onPostCreate(final Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
 
@@ -358,7 +357,6 @@ public class ThreadEntryListPresenterImpl implements ThreadEntryListPresenter {
         });
     }
 
-    @Override
     protected void onSaveInstanceState(final Bundle outState) {
         if (thread_data_ != null && thread_uri_ != null) {
             outState.putString(INTENT_KEY_URL, thread_uri_.toString());
@@ -379,7 +377,6 @@ public class ThreadEntryListPresenterImpl implements ThreadEntryListPresenter {
         super.onSaveInstanceState(outState);
     }
 
-    @Override
     protected void onResume() {
         super.onResume();
         ((ThreadEntryListAdapter) list_adapter_).setFontSize(getTuboroidApplication().view_config_);
@@ -428,7 +425,6 @@ public class ThreadEntryListPresenterImpl implements ThreadEntryListPresenter {
         applyViewConfig(getListFontPref());
     }
 
-    @Override
     protected void onPause() {
         if (thread_data_ != null && list_adapter_ != null && list_adapter_.getCount() > 0 && hasInitialData()) {
             final int bottom_pos = getListView().getLastVisiblePosition();
@@ -480,7 +476,6 @@ public class ThreadEntryListPresenterImpl implements ThreadEntryListPresenter {
         super.onPause();
     }
 
-    @Override
     protected void onActivityResult(final int request_code, final int result_code, final Intent data) {
         switch (request_code) {
         case INTENT_ID_SHOW_ENTRY_EDITOR:
@@ -501,7 +496,6 @@ public class ThreadEntryListPresenterImpl implements ThreadEntryListPresenter {
         }
     }
 
-    @Override
     protected SimpleListAdapterBase<?> createListAdapter() {
         final ThreadEntryData.ImageViewerLauncher imageViewerLauncher = new ThreadEntryData.ImageViewerLauncher() {
             @Override
@@ -545,7 +539,6 @@ public class ThreadEntryListPresenterImpl implements ThreadEntryListPresenter {
         return list_adapter;
     }
 
-    @Override
     protected void onFirstDataRequired() {
         if (thread_data_ == null)
             return;
@@ -553,7 +546,6 @@ public class ThreadEntryListPresenterImpl implements ThreadEntryListPresenter {
         onResumeDataRequired();
     }
 
-    @Override
     protected void onResumeDataRequired() {
         if (thread_data_ == null)
             return;
@@ -569,7 +561,6 @@ public class ThreadEntryListPresenterImpl implements ThreadEntryListPresenter {
     // キー管理系
     // ////////////////////////////////////////////////////////////
 
-    @Override
     public boolean onKeyDown(final int keyCode, final KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             // BACKキーが押されたときの処理
@@ -588,7 +579,6 @@ public class ThreadEntryListPresenterImpl implements ThreadEntryListPresenter {
         return super.onKeyDown(keyCode, event);
     }
 
-    @Override
     public boolean dispatchKeyEvent(final KeyEvent event) {
         if (event.getKeyCode() == KeyEvent.KEYCODE_DPAD_UP && !isToobarForcused()) {
             if (event.getAction() == KeyEvent.ACTION_DOWN) {
@@ -649,7 +639,6 @@ public class ThreadEntryListPresenterImpl implements ThreadEntryListPresenter {
     // アイテムタップ
     // ////////////////////////////////////////////////////////////
 
-    @Override
     public void onCreateContextMenu(final ContextMenu menu, final View v, final ContextMenuInfo menu_info) {
         final AdapterContextMenuInfo info = (AdapterContextMenuInfo) menu_info;
         final ThreadEntryData entry_data = ((ThreadEntryListAdapter) list_adapter_).getData(info.position);
@@ -679,7 +668,6 @@ public class ThreadEntryListPresenterImpl implements ThreadEntryListPresenter {
                 R.string.ctx_menu_find_related_entries);
     }
 
-    @Override
     public boolean onContextItemSelected(final MenuItem item) {
         final AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
         final ThreadEntryData entry_data = ((ThreadEntryListAdapter) list_adapter_).getData(info.position);
@@ -961,7 +949,6 @@ public class ThreadEntryListPresenterImpl implements ThreadEntryListPresenter {
     // オプションメニュー
     // ////////////////////////////////////////////////////////////
 
-    @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
         super.onCreateOptionsMenu(menu);
 
@@ -1016,7 +1003,6 @@ public class ThreadEntryListPresenterImpl implements ThreadEntryListPresenter {
         return true;
     }
 
-    @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
         if (item.getItemId() == R.id.menu_size_setting) {
             showSizeSettingDialog();
@@ -1061,7 +1047,6 @@ public class ThreadEntryListPresenterImpl implements ThreadEntryListPresenter {
     // ツールバー
     // ////////////////////////////////////////////////////////////
 
-    @Override
     protected void createToolbarButtons() {
         super.createToolbarButtons();
 
@@ -1235,14 +1220,12 @@ public class ThreadEntryListPresenterImpl implements ThreadEntryListPresenter {
         return buf.toString();
     }
 
-    @Override
     protected boolean isFavorite() {
         if (thread_data_ == null)
             return false;
         return thread_data_.is_favorite_;
     }
 
-    @Override
     protected void addFavorite() {
         if (thread_data_ == null)
             return;
@@ -1254,7 +1237,6 @@ public class ThreadEntryListPresenterImpl implements ThreadEntryListPresenter {
         });
     }
 
-    @Override
     protected void deleteFavorite() {
         if (thread_data_ == null)
             return;
@@ -1477,7 +1459,6 @@ public class ThreadEntryListPresenterImpl implements ThreadEntryListPresenter {
     // ////////////////////////////////////////////////////////////
     // リロード
     // ////////////////////////////////////////////////////////////
-    @Override
     protected void reloadList(final boolean force_reload) {
         if (!is_active_)
             return;
@@ -1712,7 +1693,6 @@ public class ThreadEntryListPresenterImpl implements ThreadEntryListPresenter {
         });
     }
 
-    @Override
     protected void onEndReload() {
         updateFooterRow(false, new Runnable() {
             @Override
@@ -1763,7 +1743,6 @@ public class ThreadEntryListPresenterImpl implements ThreadEntryListPresenter {
         });
     }
 
-    @Override
     protected void onEndReloadJumped() {
         getListView().post(new Runnable() {
             @Override
@@ -1991,7 +1970,6 @@ public class ThreadEntryListPresenterImpl implements ThreadEntryListPresenter {
         }
     }
 
-    @Override
     protected void updateFilter(final String filter_string) {
         if (filter_string == null || filter_string.length() == 0) {
             footer_view_.setVisibility(View.VISIBLE);
