@@ -1,6 +1,7 @@
 package info.narazaki.android.tuboroid.contents.thread_entry_list.view;
 
 import info.narazaki.android.lib.adapter.SimpleListAdapterBase;
+import info.narazaki.android.tuboroid.R;
 import info.narazaki.android.tuboroid.activity.base.SearchableListActivity;
 import info.narazaki.android.tuboroid.contents.thread_entry_list.presenter.ThreadEntryListPresenter;
 import info.narazaki.android.tuboroid.contents.thread_entry_list.presenter.ThreadEntryListPresenterImpl;
@@ -8,6 +9,7 @@ import info.narazaki.android.tuboroid.contents.thread_entry_list.presenter.Threa
 import info.narazaki.android.tuboroid.data.ThreadEntryData;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Window;
 
 /**
  * (予想)1つの「スレ」を表示するためのアクティビティ.
@@ -24,8 +26,14 @@ public class ThreadEntryListActivity extends SearchableListActivity implements T
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
-        presenter = new ThreadEntryListPresenterImpl(this, this);
+
+        requestWindowFeature(Window.FEATURE_ACTION_BAR);
+
         super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.entry_list);
+
+        presenter = new ThreadEntryListPresenterImpl(this, this);
     }
 
     @Override

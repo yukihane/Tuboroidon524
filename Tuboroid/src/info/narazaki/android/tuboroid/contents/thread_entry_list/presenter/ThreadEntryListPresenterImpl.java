@@ -1,7 +1,6 @@
 package info.narazaki.android.tuboroid.contents.thread_entry_list.presenter;
 
 import info.narazaki.android.lib.activity.base.NListActivity.PositionData;
-import info.narazaki.android.lib.activity.base.NSimpleListActivity.ReloadTerminator;
 import info.narazaki.android.lib.adapter.SimpleListAdapterBase;
 import info.narazaki.android.lib.dialog.SimpleDialog;
 import info.narazaki.android.lib.system.MigrationSDK5;
@@ -162,16 +161,7 @@ public class ThreadEntryListPresenterImpl implements ThreadEntryListPresenter {
     // ////////////////////////////////////////////////////////////
     // ステート管理系
     // ////////////////////////////////////////////////////////////
-    @Override
     protected void onCreate(final Bundle savedInstanceState) {
-
-        presenter = new ThreadEntryListPresenterImpl(this, this);
-
-        requestWindowFeature(Window.FEATURE_ACTION_BAR);
-
-        super.onCreate(savedInstanceState);
-
-        setContentView(R.layout.entry_list);
 
         registerForContextMenu(getListView());
 
