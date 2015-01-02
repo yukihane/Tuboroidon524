@@ -314,7 +314,7 @@ public class ThreadListActivity extends TuboroidListActivity {
         super.onCreateOptionsMenu(menu);
 
         // ツールバー
-        searchProxy.createToolBarOptionMenu(menu, MENU_KEY_TOOLBAR_1, MENU_KEY_TOOLBAR_2, MENU_KEY_SEARCH_BAR_1,
+        searchProxy.onCreateOptionsMenu(menu, MENU_KEY_TOOLBAR_1, MENU_KEY_TOOLBAR_2, MENU_KEY_SEARCH_BAR_1,
                 MENU_KEY_SEARCH_BAR_2);
 
         // ソート

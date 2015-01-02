@@ -47,7 +47,6 @@ public abstract class SearchableProxy {
         return activity;
     }
 
-
     /**
      * 委譲元のonResumeメソッド内で実行してください.
      */
@@ -64,6 +63,62 @@ public abstract class SearchableProxy {
     public boolean onSearchRequested() {
         toggleSearchBar();
         return true;
+    }
+
+    /**
+     * 委譲元の{@link Activity#onCreateOptionsMenu(Menu)}が呼ばれた際に呼んでください.
+     */
+
+    public void onCreateOptionsMenu(final Menu menu, final int menu_id_tool_bar_show, final int menu_id_tool_bar_hide,
+            final int menu_id_search_bar_show, final int menu_id_search_bar_hide) {
+        menu_id_tool_bar_show_ = menu_id_tool_bar_show;
+        menu_id_tool_bar_hide_ = menu_id_tool_bar_hide;
+        menu_id_search_bar_show_ = menu_id_search_bar_show;
+        menu_id_search_bar_hide_ = menu_id_search_bar_hide;
+
+        final MenuItem tool_bar_show = menu.add(0, menu_id_tool_bar_show_, menu_id_tool_bar_show_,
+                activity.getString(R.string.label_menu_show_toolbar));
+        tool_bar_show.setIcon(R.drawable.ic_menu_show_toolbar);
+        tool_bar_show.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(final MenuItem item) {
+                showToolBar(true);
+                return false;
+            }
+        });
+
+        final MenuItem tool_bar_hide = menu.add(0, menu_id_tool_bar_hide_, menu_id_tool_bar_hide_,
+                activity.getString(R.string.label_menu_hide_toolbar));
+        tool_bar_hide.setIcon(android.R.drawable.ic_menu_close_clear_cancel);
+        tool_bar_hide.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(final MenuItem item) {
+                showToolBar(false);
+                return false;
+            }
+        });
+
+        final MenuItem search_bar_show = menu.add(0, menu_id_search_bar_show_, menu_id_search_bar_show_,
+                activity.getString(R.string.label_menu_show_searchbar));
+        search_bar_show.setIcon(R.drawable.ic_menu_show_searchbar);
+        search_bar_show.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(final MenuItem item) {
+                showSearchBar(true);
+                return false;
+            }
+        });
+
+        final MenuItem search_bar_hide = menu.add(0, menu_id_search_bar_hide_, menu_id_search_bar_hide_,
+                activity.getString(R.string.label_menu_hide_searchbar));
+        search_bar_hide.setIcon(R.drawable.ic_menu_hide_searchbar);
+        search_bar_hide.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(final MenuItem item) {
+                showSearchBar(false);
+                return false;
+            }
+        });
     }
 
     /**
@@ -202,58 +257,6 @@ public abstract class SearchableProxy {
     // ////////////////////////////////////////////////////////////////
     // メニュー
     // ////////////////////////////////////////////////////////////////
-
-    public void createToolBarOptionMenu(final Menu menu, final int menu_id_tool_bar_show,
-            final int menu_id_tool_bar_hide, final int menu_id_search_bar_show, final int menu_id_search_bar_hide) {
-        menu_id_tool_bar_show_ = menu_id_tool_bar_show;
-        menu_id_tool_bar_hide_ = menu_id_tool_bar_hide;
-        menu_id_search_bar_show_ = menu_id_search_bar_show;
-        menu_id_search_bar_hide_ = menu_id_search_bar_hide;
-
-        final MenuItem tool_bar_show = menu.add(0, menu_id_tool_bar_show_, menu_id_tool_bar_show_,
-                activity.getString(R.string.label_menu_show_toolbar));
-        tool_bar_show.setIcon(R.drawable.ic_menu_show_toolbar);
-        tool_bar_show.setOnMenuItemClickListener(new OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(final MenuItem item) {
-                showToolBar(true);
-                return false;
-            }
-        });
-
-        final MenuItem tool_bar_hide = menu.add(0, menu_id_tool_bar_hide_, menu_id_tool_bar_hide_,
-                activity.getString(R.string.label_menu_hide_toolbar));
-        tool_bar_hide.setIcon(android.R.drawable.ic_menu_close_clear_cancel);
-        tool_bar_hide.setOnMenuItemClickListener(new OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(final MenuItem item) {
-                showToolBar(false);
-                return false;
-            }
-        });
-
-        final MenuItem search_bar_show = menu.add(0, menu_id_search_bar_show_, menu_id_search_bar_show_,
-                activity.getString(R.string.label_menu_show_searchbar));
-        search_bar_show.setIcon(R.drawable.ic_menu_show_searchbar);
-        search_bar_show.setOnMenuItemClickListener(new OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(final MenuItem item) {
-                showSearchBar(true);
-                return false;
-            }
-        });
-
-        final MenuItem search_bar_hide = menu.add(0, menu_id_search_bar_hide_, menu_id_search_bar_hide_,
-                activity.getString(R.string.label_menu_hide_searchbar));
-        search_bar_hide.setIcon(R.drawable.ic_menu_hide_searchbar);
-        search_bar_hide.setOnMenuItemClickListener(new OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(final MenuItem item) {
-                showSearchBar(false);
-                return false;
-            }
-        });
-    }
 
     protected void showToolBar(final boolean show) {
         final LinearLayout toolbar = (LinearLayout) activity.findViewById(R.id.toolbar);
