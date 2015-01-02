@@ -2,7 +2,7 @@ package info.narazaki.android.tuboroid.contents.thread_entry_list.view;
 
 import info.narazaki.android.lib.adapter.SimpleListAdapterBase;
 import info.narazaki.android.tuboroid.R;
-import info.narazaki.android.tuboroid.activity.base.SearchableListActivity;
+import info.narazaki.android.tuboroid.activity.base.TuboroidListActivity;
 import info.narazaki.android.tuboroid.contents.thread_entry_list.presenter.ThreadEntryListPresenter;
 import info.narazaki.android.tuboroid.contents.thread_entry_list.presenter.ThreadEntryListPresenterImpl;
 import info.narazaki.android.tuboroid.contents.thread_entry_list.presenter.ThreadEntryListView;
@@ -21,11 +21,12 @@ import android.view.Window;
 /**
  * (予想)1つの「スレ」を表示するためのアクティビティ.
  */
-public class ThreadEntryListActivity extends SearchableListActivity implements ThreadEntryListView {
+public class ThreadEntryListActivity extends TuboroidListActivity implements ThreadEntryListView {
 
     private static final String TAG = ThreadEntryListActivity.class.getSimpleName();
 
     private ThreadEntryListPresenter presenter;
+    private SearchableProxyImpl searchableProxy;
 
     private void log(String msg) {
         Log.d(TAG, msg);
@@ -41,12 +42,7 @@ public class ThreadEntryListActivity extends SearchableListActivity implements T
         setContentView(R.layout.entry_list);
 
         presenter = new ThreadEntryListPresenterImpl(this, this);
-    }
-
-    @Override
-    protected void updateFilter(String filter) {
-        // TODO Auto-generated method stub
-        log("updateFilter called");
+        searchableProxy = new SearchableProxyImpl(this);
     }
 
     @Override
@@ -85,6 +81,7 @@ public class ThreadEntryListActivity extends SearchableListActivity implements T
     @Override
     protected void onResume() {
         log("onResume called");
+        searchableProxy.onResume();
         super.onResume();
     }
 
@@ -184,4 +181,15 @@ public class ThreadEntryListActivity extends SearchableListActivity implements T
         return null;
     }
 
+    @Override
+    public boolean onSearchRequested() {
+        log("onSearchRequested called");
+        return searchableProxy.onSearchRequested();
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(final Menu menu) {
+        log("onPrepareOptionsMenu called");
+        return searchableProxy.onPrepareOptionsMenu(menu);
+    }
 }
