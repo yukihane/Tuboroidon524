@@ -195,20 +195,20 @@ public class RecentListActivity extends FavoriteListBaseActivity {
                 case 0:
                     SimpleDialog.showYesNo(RecentListActivity.this, R.string.label_submenu_delete_filled,
                             R.string.dialog_text_delete_filled_threads, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(final DialogInterface dialog, final int which) {
-                                    deleteFilled();
-                                }
-                            }, null);
+                        @Override
+                        public void onClick(final DialogInterface dialog, final int which) {
+                            deleteFilled();
+                        }
+                    }, null);
                     break;
                 case 1:
                     SimpleDialog.showYesNo(RecentListActivity.this, R.string.label_submenu_delete_except_favorite,
                             R.string.dialog_text_delete_threads_except_favorite, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(final DialogInterface dialog, final int which) {
-                                    deleteExceptFavorite();
-                                }
-                            }, null);
+                        @Override
+                        public void onClick(final DialogInterface dialog, final int which) {
+                            deleteExceptFavorite();
+                        }
+                    }, null);
                     break;
 
                 }
