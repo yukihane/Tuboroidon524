@@ -1,5 +1,7 @@
 package info.narazaki.android.tuboroid.activity;
 
+import static info.narazaki.android.tuboroid.contents.thread_entry_list.model.Constants.INTENT_KEY_MAYBE_ONLINE_COUNT;
+import static info.narazaki.android.tuboroid.contents.thread_entry_list.model.Constants.INTENT_KEY_MAYBE_THREAD_NAME;
 import info.narazaki.android.lib.adapter.SimpleListAdapterBase;
 import info.narazaki.android.lib.system.MigrationSDK5;
 import info.narazaki.android.lib.toast.ManagedToast;
@@ -132,8 +134,8 @@ public class Find2chSearchActivity extends TuboroidListActivity {
         final Find2chResultData result_data = ((Find2chResultAdapter) getListAdapter()).getData(position);
         final String uri = result_data.uri_;
         intent.setData(Uri.parse(uri));
-        intent.putExtra(ThreadEntryListActivity.INTENT_KEY_MAYBE_THREAD_NAME, result_data.thread_name_);
-        intent.putExtra(ThreadEntryListActivity.INTENT_KEY_MAYBE_ONLINE_COUNT, result_data.online_count_);
+        intent.putExtra(INTENT_KEY_MAYBE_THREAD_NAME, result_data.thread_name_);
+        intent.putExtra(INTENT_KEY_MAYBE_ONLINE_COUNT, result_data.online_count_);
         MigrationSDK5.Intent_addFlagNoAnimation(intent);
         startActivity(intent);
     }
